@@ -44,7 +44,7 @@ export default function Layout({
               width={144}
               alt={name}
             />
-            <h1 className={`text-white ${utilStyles.heading2Xl}`}>{name}</h1>
+            <h1 className={`text-black ${utilStyles.heading2Xl}`}>{name}</h1>
           </>
         ) : (
           <>
