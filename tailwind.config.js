@@ -20,11 +20,12 @@ module.exports = {
       'light': '#BBE1FA',
       'lightH': 'hsl(204, 86%, 86%)',
 
-      'white': '#fff'
+      'white': '#fff',
+      'black': '#000'
     },
     extend: {
-      skew: {
-        '45': '45deg',
+      screens: {
+        'ssm': '400px',
       },
       gridRow: {
         'span-12': 'span 12 / span 12',

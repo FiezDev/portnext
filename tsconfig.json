@@ -22,15 +22,17 @@
     "paths": {
       "@/public/*": ["public/*"],
 
-      "@/components/*": ["src/pages/components/*"],
       "@/context/*": ["context/*"],
-      "@/function/*": ["function/*"],
+      "@/services/*": ["services/*"],
       "@/model/*": ["model/*"],
       "@/src/*": ["src/*"],
       "@/styles/*": ["styles/*"],
 
-      "@/pages/*": ["pages/*"],
-   
+      "@/components/*": ["src/components/*"],
+      "@/pages/*": ["src/pages/*"],
+
+      "@/images/*": ["public/images/*"],
+      "@/fonts/*": ["public/fonts/*"],
     }
   },
   "include": [

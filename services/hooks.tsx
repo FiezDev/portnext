@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Size } from "@/model/hooksModel";
+import { Imgix, Size } from "@/model/hooksModel";
 
 export function useWindowSize(): Size {
   // Initialize state with undefined width/height so server and client renders match
@@ -35,3 +35,22 @@ export const useToggle = (initialState: boolean = false): [boolean, any] => {
   const toggle = useCallback((): void => setState(state => !state), []);
   return [state, toggle]
 }
+
+
+// export function useImgix(data:Imgix): Imgix {
+
+//   const [imgixUrl, setImgixUrl] = useState([]);
+//   useEffect(() => {
+//  const {url, param} = data;
+//  let pixelRatioBox = document.querySelector(".pixel-ratio");
+
+// const updatePixelRatio = () => {
+//   let pr = window.devicePixelRatio;
+ 
+
+//   return
+// }
+//   }, [data]); 
+
+//   return imgixUrl;
+// }// Empty array ensures that effect is only run on mount

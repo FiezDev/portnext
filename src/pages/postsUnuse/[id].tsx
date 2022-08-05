@@ -1,7 +1,7 @@
-import Layout from '@/src/components/layout'
-import { getAllPostIds, getPostData } from '@/function/posts'
+import Layout from '@/src/components/layoutPortfolio'
+import { getAllPostIds, getPostData } from 'services/posts'
 import Head from 'next/head'
-import Date from '@/src/components/date'
+import Date from '@/services/function'
 import utilStyles from '@/styles/utils.module.css'
 import { GetStaticProps, GetStaticPaths } from 'next'
 

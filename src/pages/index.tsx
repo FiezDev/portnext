@@ -1,57 +1,58 @@
-import Head from 'next/head'
-import Layout, { siteTitle } from '@/src/components/layout'
-import utilStyles from '@/styles/utils.module.css'
-import { getSortedPostsData } from '@/function/posts'
-import Link from 'next/link'
-import Date from '@/src/components/date'
-import { GetStaticProps } from 'next'
+import Head from "next/head";
+import Layout, { siteTitle } from "@/src/components/layoutPortfolio";
+import utilStyles from "@/styles/utils.module.css";
 
-export default function Home({
-  allPostsData
+import Date from "@/services/function";
+import { GetStaticProps } from "next";
+
+import mainP from "@/public/images/me.png";
+import devBg from "@/public/images/devBg.jpg";
+import workBg1 from "@/public/images/workBg1.jpg";
+import workBg2 from "@/public/images/workBg2.jpg";
+import workBg3 from "@/public/images/workBg3.jpg";
+import Image from "next/image";
+import Link from "next/link";
+
+export default function home({
+  allPostsData,
 }: {
   allPostsData: {
-    date: string
-    title: string
-    id: string
-  }[]
+    date: string;
+    title: string;
+    id: string;
+  }[];
 }) {
   return (
-    <Layout home>
-      <Head>
-        <title>{siteTitle}</title>
-      </Head>
-      <section className={utilStyles.headingMd}>
-        <p>[Your Self Introduction]</p>
-        <p>
-          (This is a sample website - you’ll be building a site like this in{' '}
-          <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
-        </p>
-      </section>
-      <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
-        <h2 className={utilStyles.headingLg}>Blog</h2>
-        <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, date, title }) => (
-            <li className={utilStyles.listItem} key={id}>
-              <Link href={`/posts/${id}`}>
-                <a>{title}</a>
+    <Layout>
+      <div className="absolute top-1/2 left-0 w-full -mt-[calc(100vw)/2] md:static md:mt-0 md:h-auto">
+          <section className="container mx-auto h-[calc(100vw)] md:h-screen grid grid-cols-2 grid-rows-2 md:grid-rows-3">
+            <div className="row-span-1 md:row-span-full left-0 top-0 overflow-clip md:flex md:items-center md:justify-center">
+              <Image src={mainP} alt="" />
+            </div>
+            <>
+              <Link href="/portfolio">
+                <div className="opacity-30 hover:opacity-100 overflow-clip">
+                  <Image src={devBg} alt="" />
+                </div>
               </Link>
-              <br />
-              <small className={utilStyles.lightText}>
-                <Date dateString={date} />
-              </small>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </Layout>
-  )
-}
+            </>
+            <>
+              <Link href="/admin">
+                <div className="opacity-30  hover:opacity-100 overflow-clip">
+                  <Image src={workBg1} alt="" />
+                </div>
+              </Link>
+            </>
+            <>
+              <Link href="/blog">
+                <div className="opacity-30  hover:opacity-100 overflow-clip">
+                  <Image src={workBg2} alt="" />
+                </div>
+              </Link>
+            </>
+          </section>
+        </div>
 
-export const getStaticProps: GetStaticProps = async () => {
-  const allPostsData = getSortedPostsData()
-  return {
-    props: {
-      allPostsData
-    }
-  }
+    </Layout>
+  );
 }
