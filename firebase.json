@@ -1,0 +1,34 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "public",
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "nextjs-server"
+      }
+    ]
+  },
+  "functions": {
+    "runtime": "nodejs16",
+    "predeploy": "npm --prefix \"$RESOURCE_DIR\" run build",
+    "source": ".",
+    "ignore": [
+      "firebase.json",
+      "firbease-debug.log",
+      "**/.*",
+      "**/node_modules/**",
+      "components/**",
+      "pages/**",
+      "public/**",
+      "readme.md"
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}
