@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Size } from "@/model/hooksModel";
 import { useWindowSize, useToggle } from "@/services/hooks";
 import {
-  faHamburger,
+  faBars,
   faClose,
   faAddressBook,
   faLaptopFile,
@@ -16,26 +16,23 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Nav = () => {
-  const mediaSize = useWindowSize().width >= 640 ? true : false;
+  let mediaSize = useWindowSize().width >= 640 ? true : false;
   const [showSidebar, setShowSidebar] = useToggle();
-  const [isNavVisible, setIsNavVisible] = useState(true);
+  const [isNavVisible, setIsNavVisible] = useState(false);
   const [scrollHeight, setScrollHeight] = useState(0);
-  const [divHeight, setDivHeight] = useState(0);
+  const [divHeightToHide, setDivHeightToHide] = useState(0);
 
-  const ref = useRef(null);
+  const refVH = useRef(null);
 
   useEffect(() => {
-    setDivHeight(ref.current.offsetHeight);
-
+    setDivHeightToHide(refVH.current.clientHeight);
     const listenToScroll = () => {
-
-      let heightToHideFrom = divHeight;
       const winScroll =
         document.body.scrollTop || document.documentElement.scrollTop;
-        setScrollHeight(winScroll);
-  
-      if (winScroll > heightToHideFrom) {
-        isNavVisible && setIsNavVisible(true);
+      setScrollHeight(winScroll);
+
+      if (scrollHeight > divHeightToHide) {
+        setIsNavVisible(true);
       } else {
         setIsNavVisible(false);
       }
@@ -43,37 +40,35 @@ const Nav = () => {
 
     window.addEventListener("scroll", listenToScroll);
     return () => window.removeEventListener("scroll", listenToScroll);
-  }, []);
-
-
+  }, [divHeightToHide, scrollHeight]);
 
   const menu = [
     {
-      id:1,
+      id: 1,
       display: "Contact",
       url: "/portfolio/contact",
       picurl: <FontAwesomeIcon icon={faAddressBook} />,
     },
     {
-      id:2,
+      id: 2,
       display: "Work",
       url: "/portfolio/works",
       picurl: <FontAwesomeIcon icon={faLaptopFile} />,
     },
     {
-      id:3,
+      id: 3,
       display: "Skill",
       url: "/portfolio/skills",
       picurl: <FontAwesomeIcon icon={faUserGear} />,
     },
     {
-      id:4,
+      id: 4,
       display: "About",
       url: "/portfolio/about",
       picurl: <FontAwesomeIcon icon={faAddressCard} />,
     },
     {
-      id:5,
+      id: 5,
       display: "Home",
       url: "/portfolio/main",
       picurl: <FontAwesomeIcon icon={faHouseChimney} />,
@@ -82,6 +77,7 @@ const Nav = () => {
 
   return (
     <>
+      <div ref={refVH} className="h-screen absolute top-0 left-0 z-[-10]" />
       {isNavVisible && (
         <>
           {showSidebar ? (
@@ -94,17 +90,16 @@ const Nav = () => {
             <FontAwesomeIcon
               className="flex w-[25px] sm:w-[35px] lg:w-[40px] z-[70] items-center fixed left-3 top-4 sm:left-8 sm:top-7 duration-500"
               onClick={setShowSidebar}
-              icon={faHamburger}
+              icon={faBars}
             />
           )}
           <nav className="glass top-0 text-white fixed h-screen z-30 lg:w-[200px] sm:w-[100px] -left-[50px] lg:-left-[200px] sm:-left-[100px]">
             <div
-              ref={ref}
               className={`glass z-20 fixed pt-40  h-screen ease-in-out duration-300
         ${!showSidebar ? "translate-x-0 " : "translate-x-full"}`}
             >
               <ul className="flex flex-col-reverse">
-                {menu.map(({id, display, url, picurl }) => {
+                {menu.map(({ id, display, url, picurl }) => {
                   return (
                     <a
                       key={id}

@@ -52,7 +52,8 @@ const Home = () => {
 
   return (
     <>
-      <main className="lg:container mx-auto grid grid-cols-12 gap-4">
+    <div className="snap-x snap-mandatory">
+    <main className="snap-center lg:container mx-auto grid grid-cols-12 gap-4">
         <section className="z-10 h-screen col-span-3 md:col-span-2 flex pt-20 md:p-0 items-start md:items-center justify-center bg-[#000] md:bg-transparent">
           <ul className="flex flex-col-reverse">
             {main.map(({ display, url }, index) => {
@@ -176,6 +177,9 @@ const Home = () => {
       <Skills />
       <Contact />
       </div>
+    </div>
+ 
+
 
     </>
   );

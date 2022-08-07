@@ -152,7 +152,6 @@ body {
     Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
     background: #000;
     color: white;
-
 }
 
 * {
@@ -165,7 +164,7 @@ a {
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 img {
