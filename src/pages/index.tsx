@@ -1,27 +1,14 @@
-import Head from "next/head";
-import Layout, { siteTitle } from "@/src/components/layoutPortfolio";
-import utilStyles from "@/styles/utils.module.css";
+import Image from "next/image";
+import Link from "next/link";
 
-import Date from "@/services/function";
-import { GetStaticProps } from "next";
-
+import Layout from "@/src/components/layoutPortfolio";
 import mainP from "@/public/images/me.png";
 import devBg from "@/public/images/devBg.jpg";
 import workBg1 from "@/public/images/workBg1.jpg";
 import workBg2 from "@/public/images/workBg2.jpg";
 import workBg3 from "@/public/images/workBg3.jpg";
-import Image from "next/image";
-import Link from "next/link";
 
-export default function home({
-  allPostsData,
-}: {
-  allPostsData: {
-    date: string;
-    title: string;
-    id: string;
-  }[];
-}) {
+export default function home() {
   return (
     <Layout>
       <div className="absolute top-1/2 left-0 w-full -mt-[calc(100vw)/2] md:static md:mt-0 md:h-auto">
