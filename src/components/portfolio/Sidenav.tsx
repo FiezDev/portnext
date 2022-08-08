@@ -1,8 +1,6 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, {useState, useEffect, useRef } from "react";
 import Link from "next/link";
-// import Head from 'next/head'
-import Image from "next/image";
-import { Size } from "@/model/hooksModel";
+
 import { useWindowSize, useToggle } from "@/services/hooks";
 import {
   faBars,
