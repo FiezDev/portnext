@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "predeploy": "npm run clean && next build",
-    "deploy": "firebase deploy --only functions:nextjs,hosting"
+    "alldeploy": "firebase deploy --only functions:nextjs,hosting",
+    "funcdeploy": "firebase deploy --only functions:nextjs",
+    "hostdeploy": "firebase deploy --only hosting"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.2",
