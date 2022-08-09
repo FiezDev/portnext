@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-
-import { useWindowSize, useToggle } from "@/services/hooks";
+import { useWindowSize } from "react-use";
+import { useToggle } from "@/services/hooks";
 import {
   faBars,
   faClose,
@@ -14,22 +14,19 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Nav = () => {
-  let mediaSize = useWindowSize().width >= 640 ? true : false;
+  const {width,height} = useWindowSize();
   const [showSidebar, setShowSidebar] = useToggle();
   const [isNavVisible, setIsNavVisible] = useState(false);
   const [scrollHeight, setScrollHeight] = useState(0);
-  const [divHeightToHide, setDivHeightToHide] = useState(0);
-
-  const refVH = useRef(null);
 
   useEffect(() => {
-    setDivHeightToHide(refVH.current.clientHeight);
-    const listenToScroll = () => {
+     const listenToScroll = () => {
       const winScroll =
         document.body.scrollTop || document.documentElement.scrollTop;
       setScrollHeight(winScroll);
+      console.log(winScroll);
 
-      if (scrollHeight > divHeightToHide) {
+      if (scrollHeight > height) {
         setIsNavVisible(true);
       } else {
         setIsNavVisible(false);
@@ -38,7 +35,7 @@ const Nav = () => {
 
     window.addEventListener("scroll", listenToScroll);
     return () => window.removeEventListener("scroll", listenToScroll);
-  }, [divHeightToHide, scrollHeight]);
+  }, [scrollHeight, height]);
 
   const menu = [
     {
@@ -75,7 +72,6 @@ const Nav = () => {
 
   return (
     <>
-      <div ref={refVH} className="h-screen absolute top-0 left-0 z-[-10]" />
       {isNavVisible && (
         <>
           {showSidebar ? (
@@ -112,7 +108,7 @@ const Nav = () => {
                   before:hover:bg-normal before:hover:brightness-75
                    "
                         >
-                          {mediaSize ? (
+                          {width ? (
                             <span className="hover:scale-x-100">{display}</span>
                           ) : (
                             picurl

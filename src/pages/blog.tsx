@@ -4,7 +4,8 @@ type Props = {}
 
 const blog = (props: Props) => {
   return (
-    <div>blog</div>
+<div className='bg-head'>TEST</div>
+
   )
 }
 
