@@ -1,12 +1,13 @@
-import React from 'react'
+import BlogLayout from "../components/layoutBlog";
 
-type Props = {}
+type Props = {};
 
-const blog = (props: Props) => {
+const Blog = (props: Props) => {
   return (
-<div className='bg-head'>TEST</div>
-
-  )
-}
-
-export default blog
+    <>
+      <div>Blog</div>
+    </>
+  );
+};
+Blog.layout = BlogLayout;
+export default Blog;
