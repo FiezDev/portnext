@@ -1,8 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
-import reactP from "@/public/images/react.svg";
-import tailwindP from "@/public/images/tailwindcss.svg";
-import viteP from "@/public/images/vite.svg";
+import Image from 'next/image';
+import Link from 'next/link';
+import reactP from '@/public/images/react.svg';
+import tailwindP from '@/public/images/tailwindcss.svg';
+import viteP from '@/public/images/vite.svg';
 
 const Footer = () => {
   return (

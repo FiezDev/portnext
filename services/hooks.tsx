@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback, useReducer, useRef } from "react";
-import { Imgix, Size } from "@/model/hooksModel";
-
+import { useState, useEffect, useCallback, useReducer, useRef } from 'react';
+import { Imgix, Size } from '@/model/hooksModel';
 
 export const useToggle = (initialState: boolean = false): [boolean, any] => {
   // Initialize the state
@@ -29,7 +28,6 @@ export const useToggle = (initialState: boolean = false): [boolean, any] => {
 //   // Finally, if equal then return the previous value
 //   return isEqual ? previous : next;
 // }
-
 
 // export function useImgix(data:Imgix): Imgix {
 

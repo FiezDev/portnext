@@ -1,7 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
-import MainLayout from "../components/layoutIndex";
-import { ImgixImage } from "@/model/storage";
+import Image from 'next/image';
+import Link from 'next/link';
+import MainLayout from '../components/layoutIndex';
+import { ImgixImage } from '@/model/storage';
 type Props = {};
 
 const Index = (props: Props) => {

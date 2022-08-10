@@ -1,9 +1,9 @@
-import type { LayoutProps } from "../pageWithLayouts";
-import Nav from "@/components/portfolio/Sidenav";
-import Footer from "@/components/portfolio/Footer";
+import type { LayoutProps } from '../pageWithLayouts';
+import Nav from '@/components/portfolio/Sidenav';
+import Footer from '@/components/portfolio/Footer';
 
-const name = "Fiez";
-export const siteTitle = "Next.js Sample Website";
+const name = 'Fiez';
+export const siteTitle = 'Next.js Sample Website';
 
 const PortfolioLayout: LayoutProps = ({ children }) => {
   return (

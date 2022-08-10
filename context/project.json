@@ -1,25 +1,30 @@
 {
-    "id": 1,
-    "type": "",
-    "name": "testName",
-    "fullname": "testFullname",
-    "intro": "TestIntro",
-    "desc": "testDesc",
-    "creteDate": "1983-11-10T17:00:00.000Z",
-    "updateDate": "2022-06-19T21:21:48.149Z",
-    "activeFlag": true,
-    "status": [{
+  "id": 1,
+  "type": "",
+  "name": "testName",
+  "fullname": "testFullname",
+  "intro": "TestIntro",
+  "desc": "testDesc",
+  "creteDate": "1983-11-10T17:00:00.000Z",
+  "updateDate": "2022-06-19T21:21:48.149Z",
+  "activeFlag": true,
+  "status": [
+    {
       "Idea": true,
       "InProgress": true,
       "Beta": true,
       "Finish": true
-    }],
-    "pic": [{
+    }
+  ],
+  "pic": [
+    {
       "picicon": "",
       "picthumb": "",
       "picurl": ""
-    }],
-    "stack": [{
+    }
+  ],
+  "stack": [
+    {
       "html": true,
       "css": true,
       "javascript": true,
@@ -28,17 +33,22 @@
       "angularJS": true,
       "csharp": true,
       "flutter": true
-    }],
-    "libray": [{
+    }
+  ],
+  "libray": [
+    {
       "vuetify": true,
       "tailwind": true,
       "primeng": true,
       "bootstrap": true
-    }],
-    "database": [{
+    }
+  ],
+  "database": [
+    {
       "MySql": true,
       "MongoDB": true,
       "Firebase": true,
       "AWS": true
-    }]
-  }
+    }
+  ]
+}

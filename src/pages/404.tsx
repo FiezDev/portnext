@@ -1,13 +1,11 @@
-import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-
-import { ENUM_EROR_CODE } from "@/model/enum";
-import IndexLayout from "../components/layoutIndex";
+import { ENUM_EROR_CODE } from '@/model/enum';
+import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
 
 type Props = {};
 
-const e404 = (props: Props) => {
+const e404 = () => {
   return (
     <>
       <section className="container mx-auto flex flex-col items-center justify-center h-screen text-2xl md:text-5xl gap-4">
@@ -25,5 +23,5 @@ const e404 = (props: Props) => {
     </>
   );
 };
-e404.layout = IndexLayout;
+
 export default e404;

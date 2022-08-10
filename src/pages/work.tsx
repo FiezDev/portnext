@@ -1,4 +1,4 @@
-import WorkLayout from "../components/layoutWork";
+import WorkLayout from '../components/layoutWork';
 
 type Props = {};
 
