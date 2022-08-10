@@ -1,12 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ImgixImage } from "@/model/storage";
+
 import Typewriter from "typewriter-effect";
-import reactP from "@/public/images/react.svg";
-import tailwindP from "@/public/images/tailwindcss.svg";
-import viteP from "@/public/images/vite.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCodepen, faGithub } from "@fortawesome/free-brands-svg-icons";
+
 
 type Props = {};
 
@@ -60,7 +60,7 @@ const main = (props: Props) => {
       </section>
       <section className="h-screen flex items-center justify-center z-0 p-10 col-span-9 md:col-span-5 bg-head">
         <Image
-          src="https://fiez.imgix.net/me.png"
+          src={ImgixImage.profilepic_me}
           alt=""
           width={574}
           height={910}
@@ -128,7 +128,7 @@ const main = (props: Props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Image src={reactP} alt="" />
+                  <Image src={ImgixImage.icon_react} width={40} height={40} alt="https://dummyimage.com/40x40"/>
                 </a>
                 <a
                   className="w-[13px] sm:w-[20px] flex justify-center items-center"
@@ -136,7 +136,7 @@ const main = (props: Props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Image src={tailwindP} alt="" />
+                  <Image src={ImgixImage.icon_tailwindcss} width={40} height={40} alt="https://dummyimage.com/40x40"/>
                 </a>
                 <a
                   className="w-[13px] sm:w-[20px] flex justify-center items-center"
@@ -144,7 +144,7 @@ const main = (props: Props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Image src={viteP} alt="" />
+                  <Image src={ImgixImage.icon_vite} width={40} height={40} alt="https://dummyimage.com/40x40"/>
                 </a>
               </span>
             </div>

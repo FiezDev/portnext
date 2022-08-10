@@ -1,3 +1,4 @@
+import { ImgixImage } from '@/model/storage'
 import Image from 'next/image'
 import React from 'react'
 
@@ -13,9 +14,8 @@ const works = (props: Props) => {
             <div className="h-full border-2 border-gray-800 rounded-lg overflow-hidden">
               <Image
                 className="lg:h-48 md:h-36 w-full object-cover object-center"
-                src=""
-                alt="blog"
-              />
+                src={ImgixImage.main_portfolio1}
+                width={360} height={480} alt="https://dummyimage.com/360x480"/>
               <div className="p-6">
                 <h2 className="tracking-widest text-xs title-font font-medium text-gray-500 mb-1">
                   CATEGORY
@@ -83,9 +83,8 @@ const works = (props: Props) => {
             <div className="h-full border-2 border-gray-800 rounded-lg overflow-hidden">
               <Image
                 className="lg:h-48 md:h-36 w-full object-cover object-center"
-                src=""
-                alt="blog"
-              />
+                src={ImgixImage.main_portfolio2}
+                width={360} height={480} alt="https://dummyimage.com/360x480"/>
               <div className="p-6">
                 <h2 className="tracking-widest text-xs title-font font-medium text-gray-500 mb-1">
                   CATEGORY
@@ -153,9 +152,8 @@ const works = (props: Props) => {
             <div className="h-full border-2 border-gray-800 rounded-lg overflow-hidden">
               <Image
                 className="lg:h-48 md:h-36 w-full object-cover object-center"
-                src=""
-                alt="blog"
-              />
+            alt=''
+                width={360} height={480} src="https://dummyimage.com/720x400"/>
               <div className="p-6">
                 <h2 className="tracking-widest text-xs title-font font-medium text-gray-500 mb-1">
                   CATEGORY
