@@ -1,4 +1,4 @@
-import BlogLayout from "../components/layoutBlog";
+import BlogLayout from '../components/layoutBlog';
 
 type Props = {};
 

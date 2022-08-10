@@ -1,21 +1,17 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "incremental": true,
     "esModuleInterop": true,
     "module": "esnext",
     "resolveJsonModule": true,
-    "moduleResolution":"node",
+    "moduleResolution": "node",
     "isolatedModules": true,
     "jsx": "preserve",
     "baseUrl": ".",
@@ -32,15 +28,9 @@
       "@/pages/*": ["src/pages/*"],
 
       "@/images/*": ["public/images/*"],
-      "@/fonts/*": ["public/fonts/*"],
+      "@/fonts/*": ["public/fonts/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-, "src/layoutAdmin.tsx"  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/layoutAdmin.tsx"],
+  "exclude": ["node_modules"]
 }

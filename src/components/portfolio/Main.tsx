@@ -1,36 +1,35 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { ImgixImage } from "@/model/storage";
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ImgixImage } from '@/model/storage';
 
-import Typewriter from "typewriter-effect";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCodepen, faGithub } from "@fortawesome/free-brands-svg-icons";
-
+import Typewriter from 'typewriter-effect';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCodepen, faGithub } from '@fortawesome/free-brands-svg-icons';
 
 type Props = {};
 
 const main = (props: Props) => {
   const main = [
     {
-      display: "Contact",
-      url: "/contact",
+      display: 'Contact',
+      url: '/contact',
     },
     {
-      display: "Work",
-      url: "/works",
+      display: 'Work',
+      url: '/works',
     },
     {
-      display: "Skill",
-      url: "/skills",
+      display: 'Skill',
+      url: '/skills',
     },
     {
-      display: "About",
-      url: "/about",
+      display: 'About',
+      url: '/about',
     },
     {
-      display: "Home",
-      url: "/",
+      display: 'Home',
+      url: '/',
     },
   ];
   return (
@@ -59,12 +58,7 @@ const main = (props: Props) => {
         </ul>
       </section>
       <section className="h-screen flex items-center justify-center z-0 p-10 col-span-9 md:col-span-5 bg-head">
-        <Image
-          src={ImgixImage.profilepic_me}
-          alt=""
-          width={574}
-          height={910}
-        />
+        <Image src={ImgixImage.profilepic_me} alt="" width={574} height={910} />
       </section>
       <section className="z-20 h-auto md:h-screen text-sm sm:text-2xl lg:text-3xl xl:text-5xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
         <div
@@ -83,9 +77,9 @@ const main = (props: Props) => {
             <Typewriter
               options={{
                 strings: [
-                  "Fullstack Developer",
-                  "Frontend Developer",
-                  "Web Developer",
+                  'Fullstack Developer',
+                  'Frontend Developer',
+                  'Web Developer',
                 ],
                 autoStart: true,
                 loop: true,
@@ -128,7 +122,12 @@ const main = (props: Props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Image src={ImgixImage.icon_react} width={40} height={40} alt="https://dummyimage.com/40x40"/>
+                  <Image
+                    src={ImgixImage.icon_react}
+                    width={40}
+                    height={40}
+                    alt="https://dummyimage.com/40x40"
+                  />
                 </a>
                 <a
                   className="w-[13px] sm:w-[20px] flex justify-center items-center"
@@ -136,7 +135,12 @@ const main = (props: Props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Image src={ImgixImage.icon_tailwindcss} width={40} height={40} alt="https://dummyimage.com/40x40"/>
+                  <Image
+                    src={ImgixImage.icon_tailwindcss}
+                    width={40}
+                    height={40}
+                    alt="https://dummyimage.com/40x40"
+                  />
                 </a>
                 <a
                   className="w-[13px] sm:w-[20px] flex justify-center items-center"
@@ -144,7 +148,12 @@ const main = (props: Props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Image src={ImgixImage.icon_vite} width={40} height={40} alt="https://dummyimage.com/40x40"/>
+                  <Image
+                    src={ImgixImage.icon_vite}
+                    width={40}
+                    height={40}
+                    alt="https://dummyimage.com/40x40"
+                  />
                 </a>
               </span>
             </div>

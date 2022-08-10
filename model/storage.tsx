@@ -1,6 +1,6 @@
 const baseurl =
-  "https://firebasestorage.googleapis.com/v0/b/fiezport.appspot.com/o/";
-const baseImgix = "https://fiez.imgix.net/";
+  'https://firebasestorage.googleapis.com/v0/b/fiezport.appspot.com/o/';
+const baseImgix = 'https://fiez.imgix.net/';
 
 export const FirestoreFile = {
   baseurl,

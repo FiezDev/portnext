@@ -1,10 +1,9 @@
-import React from 'react'
+import React from 'react';
 
-type Props = {}
+type Props = {};
 
 const contact = (props: Props) => {
   return (
-
     <div className="text-gray-400 bg-gray-900 body-font relative  lg:mx-[20vw] md:mx-[10vw] mx-[5vw]">
       <div className="absolute inset-0 bg-gray-900">
         {/* <iframe title="map" width="100%" height="100%" scrolling="no" src="https://maps.google.com/maps?width=100%&height=600&hl=en&q=%C4%B0zmir+(My%20Business%20Name)&ie=UTF8&t=&z=14&iwloc=B&output=embed" style="filter: grayscale(1) contrast(1.2) opacity(0.16);"></iframe> */}
@@ -51,7 +50,7 @@ const contact = (props: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default contact
+export default contact;
