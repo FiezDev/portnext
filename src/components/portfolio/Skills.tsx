@@ -1,6 +1,6 @@
 import React from 'react'
-import { saveAs } from "file-saver";
 import Image from 'next/image';
+import { ImgixImage } from '@/model/storage';
 
 type Props = {}
 
@@ -22,8 +22,8 @@ const skills = (props: Props) => {
           <div className="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 md:mb-0 mb-10">
             <Image
               className="object-cover object-center rounded"
-              alt="hero"
-              src=""
+              src={ImgixImage.profilepic_meabout}
+              width={1000} height={1000} alt="https://dummyimage.com/1000x1000"
             />
           </div>
   

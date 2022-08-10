@@ -24,7 +24,6 @@ const Nav = () => {
       const winScroll =
         document.body.scrollTop || document.documentElement.scrollTop;
       setScrollHeight(winScroll);
-      console.log(winScroll);
 
       if (scrollHeight > height) {
         setIsNavVisible(true);
