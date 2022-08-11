@@ -1,8 +1,8 @@
 import React from 'react';
 
-type Props = {};
+export interface IContact {}
 
-const contact = (props: Props) => {
+const Contact: React.FC<IContact> = () => {
   return (
     <div className="text-gray-400 bg-gray-900 body-font relative  lg:mx-[20vw] md:mx-[10vw] mx-[5vw]">
       <div className="absolute inset-0 bg-gray-900">
@@ -53,4 +53,4 @@ const contact = (props: Props) => {
   );
 };
 
-export default contact;
+export default Contact;
