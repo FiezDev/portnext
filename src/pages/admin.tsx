@@ -1,13 +1,21 @@
-import AdminLayout from '../components/layoutAdmin';
+// import { useRouter } from 'next/router';
+import AdminLayout from '../components/layout.Admin';
+import { NextPageWithLayout } from '../pageWithLayouts';
 
 type Props = {};
 
-const Admin = (props: Props) => {
+const Admin: NextPageWithLayout = (props: Props) => {
+  // const { locale } = useRouter();
+
   return (
     <>
       <div>Admin</div>
     </>
   );
 };
-Admin.layout = AdminLayout;
+
 export default Admin;
+
+Admin.getLayout = (page) => {
+  return <AdminLayout>{page}</AdminLayout>;
+};
