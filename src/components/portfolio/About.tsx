@@ -1,10 +1,12 @@
-import React from 'react';
-import Image from 'next/image';
 import { ImgixImage } from '@/model/storage';
+import Image from 'next/image';
+import React from 'react';
 
 type Props = {};
 
-const about = (props: Props) => {
+export interface IAbout {}
+
+const About: React.FC<IAbout> = (props: Props) => {
   return (
     <div className="text-gray-400 bg-bg">
       <div className="lg:mx-[20vw] md:mx-[10vw] mx-[5vw] flex px-5 py-24 md:flex-row flex-col items-start">
@@ -63,4 +65,4 @@ const about = (props: Props) => {
   );
 };
 
-export default about;
+export default About;
