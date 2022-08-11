@@ -1,10 +1,15 @@
+import { ImgixImage } from '@/model/storage';
+import IndexLayout from '@/src/components/layout.Index';
 import Image from 'next/image';
 import Link from 'next/link';
-import MainLayout from '../components/layoutIndex';
-import { ImgixImage } from '@/model/storage';
+// import { useRouter } from 'next/router';
+import { NextPageWithLayout } from '../pageWithLayouts';
+
 type Props = {};
 
-const Index = (props: Props) => {
+const Index: NextPageWithLayout = (props: Props) => {
+  // const { locale } = useRouter();
+
   return (
     <div className="absolute top-1/2 left-0 w-full -mt-[calc(100vw)/2] md:static md:mt-0 md:h-auto">
       <section className="container mx-auto h-[calc(100vw)] md:h-screen grid grid-cols-2 grid-rows-2 md:grid-rows-3">
@@ -56,5 +61,9 @@ const Index = (props: Props) => {
     </div>
   );
 };
-Index.layout = MainLayout;
+
 export default Index;
+
+Index.getLayout = (page) => {
+  return <IndexLayout>{page}</IndexLayout>;
+};

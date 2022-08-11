@@ -1,24 +1,19 @@
-import React from 'react';
-import { ReactElement } from 'react';
-import type { AppProps } from 'next/app';
-import { ThemeProvider } from '@material-tailwind/react';
-import PageWithLayoutType from '../pageWithLayouts';
 import '@/styles/globals.css';
+import { ThemeProvider } from '@material-tailwind/react';
+import type { AppProps } from 'next/app';
+import { NextPageWithLayout } from '../pageWithLayouts';
 
-type AppLayoutProps = AppProps & {
-  Component: PageWithLayoutType;
-  pageProps: any;
-};
+interface AppPropsWithLayout extends AppProps {
+  Component: NextPageWithLayout;
+}
 
-function App({ Component, pageProps }: AppLayoutProps) {
-  const Layout =
-    Component.layout || ((children: ReactElement) => <>{children}</>);
+function App({ Component, pageProps }: AppPropsWithLayout) {
+  // Use the layout defined at the page level, if available
+  const getLayout = Component.getLayout || ((page) => page);
+
   return (
-    <ThemeProvider>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </ThemeProvider>
+    <ThemeProvider>{getLayout(<Component {...pageProps} />)}</ThemeProvider>
   );
 }
+
 export default App;

@@ -1,13 +1,21 @@
-import WorkLayout from '../components/layoutWork';
+import WorkLayout from '@/src/components/layout.Work';
+// import { useRouter } from 'next/router';
+import { NextPageWithLayout } from '../pageWithLayouts';
 
 type Props = {};
 
-const Work = (props: Props) => {
+const Work: NextPageWithLayout = (props: Props) => {
+  // const { locale } = useRouter();
+
   return (
     <>
       <div>Work</div>
     </>
   );
 };
-Work.layout = WorkLayout;
+
 export default Work;
+
+Work.getLayout = (page) => {
+  return <WorkLayout>{page}</WorkLayout>;
+};

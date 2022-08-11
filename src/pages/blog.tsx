@@ -1,13 +1,21 @@
-import BlogLayout from '../components/layoutBlog';
+import BlogLayout from '@/src/components/layout.Blog';
+// import { useRouter } from 'next/router';
+import { NextPageWithLayout } from '../pageWithLayouts';
 
 type Props = {};
 
-const Blog = (props: Props) => {
+const Blog: NextPageWithLayout = (props: Props) => {
+  // const { locale } = useRouter();
+
   return (
     <>
       <div>Blog</div>
     </>
   );
 };
-Blog.layout = BlogLayout;
+
 export default Blog;
+
+Blog.getLayout = (page) => {
+  return <BlogLayout>{page}</BlogLayout>;
+};
