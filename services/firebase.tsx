@@ -1,29 +1,22 @@
-import firebase from 'firebase/compat/app';
-import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL, getBlob } from 'firebase/storage';
-import { useState } from 'react';
 import config from '@/context/config.json';
+import { initializeApp } from 'firebase/app';
 import {
-  doc,
-  setDoc,
-  getDoc,
   collection,
-  query,
-  where,
+  doc,
+  getDoc,
   getDocs,
+  getFirestore,
+  query,
+  setDoc,
 } from 'firebase/firestore';
+import { getBlob, getStorage, ref } from 'firebase/storage';
 
 const firebaseConfig = config.Firebase;
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-const analytics = getAnalytics(app);
 const DBref = getFirestore(app);
 
 const useFirebase = () => {
-  const [projectQuantity, setprojectQuantity] = useState(0);
-
   async function setProject(data: object, name: string) {
     try {
       await setDoc(doc(DBref, 'Projects', name), data);
@@ -46,15 +39,13 @@ const useFirebase = () => {
   }
 
   async function getAllProject() {
-    let quan = projectQuantity;
     const _query = query(collection(DBref, 'Projects'));
     const querySnapshot = await getDocs(_query);
     querySnapshot.forEach((doc) => {
-      quan++;
       console.log(doc.data(), ' => ', doc.data());
     });
-    console.log(quan);
-    return quan;
+
+    return doc;
   }
 
   async function getStorage(fileRef: string) {
