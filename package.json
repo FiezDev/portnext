@@ -7,7 +7,7 @@
   "license": "MIT",
   "homepage": "https://github.com/FiezDev/portnext && fiez.dev",
   "engines": {
-    "node": ">=16.0.0",
+    "node": "16",
     "yarn": ">=1.22.0",
     "npm": "please-use-yarn"
   },
@@ -22,9 +22,7 @@
     "predeploy": "npm run clean && next build",
     "alldeploy": "firebase deploy --only functions:nextjs,hosting",
     "funcdeploy": "firebase deploy --only functions:nextjs",
-    "hostdeploy": "firebase deploy --only hosting",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "hostdeploy": "firebase deploy --only hosting"
   },
   "dependencies": {
     "@babel/core": "^7.18.10",
@@ -49,19 +47,12 @@
     "redux": "^4.2.0",
     "remark": "^14.0.2",
     "remark-html": "^15.0.1",
-    "typewriter-effect": "^2.19.0"
+    "typewriter-effect": "^2.19.0",
+    "webpack": "^5.74.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "@storybook/addon-actions": "^6.5.10",
-    "@storybook/addon-essentials": "^6.5.10",
-    "@storybook/addon-interactions": "^6.5.10",
-    "@storybook/addon-links": "^6.5.10",
-    "@storybook/builder-webpack5": "^6.5.10",
-    "@storybook/manager-webpack5": "^6.5.10",
-    "@storybook/react": "^6.5.10",
-    "@storybook/testing-library": "^0.0.13",
     "@types/node": "^18.6.3",
     "@types/react": "^18.0.15",
     "autoprefixer": "^10.4.8",
