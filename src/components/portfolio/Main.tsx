@@ -2,8 +2,6 @@ import { ImgixImage } from '@/model/storage';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { faCodepen, faGithub } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Typewriter from 'typewriter-effect';
 
 type Props = {};
@@ -56,7 +54,7 @@ const main = (props: Props) => {
           })}
         </ul>
       </section>
-      <section className="h-screen flex items-center justify-center z-0 p-10 col-span-9 md:col-span-5 bg-light">
+      <section className="h-screen flex items-center justify-center z-0 p-10 col-span-9 md:col-span-5 bg-head overflow-hidden">
         <Image
           src={ImgixImage.profilepic_me}
           alt=""
@@ -90,34 +88,9 @@ const main = (props: Props) => {
               }}
             />
           </div>
-          <h1 className="p-6 sm:py-12 md:py-16 items-center text-normalH">
-            &quot;Passionate to make the remarkable thing&quot;
+          <h1 className="p-6 sm:py-12 md:py-16 items-center justify-center text-normalH">
+            Passionate to make the remarkable thing
           </h1>
-          <div className="flex flex-col justify-between  gap-0 sm:gap-1 md:gap-2 lg:gap-3 xl:gap-4">
-            <div className="flex items-center text-xs sm:text-base xl:text-xl uppercase">
-              <Link href="/" target="" rel="noopener noreferrer">
-                <span className="pr-3 border-r-[1px] ">Code Example</span>
-              </Link>
-              <span className="inline-flex px-3 gap-3">
-                <a
-                  className="w-[13px] sm:w-[20px] flex justify-center items-center text-white"
-                  href="https://github.com/FiezDev"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FontAwesomeIcon icon={faGithub} />
-                </a>
-                <a
-                  className="w-[13px] sm:w-[20px] flex justify-center items-center text-white"
-                  href="https://codepen.io/fiezdev"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FontAwesomeIcon icon={faCodepen} />
-                </a>
-              </span>
-            </div>
-          </div>
         </div>
       </section>
     </main>
