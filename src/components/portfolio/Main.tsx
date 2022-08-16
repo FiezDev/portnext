@@ -56,8 +56,13 @@ const main = (props: Props) => {
           })}
         </ul>
       </section>
-      <section className="h-screen flex items-center justify-center z-0 p-10 col-span-9 md:col-span-5 bg-head">
-        <Image src={ImgixImage.profilepic_me} alt="" width={574} height={910} />
+      <section className="h-screen flex items-center justify-center z-0 p-10 col-span-9 md:col-span-5 bg-light">
+        <Image
+          src={ImgixImage.profilepic_me}
+          alt=""
+          width={870}
+          height={1906}
+        />
       </section>
       <section className="z-20 h-auto md:h-screen text-base sm:text-1xl lg:text-2xl xl:text-4xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
         <div
@@ -88,12 +93,12 @@ const main = (props: Props) => {
           <h1 className="p-6 sm:py-12 md:py-16 items-center text-normalH">
             &quot;Passionate to make the remarkable thing&quot;
           </h1>
-          <div className="flex flex-col justify-between gap-0 sm:gap-1 md:gap-2 lg:gap-3 xl:gap-4">
-            <div className="text-xs sm:text-base xl:text-xl uppercase">
+          <div className="flex flex-col justify-between  gap-0 sm:gap-1 md:gap-2 lg:gap-3 xl:gap-4">
+            <div className="flex items-center text-xs sm:text-base xl:text-xl uppercase">
               <Link href="/" target="" rel="noopener noreferrer">
                 <span className="pr-3 border-r-[1px] ">Code Example</span>
               </Link>
-              <span className="inline-flex items-center px-3 gap-4">
+              <span className="inline-flex px-3 gap-3">
                 <a
                   className="w-[13px] sm:w-[20px] flex justify-center items-center text-white"
                   href="https://github.com/FiezDev"
@@ -109,50 +114,6 @@ const main = (props: Props) => {
                   rel="noopener noreferrer"
                 >
                   <FontAwesomeIcon icon={faCodepen} />
-                </a>
-              </span>
-            </div>
-            <div className="text-xs sm:text-base xl:text-xl uppercase">
-              <span className="pr-3 border-r-[1px]">Site Use</span>
-              <span className="inline-flex items-center justify-center p-3 gap-4">
-                <a
-                  className="w-[13px] sm:w-[20px] flex justify-center items-center text-white"
-                  href="https://reactjs.org/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Image
-                    src={ImgixImage.icon_react}
-                    width={40}
-                    height={40}
-                    alt="https://dummyimage.com/40x40"
-                  />
-                </a>
-                <a
-                  className="w-[13px] sm:w-[20px] flex justify-center items-center"
-                  href="https://tailwindcss.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Image
-                    src={ImgixImage.icon_tailwindcss}
-                    width={40}
-                    height={40}
-                    alt="https://dummyimage.com/40x40"
-                  />
-                </a>
-                <a
-                  className="w-[13px] sm:w-[20px] flex justify-center items-center"
-                  href="https://vitejs.dev/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Image
-                    src={ImgixImage.icon_vite}
-                    width={40}
-                    height={40}
-                    alt="https://dummyimage.com/40x40"
-                  />
                 </a>
               </span>
             </div>

@@ -12,10 +12,16 @@ const About: React.FC<IAbout> = (props: Props) => {
       <div className="lg:mx-[20vw] md:mx-[10vw] mx-[5vw] flex px-5 py-24 md:flex-row flex-col items-start">
         <div className="-z-1 lg:max-w-lg lg:w-full md:w-1/2 w-5/6 md:mb-0 mb-10">
           <Image
-            className="w-[50px] object-cover object-center rounded-full bg-black"
-            src={ImgixImage.profilepic_faceme}
-            width={700}
-            height={846}
+            className="object-cover object-center rounded-full bg-black"
+            src={ImgixImage.profilepic_faceMeEff}
+            onMouseOver={(e) =>
+              (e.currentTarget.src = ImgixImage.profilepic_faceMe)
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.src = ImgixImage.profilepic_faceMeEff)
+            }
+            width={1000}
+            height={1000}
             alt="https://dummyimage.com/1000x1000"
           />
         </div>

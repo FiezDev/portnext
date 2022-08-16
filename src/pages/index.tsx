@@ -17,8 +17,8 @@ const Index: NextPageWithLayout = (props: Props) => {
           <Image
             src={ImgixImage.profilepic_me}
             alt=""
-            width={574}
-            height={910}
+            width={870}
+            height={1906}
           />
         </div>
         <>
