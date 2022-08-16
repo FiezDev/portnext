@@ -1,11 +1,10 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { ImgixImage } from '@/model/storage';
+import Image from 'next/image';
+import Link from 'next/link';
 
-import Typewriter from 'typewriter-effect';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCodepen, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Typewriter from 'typewriter-effect';
 
 type Props = {};
 
@@ -60,10 +59,10 @@ const main = (props: Props) => {
       <section className="h-screen flex items-center justify-center z-0 p-10 col-span-9 md:col-span-5 bg-head">
         <Image src={ImgixImage.profilepic_me} alt="" width={574} height={910} />
       </section>
-      <section className="z-20 h-auto md:h-screen text-sm sm:text-2xl lg:text-3xl xl:text-5xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
+      <section className="z-20 h-auto md:h-screen text-base sm:text-1xl lg:text-2xl xl:text-4xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
         <div
           className="absolute flex flex-col items-start justify-center
-       glass w-[80vw] md:w-auto md:left-auto left-[calc(0px+10vw)] bottom-[calc(0px+5vw)] md:m-0 p-4 sm:p-10 md:relative md:bottom-0 md:right-[6vw]"
+       glass w-[80vw] md:w-auto md:left-auto left-[calc(0px+10vw)] bottom-[calc(0px+5vw)] md:m-0 p-4 sm:p-10 md:static md:bottom-0"
         >
           <div className="flex flex-row md:flex-col">
             <div className="mr-2 md:mr-0 py-1 xl:py-2">Hello!!</div>
@@ -86,7 +85,7 @@ const main = (props: Props) => {
               }}
             />
           </div>
-          <h1 className="p-6 sm:py-12 md:py-24 items-center text-normalH">
+          <h1 className="p-6 sm:py-12 md:py-16 items-center text-normalH">
             &quot;Passionate to make the remarkable thing&quot;
           </h1>
           <div className="flex flex-col justify-between gap-0 sm:gap-1 md:gap-2 lg:gap-3 xl:gap-4">

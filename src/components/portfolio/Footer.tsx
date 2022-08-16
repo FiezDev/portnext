@@ -1,8 +1,9 @@
+import { ImgixImage } from '@/model/storage';
 import Image from 'next/image';
 import Link from 'next/link';
-import reactP from '@/public/images/react.svg';
-import tailwindP from '@/public/images/tailwindcss.svg';
-import viteP from '@/public/images/vite.svg';
+// import reactP from '@/public/images/react.svg';
+// import tailwindP from '@/public/images/tailwindcss.svg';
+// import viteP from '@/public/images/vite.svg';
 
 const Footer = () => {
   return (
@@ -43,7 +44,12 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Image src={reactP} alt="" />
+              <Image
+                src={ImgixImage.icon_react}
+                width={40}
+                height={40}
+                alt="https://dummyimage.com/40x40"
+              />
             </a>
             <a
               className="w-[20px]"
@@ -51,7 +57,12 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Image src={tailwindP} alt="" />
+              <Image
+                src={ImgixImage.icon_tailwindcss}
+                width={40}
+                height={40}
+                alt="https://dummyimage.com/40x40"
+              />
             </a>
             <a
               className="w-[20px]"
@@ -59,7 +70,12 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Image src={viteP} alt="" />
+              <Image
+                src={ImgixImage.icon_vite}
+                width={40}
+                height={40}
+                alt="https://dummyimage.com/40x40"
+              />
             </a>
           </span>
         </div>

@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { useWindowSize } from 'react-use';
 import { useToggle } from '@/services/hooks';
 import {
+  faAddressBook,
+  faAddressCard,
   faBars,
   faClose,
-  faAddressBook,
+  faHouseChimney,
   faLaptopFile,
   faUserGear,
-  faAddressCard,
-  faHouseChimney,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useWindowSize } from 'react-use';
 
 const Nav = () => {
   const { width, height } = useWindowSize();
@@ -41,31 +41,31 @@ const Nav = () => {
       id: 1,
       display: 'Contact',
       url: '/portfolio/contact',
-      picurl: <FontAwesomeIcon icon={faAddressBook} />,
+      picurl: faAddressBook,
     },
     {
       id: 2,
       display: 'Work',
       url: '/portfolio/works',
-      picurl: <FontAwesomeIcon icon={faLaptopFile} />,
+      picurl: faLaptopFile,
     },
     {
       id: 3,
       display: 'Skill',
       url: '/portfolio/skills',
-      picurl: <FontAwesomeIcon icon={faUserGear} />,
+      picurl: faUserGear,
     },
     {
       id: 4,
       display: 'About',
       url: '/portfolio/about',
-      picurl: <FontAwesomeIcon icon={faAddressCard} />,
+      picurl: faAddressCard,
     },
     {
       id: 5,
       display: 'Home',
       url: '/portfolio/main',
-      picurl: <FontAwesomeIcon icon={faHouseChimney} />,
+      picurl: faHouseChimney,
     },
   ];
 
@@ -107,10 +107,10 @@ const Nav = () => {
                   before:hover:bg-normal before:hover:brightness-75
                    "
                         >
-                          {width ? (
+                          {width >= 540 ? (
                             <span className="hover:scale-x-100">{display}</span>
                           ) : (
-                            picurl
+                            <FontAwesomeIcon icon={picurl} />
                           )}
                         </li>
                       </Link>

@@ -1,6 +1,6 @@
 const baseurl =
   'https://firebasestorage.googleapis.com/v0/b/fiezport.appspot.com/o/';
-const baseImgix = 'https://fiez.imgix.net/';
+const baseImgix = '';
 
 export const FirestoreFile = {
   baseurl,
@@ -29,6 +29,7 @@ export const ImgixImage = {
   //profilepic
   profilepic_me: `${baseImgix}profilepic/me.png`,
   profilepic_meabout: `${baseImgix}profilepic/meabout.jpg`,
+  profilepic_faceme: `${baseImgix}profilepic/faceme.png`,
   profilepic_guy: `${baseImgix}profilepic/guy.jpg`,
   profilepic_devBg: `${baseImgix}profilepic/devBg.jpg`,
   profilepic_workBg1: `${baseImgix}profilepic/workBg1.jpg`,
@@ -44,4 +45,6 @@ export const ImgixImage = {
   main_portfolio4: `${baseImgix}portfolio4.jpg`,
   main_portfolio5: `${baseImgix}portfolio5.jpg`,
   main_portfolio6: `${baseImgix}portfolio6.jpg`,
+  //error cat
+  errorcat_404: `${baseImgix}error/404.jpeg`,
 };

@@ -1,5 +1,5 @@
+import Footer from '@/components/portfolio/Footer';
 import Nav from '@/components/portfolio/Sidenav';
-// import Footer from '@/components/portfolio/Footer';
 
 const name = 'Fiez';
 export const siteTitle = 'Next.js Sample Website';
@@ -13,7 +13,7 @@ const PortfolioLayout: React.FC<IPortfolioLayout> = ({ children }) => {
       <div className="flex flex-col md:flex-row flex-1">
         <Nav />
         <main className="flex-1">{children}</main>
-        {/* <Footer/> */}
+        <Footer />
       </div>
     </div>
   );

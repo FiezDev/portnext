@@ -1,6 +1,5 @@
 import { ImgixImage } from '@/model/storage';
 import Image from 'next/image';
-import React from 'react';
 
 type Props = {};
 
@@ -160,7 +159,7 @@ const works = (props: Props) => {
                 alt=""
                 width={360}
                 height={480}
-                src="https://dummyimage.com/720x400"
+                src={ImgixImage.main_portfolio3}
               />
               <div className="p-6">
                 <h2 className="tracking-widest text-xs title-font font-medium text-gray-500 mb-1">
