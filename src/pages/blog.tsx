@@ -1,4 +1,4 @@
-import BlogLayout from '@/src/components/layout.Blog';
+import BlogLayout from '@/layouts/layout.Blog';
 // import { useRouter } from 'next/router';
 import { NextPageWithLayout } from '../pageWithLayouts';
 

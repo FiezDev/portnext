@@ -1,5 +1,5 @@
-import WorkLayout from '@/src/components/layout.Work';
 // import { useRouter } from 'next/router';
+import WorkLayout from '@/layouts/layout.Work';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
 type Props = {};

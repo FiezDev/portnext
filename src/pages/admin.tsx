@@ -1,5 +1,5 @@
 // import { useRouter } from 'next/router';
-import AdminLayout from '../components/layout.Admin';
+import AdminLayout from '@/layouts/layout.Admin';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
 type Props = {};

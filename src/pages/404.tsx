@@ -2,7 +2,7 @@ import { ImgixImage } from '@/model/storage';
 import Image from 'next/image';
 import Link from 'next/link';
 // import { useRouter } from 'next/router';
-import IndexLayout from '../components/layout.Index';
+import IndexLayout from '@/layouts/layout.Index';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
 type Props = {};

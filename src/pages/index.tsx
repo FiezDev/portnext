@@ -1,8 +1,7 @@
+import IndexLayout from '@/layouts/layout.Index';
 import { ImgixImage } from '@/model/storage';
-import IndexLayout from '@/src/components/layout.Index';
 import Image from 'next/image';
 import Link from 'next/link';
-// import { useRouter } from 'next/router';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
 type Props = {};

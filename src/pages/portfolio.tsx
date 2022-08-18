@@ -3,7 +3,7 @@ import Contact from '@/components/portfolio/Contact';
 import Main from '@/components/portfolio/Main';
 import Skills from '@/components/portfolio/Skills';
 import Works from '@/components/portfolio/Works';
-import PortfolioLayout from '@/src/components/layout.Portfolio';
+import PortfolioLayout from '@/layouts/layout.Portfolio';
 // import { useRouter } from 'next/router';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
@@ -15,9 +15,13 @@ const Portfolio: NextPageWithLayout = (props: Props) => {
   return (
     <>
       <Main />
+      <div id="about"></div>
       <About />
+      <div id="works"></div>
       <Works />
+      <div id="skills"></div>
       <Skills />
+      <div id="contact"></div>
       <Contact />
     </>
   );
