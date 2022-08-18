@@ -35,13 +35,13 @@ const main = () => {
         alt=""
         src={ImgixImage.bg4k}
       />
-      <section className="z-10 h-screen col-span-3 md:col-span-2 flex pt-20 md:p-0 items-start md:items-center justify-center bg-[#000] md:bg-transparent">
+      <section className="z-10 h-screen col-span-3 md:col-span-2 flex pt-20 pl-1 sm:pl-2 md:p-0 items-start md:items-center justify-start md:justify-center bg-[#000] md:bg-transparent">
         <ul className="flex flex-col-reverse">
           {main.map(({ display, url }, index) => {
             return (
               <div
                 key={index}
-                className="last:hidden first-letter:text-normalH hover:text-white ml-4 font-bold text-sm sm:text-2xl lg:text-3xl xl:text-4xl first-letter:text-2xl sm:first-letter:text-4xl lg:first-letter:text-5xl xl:first-letter:text-6xl  text-white block uppercase tracking-wider"
+                className="last:hidden first-letter:text-normalH hover:text-white font-bold text-sm sm:text-2xl lg:text-3xl xl:text-4xl first-letter:text-2xl sm:first-letter:text-4xl lg:first-letter:text-5xl xl:first-letter:text-6xl  text-white block uppercase tracking-wider"
               >
                 <Link href={url}>
                   <li
