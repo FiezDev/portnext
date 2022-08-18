@@ -1,17 +1,9 @@
 import BlogLayout from '@/layouts/layout.Blog';
-// import { useRouter } from 'next/router';
+import WUC from '../components/global/Wuc';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
-type Props = {};
-
-const Blog: NextPageWithLayout = (props: Props) => {
-  // const { locale } = useRouter();
-
-  return (
-    <>
-      <div>Blog</div>
-    </>
-  );
+const Blog: NextPageWithLayout = () => {
+  return <WUC linktext={''} backlink={''} />;
 };
 
 export default Blog;

@@ -13,7 +13,7 @@ const e404: NextPageWithLayout = (props: Props) => {
   return (
     <>
       <section className="container mx-auto flex flex-col items-center justify-center h-screen text-2xl md:text-5xl gap-4">
-        <Image src={ImgixImage.errorcat_404} alt="" width={750} height={600} />
+        <Image src={ImgixImage.error_404} alt="" width={750} height={600} />
         <span>Someone is Lost</span>
         <span className="text-head">
           <Link href="/">Go Back</Link>

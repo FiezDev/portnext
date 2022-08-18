@@ -7,7 +7,6 @@ import { NextPageWithLayout } from '../pageWithLayouts';
 interface AppPropsWithLayout extends AppProps {
   Component: NextPageWithLayout;
 }
-
 function App({ Component, pageProps }: AppPropsWithLayout) {
   useEffect(() => {
     if ('serviceWorker' in navigator) {

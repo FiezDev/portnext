@@ -1,36 +1,40 @@
 import { ImgixImage } from '@/model/storage';
 import Image from 'next/image';
 import Link from 'next/link';
-
 import Typewriter from 'typewriter-effect';
 
-type Props = {};
-
-const main = (props: Props) => {
+const main = () => {
+  const me = 'profilepic/Me.png?fit=crop?crop=bottom,right&min-w=300&h=1906';
   const main = [
     {
       display: 'Contact',
-      url: '/contact',
+      url: '#contact',
     },
     {
       display: 'Work',
-      url: '/works',
+      url: '#works',
     },
     {
       display: 'Skill',
-      url: '/skills',
+      url: '#skills',
     },
     {
       display: 'About',
-      url: '/about',
+      url: '#about',
     },
     {
       display: 'Home',
-      url: '/',
+      url: '#main',
     },
   ];
   return (
-    <main className="md:container mx-auto grid grid-cols-12 gap-4">
+    <main className="md:container mx-auto grid grid-cols-12 gap-0 md:gap-12">
+      <Image
+        className="opacity-20"
+        layout="fill"
+        alt=""
+        src={ImgixImage.bg4k}
+      />
       <section className="z-10 h-screen col-span-3 md:col-span-2 flex pt-20 md:p-0 items-start md:items-center justify-center bg-[#000] md:bg-transparent">
         <ul className="flex flex-col-reverse">
           {main.map(({ display, url }, index) => {
@@ -54,18 +58,13 @@ const main = (props: Props) => {
           })}
         </ul>
       </section>
-      <section className="h-screen flex items-center justify-center z-0 p-10 col-span-9 md:col-span-5 bg-head overflow-hidden">
-        <Image
-          src={ImgixImage.profilepic_me}
-          alt=""
-          width={870}
-          height={1906}
-        />
+      <section className="h-screen min-w-[250px] ssm:min-w-full flex items-center z-0 p-10 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head">
+        <Image className="" src={me} alt="" width={870} height={1906} />
       </section>
-      <section className="z-20 h-auto md:h-screen text-base sm:text-1xl lg:text-2xl xl:text-4xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
+      <section className="z-20 h-1/2 md:h-screen font-semibold text-sm sm:text-2xl lg:text-2xl xl:text-4xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
         <div
           className="absolute flex flex-col items-start justify-center
-       glass w-[80vw] md:w-auto md:left-auto left-[calc(0px+10vw)] bottom-[calc(0px+5vw)] md:m-0 p-4 sm:p-10 md:static md:bottom-0"
+       glass w-[70vw] md:w-auto md:left-auto left-[calc(0px+15vw)] bottom-[calc(0px+10vw)] md:m-0 p-4 md:p-10 md:static md:bottom-0"
         >
           <div className="flex flex-row md:flex-col">
             <div className="mr-2 md:mr-0 py-1 xl:py-2">Hello!!</div>
@@ -88,8 +87,9 @@ const main = (props: Props) => {
               }}
             />
           </div>
-          <h1 className="p-6 sm:py-12 md:py-16 items-center justify-center text-normalH">
-            Passionate to make the remarkable thing
+          <h1 className="w-full p-6 sm:py-12 md:py-16 flex flex-col items-center justify-center text-normalH uppercase">
+            <div>&quot;Passionate to make</div>
+            <div>the remarkable thing&quot;</div>
           </h1>
         </div>
       </section>

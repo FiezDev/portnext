@@ -11,7 +11,8 @@ type HeadingFirstProps = {
 
 const headingFirst = ({ text, className }: HeadingFirstProps) => {
   const cssProp = className ? def.className + ' ' + className : def.className;
-  return <h1 className={`${cssProp}`}>{text}</h1>;
+  const textProp = text ? text : def.text;
+  return <h1 className={`${cssProp}`}>{textProp}</h1>;
 };
 
 export default headingFirst;

@@ -1,17 +1,9 @@
-// import { useRouter } from 'next/router';
 import WorkLayout from '@/layouts/layout.Work';
+import WUC from '../components/global/Wuc';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
-type Props = {};
-
-const Work: NextPageWithLayout = (props: Props) => {
-  // const { locale } = useRouter();
-
-  return (
-    <>
-      <div>Work</div>
-    </>
-  );
+const Work: NextPageWithLayout = () => {
+  return <WUC linktext={''} backlink={''} />;
 };
 
 export default Work;

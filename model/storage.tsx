@@ -12,6 +12,8 @@ export const ImgixImage = {
   baseImgix,
   //logo
   logo: `${baseImgix}FFLogoW.png`,
+  bg4k: `${baseImgix}4kbg.jpeg`,
+  //bg
   //resume
   cv_resumepdf: `${baseImgix}cv/ITTI_RESUME_2022_Rev02.pdf`,
   cv_esumejpg: `${baseImgix}cv/ITTI_RESUME_2022_Rev02.jpg`,
@@ -27,7 +29,7 @@ export const ImgixImage = {
   icon_firebase: `${baseImgix}icon/firebase.svg`,
   icon_nextjs: `${baseImgix}icon/nextjs.svg`,
   //profilepic
-  profilepic_me: `${baseImgix}profilepic/Me.png`,
+  profilepic_me: `${baseImgix}profilepic/Me.png?fit=crop?crop=bottom,right&min-w=300&h=1906`,
   profilepic_me2: `${baseImgix}profilepic/Me2.png`,
   profilepic_meabout: `${baseImgix}profilepic/meabout.jpg`,
   profilepic_faceMe: `${baseImgix}profilepic/faceMe.jpg`,
@@ -47,6 +49,9 @@ export const ImgixImage = {
   main_portfolio4: `${baseImgix}portfolio4.jpg`,
   main_portfolio5: `${baseImgix}portfolio5.jpg`,
   main_portfolio6: `${baseImgix}portfolio6.jpg`,
-  //error cat
-  errorcat_404: `${baseImgix}error/404.jpeg`,
+  main_blog: `${baseImgix}blog.jpeg`,
+  main_admin: `${baseImgix}admin.jpeg`,
+  //error
+  error_404: `${baseImgix}error/404.jpeg`,
+  error_wuc: `${baseImgix}error/WUC.png`,
 };

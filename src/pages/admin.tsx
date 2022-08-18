@@ -1,17 +1,9 @@
-// import { useRouter } from 'next/router';
 import AdminLayout from '@/layouts/layout.Admin';
+import WUC from '../components/global/Wuc';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
-type Props = {};
-
-const Admin: NextPageWithLayout = (props: Props) => {
-  // const { locale } = useRouter();
-
-  return (
-    <>
-      <div>Admin</div>
-    </>
-  );
+const Admin: NextPageWithLayout = () => {
+  return <WUC linktext={''} backlink={''} />;
 };
 
 export default Admin;

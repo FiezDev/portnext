@@ -14,15 +14,21 @@ const Portfolio: NextPageWithLayout = (props: Props) => {
 
   return (
     <>
-      <Main />
-      <div id="about"></div>
-      <About />
-      <div id="works"></div>
-      <Works />
-      <div id="skills"></div>
-      <Skills />
-      <div id="contact"></div>
-      <Contact />
+      <div id="main">
+        <Main />
+      </div>
+      <div id="about">
+        <About />
+      </div>
+      <div id="works">
+        <Works />
+      </div>
+      <div id="skills">
+        <Skills />
+      </div>
+      <div id="contact">
+        <Contact />
+      </div>
     </>
   );
 };
