@@ -23,7 +23,8 @@ module.exports = withMT({
     },
     extend: {
       screens: {
-        ssm: '400px',
+        xs: '400px',
+        ssm: '539px',
       },
       gridRow: {
         'span-12': 'span 12 / span 12',

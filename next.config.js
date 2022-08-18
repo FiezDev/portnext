@@ -5,7 +5,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    deviceSizes: [400, 640, 768, 1024, 1280, 1536],
+    deviceSizes: [400, 539, 640, 768, 1024, 1280, 1536],
     loader: 'imgix',
     path: 'https://fiez.imgix.net/',
     domains: ['http.cat', 'dummyimage.com'],
