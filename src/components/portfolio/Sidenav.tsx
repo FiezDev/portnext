@@ -86,9 +86,9 @@ const Nav = () => {
               icon={faBars}
             />
           )}
-          <nav className="glass top-0 text-white fixed h-screen z-30 lg:w-[200px] sm:w-[100px] -left-[50px] lg:-left-[200px] sm:-left-[100px]">
+          <nav className="top-0 text-white fixed h-screen z-30 lg:w-[200px] sm:w-[100px] -left-[50px] lg:-left-[200px] sm:-left-[100px]">
             <div
-              className={`glass z-20 fixed pt-40  h-screen ease-in-out duration-300
+              className={`bg-black z-20 fixed pt-40  h-screen ease-in-out duration-300
         ${!showSidebar ? 'translate-x-0 ' : 'translate-x-full'}`}
             >
               <ul className="flex flex-col-reverse">
