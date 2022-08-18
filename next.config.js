@@ -1,6 +1,21 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: '/:all*(svg|jpg|jpeg|png|pdf)',
+        locale: false,
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+
   distDir: 'nextjs',
   reactStrictMode: true,
   swcMinify: true,
