@@ -28,20 +28,15 @@ const Index: NextPageWithLayout = (props: Props) => {
             <Image
               src={ImgixImage.main_portfolio2}
               alt=""
-              width={1430}
-              height={1144}
+              width={480}
+              height={360}
             />
           </div>
         </Link>
 
         <Link href="/blog">
           <div className="left-0 top-0 overflow-clip md:flex md:items-center md:justify-center opacity-30 hover:opacity-100 shadow shadow-white">
-            <Image
-              src={ImgixImage.main_blog}
-              alt=""
-              width={1024}
-              height={1024}
-            />
+            <Image src={ImgixImage.main_blog} alt="" width={600} height={405} />
           </div>
         </Link>
 
@@ -50,8 +45,8 @@ const Index: NextPageWithLayout = (props: Props) => {
             <Image
               src={ImgixImage.main_admin}
               alt=""
-              width={1024}
-              height={1024}
+              width={1535}
+              height={864}
             />
           </div>
         </Link>
