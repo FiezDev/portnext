@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Typewriter from 'typewriter-effect';
 
 const main = () => {
-  const me = 'profilepic/Me.png?fit=crop?crop=bottom,right&min-w=300&h=1906';
   const main = [
     {
       display: 'Contact',
@@ -59,7 +58,12 @@ const main = () => {
         </ul>
       </section>
       <section className="h-screen min-w-[250px] ssm:min-w-full flex items-center z-0 p-10 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head">
-        <Image className="" src={me} alt="" width={870} height={1906} />
+        <Image
+          src={ImgixImage.profilepic_me}
+          alt=""
+          width={870}
+          height={1906}
+        />
       </section>
       <section className="z-20 h-1/2 md:h-screen font-semibold text-sm sm:text-2xl lg:text-2xl xl:text-4xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
         <div
