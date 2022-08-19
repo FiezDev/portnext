@@ -4,6 +4,27 @@ import Link from 'next/link';
 import Typewriter from 'typewriter-effect';
 
 const main = () => {
+  // const client = new ImgixClient({
+  //   domain: 'fiez.imgix.net',
+  //   secureURLToken: 'cYYgCR2CuHuXZ2n4',
+  //   includeLibraryParam: false,
+  // });
+
+  // let url = client.buildURL('profilepic/Me.png', {
+  //   w: 870,
+  //   h: 1906,
+  //   'fp-x': 0.37,
+  //   'fp-y': 0.15,
+  //   'fp-z': 1,
+  //   crop: 'focalpoint',
+  //   fit: 'crop',
+  //   // crop: 'bottom,right',
+  // });
+
+  //fit=crop?crop=bottom,right&min-w=300&h=1906
+
+  // url = url.replace('https://fiez.imgix.net/', '');
+
   const main = [
     {
       display: 'Contact',
@@ -57,7 +78,7 @@ const main = () => {
           })}
         </ul>
       </section>
-      <section className="h-screen min-w-[250px] ssm:min-w-full flex items-center z-0 p-10 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head">
+      <section className="h-screen min-w-[250px] ssm:min-w-full flex items-end md:items-center z-0 p-0 pb-0 md:p-10  col-span-9 md:col-span-5 overflow-hidden bg-head">
         <Image
           src={ImgixImage.profilepic_me}
           alt=""
