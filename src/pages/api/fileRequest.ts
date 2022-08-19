@@ -115,7 +115,3 @@ export default function handler(
       break;
   }
 }
-
-export const config = {
-  runtime: 'experimental-edge',
-};
