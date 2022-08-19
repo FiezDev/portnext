@@ -66,3 +66,17 @@ export enum ENUM_EROR_CODE {
   ProxyConnectionTimeOut = 525,
   NetworkConnectTimeoutError = 599,
 }
+
+export enum SERVER_TYPE {
+  Firebase,
+  Vercel,
+  Imgix,
+  MongoDB,
+  AWS,
+  PostgreSQL,
+}
+
+export enum REQ_TYPE {
+  all,
+  single,
+}

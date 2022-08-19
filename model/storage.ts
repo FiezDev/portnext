@@ -2,10 +2,6 @@ const baseurl =
   'https://firebasestorage.googleapis.com/v0/b/fiezport.appspot.com/o/';
 const baseImgix = '';
 
-type imgixProp = {
-  url: string;
-};
-
 export const FirestoreFile = {
   baseurl,
   resumepdf: `${baseurl}cv%2FITTI_RESUME_2022_Rev02.pdf?alt=media&token=5b9d4403-ab3f-4fde-bfd6-9416013f6dc0`,

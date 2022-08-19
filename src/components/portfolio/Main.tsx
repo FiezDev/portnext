@@ -4,27 +4,6 @@ import Link from 'next/link';
 import Typewriter from 'typewriter-effect';
 
 const main = () => {
-  // const client = new ImgixClient({
-  //   domain: 'fiez.imgix.net',
-  //   secureURLToken: 'cYYgCR2CuHuXZ2n4',
-  //   includeLibraryParam: false,
-  // });
-
-  // let url = client.buildURL('profilepic/Me.png', {
-  //   w: 870,
-  //   h: 1906,
-  //   'fp-x': 0.37,
-  //   'fp-y': 0.15,
-  //   'fp-z': 1,
-  //   crop: 'focalpoint',
-  //   fit: 'crop',
-  //   // crop: 'bottom,right',
-  // });
-
-  //fit=crop?crop=bottom,right&min-w=300&h=1906
-
-  // url = url.replace('https://fiez.imgix.net/', '');
-
   const main = [
     {
       display: 'Contact',
