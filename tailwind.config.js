@@ -15,6 +15,8 @@ module.exports = withMT({
       normal: '#3282B8',
       normalH: 'hsl(204, 57%, 46%)',
 
+      dark: '#00141f',
+
       light: '#BBE1FA',
       lightH: 'hsl(204, 86%, 86%)',
 

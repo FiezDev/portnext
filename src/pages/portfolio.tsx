@@ -10,8 +10,6 @@ import { NextPageWithLayout } from '../pageWithLayouts';
 type Props = {};
 
 const Portfolio: NextPageWithLayout = (props: Props) => {
-  // const { locale } = useRouter();
-
   return (
     <>
       <div id="main">

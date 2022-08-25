@@ -27,7 +27,7 @@ const main = () => {
     },
   ];
   return (
-    <main className="md:container mx-auto grid grid-cols-12 gap-0 md:gap-12">
+    <main className="md:container md:max-w-[1140px] p-0 md:px-5 mx-auto grid grid-cols-12 gap-0 md:gap-4 items-center justify-center">
       <Image
         className="opacity-20"
         layout="fill"
@@ -57,7 +57,7 @@ const main = () => {
           })}
         </ul>
       </section>
-      <section className="h-screen min-w-[250px] ssm:min-w-full flex items-end md:items-center z-0 p-0 pb-0 md:p-10  col-span-9 md:col-span-5 overflow-hidden bg-head">
+      <section className="h-screen w-full flex items-start md:items-end justify-center z-0 p-0 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head">
         <Image
           src={ImgixImage.profilepic_me}
           alt=""

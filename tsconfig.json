@@ -32,6 +32,6 @@
       "@/fonts/*": ["public/fonts/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/layoutAdmin.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.d.ts"],
   "exclude": ["node_modules"]
 }

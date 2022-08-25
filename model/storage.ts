@@ -29,7 +29,7 @@ export const ImgixImage = {
   icon_firebase: `${baseImgix}icon/firebase.svg`,
   icon_nextjs: `${baseImgix}icon/nextjs.svg`,
   //profilepic
-  profilepic_me: `${baseImgix}profilepic/Me.png`,
+  profilepic_me: `${baseImgix}profilepic/newMe.png?w=870&h=1906&auto=undefined%2Cenhance%2Ccompress&fit=crop&crop=focalpoint&fp-x=0.37&fp-y=0.15&fp-z=1`,
   //fit=crop?crop=bottom,right&min-w=300&h=1906
   profilepic_me2: `${baseImgix}profilepic/Me2.png`,
   profilepic_meabout: `${baseImgix}profilepic/meabout.jpg`,
