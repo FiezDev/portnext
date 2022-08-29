@@ -4,12 +4,23 @@ import Main from '@/components/portfolio/Main';
 import Skills from '@/components/portfolio/Skills';
 import Works from '@/components/portfolio/Works';
 import PortfolioLayout from '@/layouts/layout.Portfolio';
+import { useEffect } from 'react';
 // import { useRouter } from 'next/router';
 import { NextPageWithLayout } from '../pageWithLayouts';
+import fireStoreGetAll from './api/fireStoreGetAll';
 
 type Props = {};
 
 const Portfolio: NextPageWithLayout = (props: Props) => {
+  useEffect(() => {
+    // const setData = setProject(project);
+    // console.log(setData);
+    const getData = fireStoreGetAll();
+    console.log(getData);
+
+    return () => {};
+  }, []);
+
   return (
     <>
       <div id="main">
