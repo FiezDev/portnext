@@ -2,15 +2,14 @@ import { initializeApp } from 'firebase/app';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDlX0XlIiTmqBoRq-whTMlVcw6I1U_XnvY',
-  authDomain: 'fiezport.firebaseapp.com',
-  databaseURL:
-    'https://fiezport-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId: 'fiezport',
-  storageBucket: 'fiezport.appspot.com',
-  messagingSenderId: '10093093757',
-  appId: '1:10093093757:web:50d1a301bc34d3aa086214',
-  measurementId: 'G-KK7H46FWTR',
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 const app = initializeApp(firebaseConfig);
 const DBref = getFirestore(app);

@@ -15,7 +15,7 @@ const Portfolio: NextPageWithLayout = (props: Props) => {
   useEffect(() => {
     // const setData = setProject(project);
     // console.log(setData);
-    const getData = fireStoreGetAll();
+    const getData = fireStoreGetAll('Projects');
     console.log(getData);
 
     return () => {};
