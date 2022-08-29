@@ -15,9 +15,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const DBref = getFirestore(app);
 
-export default async function handler(collections: string) {
+export default async function handler() {
   let res: any = [];
-  const _query = query(collection(DBref, collections));
+  const _query = query(collection(DBref, 'Projects'));
   const querySnapshot = await getDocs(_query);
   querySnapshot.forEach((doc) => {
     res.push(doc.data());
