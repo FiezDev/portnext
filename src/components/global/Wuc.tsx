@@ -20,7 +20,7 @@ const WUC = ({ linktext, backlink }: WUCProps) => {
       <section className="container mx-auto flex flex-col items-center justify-center h-screen w-[800px] text-2xl md:text-5xl gap-8">
         <Image src={ImgixImage.error_wuc} alt="" width={2000} height={1781} />
         <span className="text-head">
-          <Link href={`${backlinkProp}`}>{linktextProp}</Link>
+          <Link href={backlinkProp}>{linktextProp}</Link>
         </span>
       </section>
     </>

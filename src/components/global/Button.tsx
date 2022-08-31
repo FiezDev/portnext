@@ -12,7 +12,7 @@ type ButtonProps = {
 const Button = ({ text, className }: ButtonProps) => {
   const cssProp = className ? def.className + ' ' + className : def.className;
   const textProp = text ? text : def.text;
-  return <button className={`${cssProp}`}>{textProp}</button>;
+  return <button className={cssProp}>{textProp}</button>;
 };
 
 export default Button;
