@@ -29,11 +29,11 @@ const Portfolio: NextPageWithLayout = (props: Props) => {
       <div id="about">
         <About />
       </div>
-      <div id="works">
-        <Works />
-      </div>
       <div id="skills">
         <Skills />
+      </div>
+      <div id="works">
+        <Works />
       </div>
       <div id="contact">
         <Contact />

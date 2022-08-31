@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Typewriter from 'typewriter-effect';
 
-const main = () => {
+const Main: React.FC = () => {
   const main = [
     {
       display: 'Contact',
@@ -27,13 +27,7 @@ const main = () => {
     },
   ];
   return (
-    <main className="md:container md:max-w-[1140px] p-0 md:px-5 mx-auto grid grid-cols-12 gap-0 md:gap-4 items-center justify-center">
-      <Image
-        className="opacity-20"
-        layout="fill"
-        alt=""
-        src={ImgixImage.bg4k}
-      />
+    <main className="md:container md:max-w-[1140px] p-0 md:px-5 mx-auto grid grid-cols-12 gap-0 md:gap-8 items-center justify-center">
       <section className="z-10 h-screen col-span-3 md:col-span-2 flex pt-20 pl-1 sm:pl-2 md:p-0 items-start md:items-center justify-start md:justify-center bg-[#000] md:bg-transparent">
         <ul className="flex flex-col-reverse">
           {main.map(({ display, url }, index) => {
@@ -101,4 +95,4 @@ const main = () => {
   );
 };
 
-export default main;
+export default Main;

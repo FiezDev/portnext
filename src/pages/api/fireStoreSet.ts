@@ -21,7 +21,7 @@ export default async function handler(
 ) {
   try {
     await setDoc(doc(DBref, collections, name), data);
-    console.log('Error When setProject');
+    console.log('Error When setObject');
   } catch (e) {
     console.error('Error adding document: ', e);
   }

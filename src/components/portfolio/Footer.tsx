@@ -64,19 +64,6 @@ const Footer = () => {
                 alt="https://dummyimage.com/40x40"
               />
             </a>
-            <a
-              className="w-[20px]"
-              href="https://vitejs.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                src={ImgixImage.icon_vite}
-                width={40}
-                height={40}
-                alt="https://dummyimage.com/40x40"
-              />
-            </a>
           </span>
         </div>
       </div>

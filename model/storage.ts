@@ -20,14 +20,21 @@ export const ImgixImage = {
   //icon
   icon_close: `${baseImgix}icon/close.svg`,
   icon_ham: `${baseImgix}icon/ham.svg`,
-  icon_react: `${baseImgix}icon/react.svg`,
-  icon_codepen: `${baseImgix}icon/codepen.svg`,
-  icon_github: `${baseImgix}icon/github.svg`,
+
+  icon_html: `${baseImgix}icon/html.svg`,
+  icon_css: `${baseImgix}icon/css.svg`,
+  icon_javascript: `${baseImgix}icon/javascript.svg`,
   icon_typescript: `${baseImgix}icon/typescript.svg`,
+  icon_dart: `${baseImgix}icon/dart.svg`,
+  icon_flutter: `${baseImgix}icon/flutter.svg`,
+  icon_csharp: `${baseImgix}icon/csharp.svg`,
+  icon_angular: `${baseImgix}icon/angular.svg`,
+  icon_react: `${baseImgix}icon/react.svg`,
+  icon_vue: `${baseImgix}icon/vue.svg`,
   icon_tailwindcss: `${baseImgix}icon/tailwindcss.svg`,
-  icon_vite: `${baseImgix}icon/vite.svg`,
   icon_firebase: `${baseImgix}icon/firebase.svg`,
-  icon_nextjs: `${baseImgix}icon/nextjs.svg`,
+  icon_vercel: `${baseImgix}icon/vercel.svg`,
+  icon_nextjs: `${baseImgix}icon/next.svg`,
   //profilepic
   profilepic_me: `${baseImgix}profilepic/newMe.png?w=870&h=1906&auto=undefined%2Cenhance%2Ccompress&fit=crop&crop=focalpoint&fp-x=0.37&fp-y=0.15&fp-z=1`,
   //fit=crop?crop=bottom,right&min-w=300&h=1906
