@@ -82,15 +82,15 @@ export enum REQ_TYPE {
 }
 
 export enum PROJECT_TYPE {
-  Work,
-  Mini,
-  UI,
-  Personal,
+  Work = 'Work',
+  Mini = 'Mini',
+  UI = 'UI',
+  Personal = 'Personal',
 }
 
 export enum PROJECT_STATUS {
-  Idea,
-  InProgress,
-  Beta,
-  Finish,
+  Idea = 'Idea',
+  InProgress = 'InProgress',
+  Beta = 'Beta',
+  Finish = 'Finish',
 }

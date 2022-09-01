@@ -1,127 +1,140 @@
+import { PROJECT_STATUS, PROJECT_TYPE } from '@/model/enum';
+import { Projects } from '@/model/object';
 import { ImgixImage } from '@/model/storage';
-import Image from 'next/image';
+import Heading from '../global/Heading';
+import ProjectCard from '../global/ProjectCard';
 
-type Props = {};
-
-const works = (props: Props) => {
-  interface project {
-    projectID: number;
-    projectName: string;
-    projectPic: { url: string; width: number; height: number };
-    projectDesc: string;
-  }
-
-  interface Projects extends Array<project> {}
-
+const Works: React.FC = () => {
   const _projects: Projects = [
     {
       projectID: 1,
-      projectName: 'Project - 1',
-      projectPic: { url: ImgixImage.main_portfolio1, width: 360, height: 480 },
-      projectDesc:
-        'Project - 1 || Photo booth fam kinfolk cold-pressed sriracha leggings jianbing microdosing tousled waistcoat.',
+      projectType: PROJECT_TYPE.Work,
+      projectName: 'Short URL Service Website',
+      projectFullName: '',
+      projectIntro: 'Short URL Service Website',
+      projectDesc: (
+        <p>
+          - Work closely with ux/ui designer to implement Frontend/Backend of
+          ADMIN Panel for company and corporate customer
+        </p>
+      ),
+      projectPic: {
+        picurl: {
+          pic: ImgixImage.main_portfolio1,
+          width: 360,
+          height: 480,
+        },
+      },
+      createDate: Date(),
+      updateDate: '',
+      activeFlag: true,
+      status: PROJECT_STATUS.Finish,
+      stack: ['VueJS', 'Vuetify', 'C#', 'MySQL'],
     },
     {
       projectID: 2,
-      projectName: 'Project - 2',
-      projectPic: { url: ImgixImage.main_portfolio2, width: 360, height: 480 },
-      projectDesc:
-        'Project - 2 || Photo booth fam kinfolk cold-pressed sriracha leggings jianbing microdosing tousled waistcoat.',
+      projectType: PROJECT_TYPE.Work,
+      projectName: 'Health Insurance WebApp',
+      projectFullName: '',
+      projectIntro: 'Health Insurance WebApp',
+      projectDesc: (
+        <p>
+          - Debug and maintain of Application - Correct UI and Responsive Bug
+          <br />
+          - Delivering New Feature like Authentication, Customer Report, Coupon
+          Code
+          <br />
+          - Support Customer about application problem and feature
+          <br />
+        </p>
+      ),
+      projectPic: {
+        picurl: {
+          pic: ImgixImage.main_portfolio2,
+          width: 360,
+          height: 480,
+        },
+      },
+      createDate: Date(),
+      updateDate: '',
+      activeFlag: true,
+      status: PROJECT_STATUS.Finish,
+      stack: ['AngularJS', 'Typescript', 'PrimeNG', 'C#', 'MySQL'],
     },
     {
       projectID: 3,
-      projectName: 'Project - 3',
+      projectType: PROJECT_TYPE.Work,
+      projectName: 'Taxi Service App',
+      projectFullName: '',
+      projectIntro: 'Taxi Service App',
+      projectDesc: (
+        <p>
+          - Add front-end feature of Navigation And Driver Review
+          <br />
+          - Build front-end widget and design by XD Across many aplication
+          feature
+          <br />
+          - Add Driver/Car data CRUD to ADMIN Panel
+          <br />
+        </p>
+      ),
       projectPic: {
-        url: 'https://dummyimage.com/720x400',
-        width: 360,
-        height: 480,
+        picurl: {
+          pic: ImgixImage.main_portfolio3,
+          width: 360,
+          height: 480,
+        },
       },
-      projectDesc:
-        'Project - 3 || Photo booth fam kinfolk cold-pressed sriracha leggings jianbing microdosing tousled waistcoat.',
+      createDate: Date(),
+      updateDate: '',
+      activeFlag: true,
+      status: PROJECT_STATUS.Finish,
+      stack: ['VueJS', 'Vuetify', 'Typescript', 'Flutter', 'C#', 'Firebase'],
     },
   ];
 
   return (
-    <div className="text-gray-400 bg-gray-900 body-font lg:mx-[20vw] md:mx-[10vw] mx-[5vw]">
-      <div className="container px-5 py-24 mx-auto">
-        <div className="flex flex-wrap -m-4">
-          {_projects.map(
-            ({ projectID, projectName, projectPic, projectDesc }) => (
-              <div key={projectID} className="p-4 md:w-1/3">
-                <div className="h-full border-2 border-gray-800 rounded-lg overflow-hidden">
-                  <Image
-                    className="lg:h-48 md:h-36 w-full object-cover object-center"
-                    src={projectPic.url}
-                    width={projectPic.width}
-                    height={projectPic.height}
-                    alt="https://dummyimage.com/360x480"
-                  />
-                  <div className="p-6">
-                    <h2 className="tracking-widest text-xs title-font font-medium text-gray-500 mb-1">
-                      CATEGORY
-                    </h2>
-                    <h1 className="title-font text-lg font-medium text-white mb-3">
-                      {projectName}
-                    </h1>
-                    <p className="leading-relaxed mb-3">{projectDesc}</p>
-                    <div className="flex items-center flex-wrap ">
-                      <a
-                        className="text-indigo-400 inline-flex items-center md:mb-2 lg:mb-0"
-                        href=".."
-                      >
-                        Learn More
-                        <svg
-                          className="w-4 h-4 ml-2"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M5 12h14"></path>
-                          <path d="M12 5l7 7-7 7"></path>
-                        </svg>
-                      </a>
-                      <span className="text-gray-500 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-800">
-                        <svg
-                          className="w-4 h-4 mr-1"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                        1.2K
-                      </span>
-                      <span className="text-gray-500 inline-flex items-center leading-none text-sm">
-                        <svg
-                          className="w-4 h-4 mr-1"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
-                        </svg>
-                        6
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )
-          )}
-        </div>
+    <div className="container px-5 py-24 mx-auto flex flex-col items-center justify-center">
+      <Heading className={'pb-16'} text={'Works'} />
+      <div className="flex flex-wrap -m-4 items-center justify-evenly">
+        {_projects.map(
+          ({
+            projectID,
+            projectType,
+            projectName,
+            projectFullName,
+            projectIntro,
+            projectDesc,
+            projectPic: { picurl },
+            createDate,
+            updateDate,
+            activeFlag,
+            status,
+            stack,
+          }) => (
+            <ProjectCard
+              key={projectID}
+              projectID={projectID}
+              projectType={projectType}
+              projectName={projectName}
+              projectDesc={projectDesc}
+              projectPic={{
+                picurl: {
+                  pic: picurl.pic,
+                  width: picurl.width,
+                  height: picurl.height,
+                },
+              }}
+              createDate={createDate}
+              activeFlag={activeFlag}
+              status={status}
+              stack={stack}
+            />
+          )
+        )}
       </div>
     </div>
   );
 };
 
-export default works;
+export default Works;
