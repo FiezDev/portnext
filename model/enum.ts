@@ -80,3 +80,17 @@ export enum REQ_TYPE {
   all,
   single,
 }
+
+export enum PROJECT_TYPE {
+  Work,
+  Mini,
+  UI,
+  Personal,
+}
+
+export enum PROJECT_STATUS {
+  Idea,
+  InProgress,
+  Beta,
+  Finish,
+}
