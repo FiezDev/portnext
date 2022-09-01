@@ -35,7 +35,12 @@ const ProjectCard = ({
         </h1>
         <h1 className="my-5">
           {stack.map((item, index) => (
-            <Chip className="m-1" key={index} value={item} variant="filled" />
+            <Chip
+              className="m-1 text-[9px] bg-normal"
+              key={index}
+              value={item}
+              variant="filled"
+            />
           ))}
         </h1>
       </div>
