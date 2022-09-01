@@ -14,13 +14,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const DBref = getFirestore(app);
 
-export default async function handler(
+export default function handler(
   collections: string,
-  data: object,
-  name: string
+  name: string,
+  data: object
 ) {
   try {
-    await setDoc(doc(DBref, collections, name), data);
+    setDoc(doc(DBref, collections, name), data);
     console.log('Error When setObject');
   } catch (e) {
     console.error('Error adding document: ', e);
