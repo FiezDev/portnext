@@ -1,10 +1,23 @@
 import { PROJECT_STATUS, PROJECT_TYPE } from '@/model/enum';
 import { Projects } from '@/model/object';
 import { ImgixImage } from '@/model/storage';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import Heading from '../global/Heading';
 import ProjectCard from '../global/ProjectCard';
 
 const Works: React.FC = () => {
+  const [project, SetProject] = useState();
+  const collec = 'Projects';
+  useEffect(() => {
+    axios
+      .get(`https://www.fiez.dev/api/fireStoreGetAll?collections=${collec}`)
+      .then((response) => {
+        SetProject(response.data);
+        console.log(project);
+      });
+  }, []);
+
   const _projects: Projects = [
     {
       projectID: 1,
