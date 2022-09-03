@@ -25,7 +25,7 @@ const ProjectCard = ({
         height={picurl.height}
         alt=""
       />
-      <div className="p-5 w-full lg:w-[calc(((100%-300px)/5)*2)] xl:w-[calc(((100%-400px)/5)*2)]">
+      <div className="p-5 pb-0 lg:pb-5 w-full lg:w-[calc(((100%-300px)/5)*2)] xl:w-[calc(((100%-400px)/5)*2)]">
         <h1>
           <span className="text-normal text-3xl font-[700] antialiased tracking-wide uppercase">
             Project
@@ -33,7 +33,7 @@ const ProjectCard = ({
           <br />
           <span className="text-white antialiased text-lg ">{projectName}</span>
         </h1>
-        <h1 className="my-5">
+        <h1 className="mt-2">
           {stack.map((item, index) => (
             <Chip
               className="m-1 text-[9px] bg-normal"
@@ -44,7 +44,7 @@ const ProjectCard = ({
           ))}
         </h1>
       </div>
-      <div className="p-5 w-full lg:w-[calc(((100%-300px)/5)*3)] xl:w-[calc(((100%-400px)/5)*3)] text-lg">
+      <div className="p-5 pt-0 lg-pt-5 w-full lg:w-[calc(((100%-300px)/5)*3)] xl:w-[calc(((100%-400px)/5)*3)] text-lg">
         <p>
           {projectDesc.map((item, index) => (
             <span key={index}>
