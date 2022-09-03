@@ -1,12 +1,10 @@
-import { ReactElement } from 'react';
-
 export type project = {
   projectID: number;
   projectType: string;
   projectName: string;
   projectFullName?: string;
   projectIntro?: string;
-  projectDesc: ReactElement;
+  projectDesc: string[];
   projectPic: {
     picurl: {
       pic: string;
@@ -24,8 +22,8 @@ export type project = {
       height: number;
     };
   };
-  createDate: string;
-  updateDate?: string;
+  createDate: number;
+  updateDate?: number;
   activeFlag: boolean;
   status: string;
   stack: string[];

@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, query } from 'firebase/firestore';
+import { collection, getDocs, getFirestore } from 'firebase/firestore';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,16 +12,28 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APPNEXT_PUBLIC__ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
+
 const app = initializeApp(firebaseConfig);
 const DBref = getFirestore(app);
 
-export default async function handler(collections: string) {
-  let res: any = [];
-  const _query = query(collection(DBref, collections));
-  const querySnapshot = await getDocs(_query);
-  querySnapshot.forEach((doc) => {
-    res.push(doc.data());
-  });
-  console.log(res);
-  return res;
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  let data: any = [];
+
+  const colRef = collection(DBref, 'Projects');
+
+  try {
+    const docsSnap = await getDocs(colRef);
+    if (docsSnap.docs.length > 0) {
+      docsSnap.forEach((doc) => {
+        data.push(doc.data());
+      });
+      console.log(data);
+    }
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500);
+  }
 }
