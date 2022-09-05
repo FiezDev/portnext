@@ -28,7 +28,7 @@ const About: React.FC = () => {
             Currently interested in reactJS,AI Generated Art and Frontend.
           </p>
           <p className="col-span-2 xs:col-span-1">
-            Favourite
+            <span className="text-normal">Favourite</span>
             <br />- Blue
             <br />- Cat
             <br />- Basketball
@@ -37,11 +37,11 @@ const About: React.FC = () => {
           </p>
 
           <p className="col-span-2 xs:col-span-1 text-center md:text-left">
-            Live : Samutprakarn, Thailand.
+            <span className="text-normal">Live</span> : Samutprakarn, Thailand.
             <br />
             <br />
             <br />
-            <a href={FirestoreFile.resumepdf} download target="blank">
+            <a href={FirestoreFile.resumepdf} target="blank">
               <Button text={'Resume'} />
             </a>
           </p>

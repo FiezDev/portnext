@@ -1,7 +1,7 @@
 const def: HeadingProps = {
   text: 'Default',
   className:
-    'text-normalH font-bold text-xl sm:text-3xl lg:text-4xl xl:text-5xl text-white block uppercase tracking-wider',
+    'textglow text-light font-bold text-4xl xl:text-5xl text-white block uppercase tracking-wider',
 };
 
 type HeadingProps = {

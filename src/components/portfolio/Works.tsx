@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Heading from '../global/Heading';
 import ProjectCard from '../global/ProjectCard';
 
-const Works = () => {
+const Works: React.FC = () => {
   const [project, SetProject] = useState([]);
 
   useEffect(() => {
@@ -14,7 +14,7 @@ const Works = () => {
   }, []);
 
   return (
-    <div className="container px-5 py-24 mx-auto flex flex-col items-center justify-center">
+    <div className="container px-5 pt-24 pb-10 mx-auto flex flex-col items-center justify-center">
       <Heading className={'pb-16'} text={'Works'} />
       <div className="flex flex-wrap -m-4 items-center justify-evenly">
         {project.map(
@@ -25,7 +25,9 @@ const Works = () => {
             projectFullName,
             projectIntro,
             projectDesc,
-            projectPic: { picurl },
+            projectPic: {
+              picurl: { height, pic, width },
+            },
             createDate,
             updateDate,
             activeFlag,
@@ -39,7 +41,7 @@ const Works = () => {
               projectName={projectName}
               projectDesc={projectDesc}
               projectPic={{
-                picurl,
+                picurl: { height, pic, width },
               }}
               createDate={createDate}
               activeFlag={activeFlag}

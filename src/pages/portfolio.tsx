@@ -21,8 +21,10 @@ const Portfolio: NextPageWithLayout = () => {
       <div id="works">
         <Works />
       </div>
-      <div id="contact">
-        <Contact />
+      <div className="seembghi" id="contact">
+        <div className="glass">
+          <Contact />
+        </div>
       </div>
     </>
   );

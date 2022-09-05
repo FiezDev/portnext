@@ -1,19 +1,12 @@
+import { menu } from '@/model/mapdata';
 import { useToggle } from '@/services/hooks';
-import {
-  faAddressBook,
-  faAddressCard,
-  faBars,
-  faClose,
-  faHouseChimney,
-  faLaptopFile,
-  faUserGear,
-} from '@fortawesome/free-solid-svg-icons';
+import { faBars, faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useWindowSize } from 'react-use';
 
-const Nav = () => {
+const Nav: React.FC = () => {
   const { width, height } = useWindowSize();
   const [showSidebar, setShowSidebar] = useToggle();
   const [isNavVisible, setIsNavVisible] = useState(false);
@@ -35,39 +28,6 @@ const Nav = () => {
     window.addEventListener('scroll', listenToScroll);
     return () => window.removeEventListener('scroll', listenToScroll);
   }, [scrollHeight, height]);
-
-  const menu = [
-    {
-      id: 1,
-      display: 'Contact',
-      url: '/portfolio/contact',
-      picurl: faAddressBook,
-    },
-    {
-      id: 2,
-      display: 'Work',
-      url: '/portfolio/works',
-      picurl: faLaptopFile,
-    },
-    {
-      id: 3,
-      display: 'Skill',
-      url: '/portfolio/skills',
-      picurl: faUserGear,
-    },
-    {
-      id: 4,
-      display: 'About',
-      url: '/portfolio/about',
-      picurl: faAddressCard,
-    },
-    {
-      id: 5,
-      display: 'Home',
-      url: '/portfolio/main',
-      picurl: faHouseChimney,
-    },
-  ];
 
   return (
     <>

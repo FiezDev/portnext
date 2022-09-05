@@ -59,7 +59,14 @@ export const ImgixImage = {
   main_portfolio6: `${baseImgix}portfolio6.jpg`,
   main_blog: `${baseImgix}blog.jpeg`,
   main_admin: `${baseImgix}admin.jpeg`,
+  main_blueline: `${baseImgix}BlueLine.png`,
   //error
   error_404: `${baseImgix}error/404.jpeg`,
   error_wuc: `${baseImgix}error/WUC.png`,
+  ///screenshot
+  screenshot_project1_1: `${baseImgix}screenshot/projectone1.jpeg`,
+  screenshot_project1_2: `${baseImgix}screenshot/projectone2.jpeg`,
+  screenshot_project1_3: `${baseImgix}screenshot/projectone3.jpeg`,
+  screenshot_project2_1: `${baseImgix}screenshot/projecttwo1.jpeg`,
+  screenshot_project3_1: `${baseImgix}screenshot/projectthree1.jpeg`,
 };

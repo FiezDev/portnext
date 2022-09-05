@@ -228,7 +228,6 @@ body {
     Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
     sans-serif;
   color: white;
-
   background: hsla(201, 24%, 14%, 1);
 
   background: linear-gradient(
@@ -272,8 +271,28 @@ a:hover {
  * Custom
  */
 
+.seembg {
+  background-image: url(https://fiez.imgix.net/seemleesbg54x.jpg);
+  background-repeat: repeat;
+  background-size: 800px;
+}
+
+.seembghi {
+  background-image: url(https://fiez.imgix.net/seemleesbg.png);
+  background-repeat: repeat;
+  background-size: 400px;
+}
+
 .glow :hover {
   text-shadow: rgba(255, 255, 255, 1) 0px 0px 18px;
+}
+
+.textglow {
+  text-shadow: 0 0 5px hsl(204, 57%, 46%), 0 0 10px hsl(204, 57%, 41%);
+}
+
+.textglow2 {
+  text-shadow: 0 0 5px hsl(204, 77%, 26%), 0 0 10px hsl(204, 77%, 25%);
 }
 
 .glass {
@@ -281,7 +300,6 @@ a:hover {
   -webkit-box-shadow: 1px 1px 40px 1px rgba(15, 76, 117, 0.5) inset;
   -moz-box-shadow: 1px 1px 40px 1px rgba(15, 76, 117, 0.5) inset;
   background: hsl(200, 100%, 6%, 0.7);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border-radius: 1.5rem;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }

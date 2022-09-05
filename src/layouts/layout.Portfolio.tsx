@@ -12,8 +12,7 @@ const PortfolioLayout: React.FC<IPortfolioLayout> = ({ children }) => {
       <div className="flex flex-col md:flex-row flex-1">
         {/* <Top /> */}
         <Nav />
-        <main className="flex-1">{children}</main>
-        {/* <Footer /> */}
+        <main className="flex-1 seembg">{children}</main>
       </div>
     </div>
   );

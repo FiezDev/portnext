@@ -7,17 +7,17 @@ export type project = {
   projectDesc: string[];
   projectPic: {
     picurl: {
-      pic: string;
+      pic: string[];
       width: number;
       height: number;
     };
     picthumb?: {
-      pic: string;
+      pic: string[];
       width: number;
       height: number;
     };
     picicon?: {
-      pic: string;
+      pic: string[];
       width: number;
       height: number;
     };
