@@ -171,7 +171,10 @@ const Contact: React.FC = () => {
           ></textarea>
         </div>
 
-        <button className="text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg">
+        <button
+          onSubmit={handleSumitForm}
+          className="text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg"
+        >
           Submit
         </button>
         {notification && <p>{notification}</p>}

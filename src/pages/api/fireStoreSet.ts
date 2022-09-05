@@ -32,7 +32,7 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `secret=your_secret_key&response=${req.body.gRecaptchaToken}`,
+        body: `secret=6LfBo9IhAAAAAEXlXtgABpwG-CFJz6en-cmtM5Ev&response=${req.body.gRecaptchaToken}`,
       })
         .then((reCaptchaRes) => reCaptchaRes.json())
         .then((reCaptchaRes) => {
