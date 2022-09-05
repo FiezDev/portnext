@@ -1,7 +1,7 @@
 import { codeuse, infouse, siteuse } from '@/model/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import Heading from '../global/Heading';
 
@@ -13,24 +13,24 @@ const Contact: React.FC = () => {
 
   const { executeRecaptcha } = useGoogleReCaptcha();
 
-  // const handleSumitForm = useCallback(
-  //   (e: any) => {
-  //     e.preventDefault();
-  //     if (!executeRecaptcha) {
-  //       console.log('Execute recaptcha not yet available');
-  //       return;
-  //     }
-  //     executeRecaptcha('enquiryFormSubmit').then((gReCaptchaToken) => {
-  //       console.log(gReCaptchaToken, 'response Google reCaptcha server');
-  //       submitEnquiryForm(gReCaptchaToken);
-  //     });
-  //   },
-  //   [executeRecaptcha]
-  // );
+  const handleSumitForm = useCallback(
+    (e: any) => {
+      e.preventDefault();
+      if (!executeRecaptcha) {
+        console.log('Execute recaptcha not yet available');
+        return;
+      }
+      executeRecaptcha('enquiryFormSubmit').then((gReCaptchaToken) => {
+        console.log(gReCaptchaToken, 'response Google reCaptcha server');
+        submitEnquiryForm(gReCaptchaToken);
+      });
+    },
+    [executeRecaptcha]
+  );
 
   const submitEnquiryForm = (gReCaptchaToken: any) => {
     const dbname = Math.random().toString(36).substring(2, 12);
-
+    const collections = 'Contacts';
     fetch('/api/fireStoreSet', {
       method: 'POST',
       headers: {
@@ -38,12 +38,10 @@ const Contact: React.FC = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: name,
-        email: email,
-        message: message,
+        data: { name: name, email: email, message: message },
+        gRecaptchaToken: gReCaptchaToken,
+        collections: collections,
         dbname: dbname,
-        collections: 'Contact',
-        // gRecaptchaToken: gReCaptchaToken,
       }),
     })
       .then((res) => res.json())
@@ -132,7 +130,7 @@ const Contact: React.FC = () => {
         </div>
       </div>
       <div className="glass basis-full w-full xl:basis-1/3 bg-bg shadow-md rounded-3xl p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
-        <form onSubmit={submitEnquiryForm}>
+        <form onSubmit={handleSumitForm}>
           <div className="relative mb-4">
             <label htmlFor="email" className="leading-7 text-sm text-gray-400">
               Name
@@ -143,7 +141,7 @@ const Contact: React.FC = () => {
               type="name"
               id="name"
               name="name"
-              className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
           </div>
           <div className="relative mb-4">
@@ -156,7 +154,7 @@ const Contact: React.FC = () => {
               type="email"
               id="email"
               name="email"
-              className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
           </div>
           <div className="relative mb-4">
@@ -167,11 +165,12 @@ const Contact: React.FC = () => {
               Message
             </label>
             <textarea
+              rows={3}
+              name="message"
               value={message}
               onChange={(e) => setMessage(e?.target?.value)}
-              id="message"
-              name="message"
-              className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 h-32 text-base outline-none text-gray-100 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
+              placeholder="Message"
+              className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 h-32 text-base outline-none text-black py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
             ></textarea>
           </div>
 
