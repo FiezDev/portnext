@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { doc, getFirestore, setDoc } from 'firebase/firestore';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,15 +15,55 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const DBref = getFirestore(app);
 
-export default function handler(
-  collections: string,
-  name: string,
-  data: object
-) {
-  try {
-    setDoc(doc(DBref, collections, name), data);
-    console.log('Error When setObject');
-  } catch (e) {
-    console.error('Error adding document: ', e);
+const handler = (req: NextApiRequest, res: NextApiResponse) => {
+  const _req = {
+    collections: req.body.collections,
+    name: req.body.name,
+    data: {
+      name: req.body.name,
+      email: req.body.email,
+      massage: req.body.massage,
+    },
+  };
+  if (req.method === 'POST') {
+    try {
+      fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `secret=your_secret_key&response=${req.body.gRecaptchaToken}`,
+      })
+        .then((reCaptchaRes) => reCaptchaRes.json())
+        .then((reCaptchaRes) => {
+          console.log(
+            reCaptchaRes,
+            'Response from Google reCaptcha verification API'
+          );
+          if (reCaptchaRes?.score > 0.5) {
+            setDoc(doc(DBref, _req.collections, _req.name), _req.data);
+            // Save data to the database from here
+            res.status(200).json({
+              status: 'success',
+              message: 'Enquiry submitted successfully',
+            });
+          } else {
+            res.status(200).json({
+              status: 'failure',
+              message: 'Google ReCaptcha Failure',
+            });
+          }
+        });
+    } catch (err) {
+      res.status(405).json({
+        status: 'failure',
+        message: 'Error submitting the enquiry form',
+      });
+    }
+  } else {
+    res.status(405);
+    res.end();
   }
-}
+};
+
+export default handler;
