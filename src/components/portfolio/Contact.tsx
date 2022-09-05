@@ -1,5 +1,6 @@
 import { codeuse, infouse, siteuse } from '@/model/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 import Image from 'next/image';
 import React, { useCallback, useState } from 'react';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
@@ -28,29 +29,28 @@ const Contact: React.FC = () => {
     [executeRecaptcha]
   );
 
-  const submitEnquiryForm = (gReCaptchaToken: any) => {
+  const submitEnquiryForm = async (gReCaptchaToken: any) => {
     const dbname = Math.random().toString(36).substring(2, 12);
     const collections = 'Contacts';
-    fetch('/api/fireStoreSet', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        data: { name: name, email: email, message: message },
-        gRecaptchaToken: gReCaptchaToken,
-        collections: collections,
-        dbname: dbname,
-      }),
-    })
-      .then((res) => res.json())
+
+    const headers = {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    };
+    const data = { name: name, email: email, message: message };
+    await axios
+      .post('/api/fireStoreSet', data, {
+        headers: headers,
+      })
       .then((res) => {
+        const stat = res?.statusText;
         console.log(res, 'response from backend');
-        if (res?.status === 'success') {
-          setNotification(res?.message);
+        if (stat === 'success') {
+          setNotification(stat);
         } else {
-          setNotification(res?.message);
+          setNotification(stat);
         }
       });
   };
