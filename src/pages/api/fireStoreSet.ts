@@ -15,7 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const DBref = getFirestore(app);
 
-const handler = (req: NextApiRequest, res: NextApiResponse) => {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const _req = {
     collections: req.body.collections,
     name: req.body.name,
@@ -25,45 +25,14 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
       massage: req.body.massage,
     },
   };
-  if (req.method === 'POST') {
-    try {
-      fetch('https://www.google.com/recaptcha/api/siteverify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `secret=6LfBo9IhAAAAAEXlXtgABpwG-CFJz6en-cmtM5Ev&response=${req.body.gRecaptchaToken}`,
-      })
-        .then((reCaptchaRes) => reCaptchaRes.json())
-        .then((reCaptchaRes) => {
-          console.log(
-            reCaptchaRes,
-            'Response from Google reCaptcha verification API'
-          );
-          if (reCaptchaRes?.score > 0.5) {
-            setDoc(doc(DBref, _req.collections, _req.name), _req.data);
-            // Save data to the database from here
-            res.status(200).json({
-              status: 'success',
-              message: 'Enquiry submitted successfully',
-            });
-          } else {
-            res.status(200).json({
-              status: 'failure',
-              message: 'Google ReCaptcha Failure',
-            });
-          }
-        });
-    } catch (err) {
-      res.status(405).json({
-        status: 'failure',
-        message: 'Error submitting the enquiry form',
-      });
-    }
-  } else {
-    res.status(405);
-    res.end();
-  }
-};
+  try {
+    setDoc(doc(DBref, _req.collections, _req.name), _req.data);
 
-export default handler;
+    res.status(200);
+  } catch (e) {
+    res.status(405).json({
+      status: 'failure',
+      message: 'Error submitting the enquiry form',
+    });
+  }
+}

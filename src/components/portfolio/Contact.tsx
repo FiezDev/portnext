@@ -1,7 +1,7 @@
 import { codeuse, infouse, siteuse } from '@/model/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import Heading from '../global/Heading';
 
@@ -13,20 +13,20 @@ const Contact: React.FC = () => {
 
   const { executeRecaptcha } = useGoogleReCaptcha();
 
-  const handleSumitForm = useCallback(
-    (e: any) => {
-      e.preventDefault();
-      if (!executeRecaptcha) {
-        console.log('Execute recaptcha not yet available');
-        return;
-      }
-      executeRecaptcha('enquiryFormSubmit').then((gReCaptchaToken) => {
-        console.log(gReCaptchaToken, 'response Google reCaptcha server');
-        submitEnquiryForm(gReCaptchaToken);
-      });
-    },
-    [executeRecaptcha]
-  );
+  // const handleSumitForm = useCallback(
+  //   (e: any) => {
+  //     e.preventDefault();
+  //     if (!executeRecaptcha) {
+  //       console.log('Execute recaptcha not yet available');
+  //       return;
+  //     }
+  //     executeRecaptcha('enquiryFormSubmit').then((gReCaptchaToken) => {
+  //       console.log(gReCaptchaToken, 'response Google reCaptcha server');
+  //       submitEnquiryForm(gReCaptchaToken);
+  //     });
+  //   },
+  //   [executeRecaptcha]
+  // );
 
   const submitEnquiryForm = (gReCaptchaToken: any) => {
     const dbname = Math.random().toString(36).substring(2, 12);
@@ -43,7 +43,7 @@ const Contact: React.FC = () => {
         message: message,
         dbname: dbname,
         collections: 'Contact',
-        gRecaptchaToken: gReCaptchaToken,
+        // gRecaptchaToken: gReCaptchaToken,
       }),
     })
       .then((res) => res.json())
@@ -132,7 +132,7 @@ const Contact: React.FC = () => {
         </div>
       </div>
       <div className="glass basis-full w-full xl:basis-1/3 bg-bg shadow-md rounded-3xl p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
-        <form onSubmit={handleSumitForm}>
+        <form onSubmit={submitEnquiryForm}>
           <div className="relative mb-4">
             <label htmlFor="email" className="leading-7 text-sm text-gray-400">
               Name
