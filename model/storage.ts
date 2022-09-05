@@ -1,5 +1,4 @@
-const baseurl =
-  'https://firebasestorage.googleapis.com/v0/b/fiezport.appspot.com/o/';
+const baseurl = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_URL;
 const baseImgix = '';
 
 export const FirestoreFile = {

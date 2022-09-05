@@ -1,7 +1,9 @@
-import { main } from '@/model/mapdata';
-import { ImgixImage } from '@/model/storage';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { main } from '@/model/mapdata';
+import { ImgixImage } from '@/model/storage';
+
 import Typewriter from 'typewriter-effect';
 
 const Main: React.FC = () => {
@@ -43,7 +45,7 @@ const Main: React.FC = () => {
       <section className="z-20 h-1/2 md:h-screen font-semibold text-sm sm:text-2xl lg:text-2xl xl:text-4xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
         <div
           className="absolute flex flex-col items-start justify-center
-       glass rounded-3xl w-[70vw] md:w-auto md:left-auto left-[calc(0px+15vw)] bottom-[calc(0px+10vw)] md:m-0 p-4 md:p-10 md:static md:bottom-0"
+       glass2 rounded-3xl w-[70vw] md:w-auto md:left-auto left-[calc(0px+15vw)] bottom-[calc(0px+10vw)] md:m-0 p-4 md:p-10 md:static md:bottom-0"
         >
           <div className="flex flex-col">
             <div className="flex flex-row md:flex-col mb-2">

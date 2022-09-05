@@ -1,6 +1,7 @@
-import { FirestoreFile, ImgixImage } from '@/model/storage';
 import Image from 'next/image';
 import React, { useState } from 'react';
+
+import { FirestoreFile, ImgixImage } from '@/model/storage';
 import Button from '../global/Button';
 import Heading from '../global/Heading';
 
@@ -19,7 +20,7 @@ const About: React.FC = () => {
             onMouseLeave={() => srcSet(ImgixImage.profilepic_faceMeEff)}
             width={1000}
             height={1000}
-            alt="https://dummyimage.com/1000x1000"
+            alt=""
           />
         </div>
         <div className="glass p-10 md:p-16 w-full h-full md:w-2/3 grid grid-cols-2 items-start text-left text-base md:text-2xl rounded-3xl gap-10">

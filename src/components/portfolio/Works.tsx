@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+
 import Heading from '../global/Heading';
 import ProjectCard from '../global/ProjectCard';
 
@@ -14,7 +15,7 @@ const Works: React.FC = () => {
   }, []);
 
   return (
-    <div className="container px-5 pt-24 pb-10 mx-auto flex flex-col items-center justify-center">
+    <div className="container px-5 py-24 mx-auto flex flex-col items-center justify-center">
       <Heading className={'pb-16'} text={'Works'} />
       <div className="flex flex-wrap -m-4 items-center justify-evenly">
         {project.map(

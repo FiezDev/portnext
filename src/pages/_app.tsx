@@ -1,8 +1,10 @@
-import '@/styles/globals.css';
-import { ThemeProvider } from '@material-tailwind/react';
 import type { AppProps } from 'next/app';
-import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+
+import '@/styles/globals.css';
 import { NextPageWithLayout } from '../pageWithLayouts';
+
+import { ThemeProvider } from '@material-tailwind/react';
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 
 interface AppPropsWithLayout extends AppProps {
   Component: NextPageWithLayout;
@@ -10,10 +12,10 @@ interface AppPropsWithLayout extends AppProps {
 function App({ Component, pageProps }: AppPropsWithLayout) {
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout || ((page) => page);
-
+  const key: any = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
   return (
     <GoogleReCaptchaProvider
-      reCaptchaKey="6LfBo9IhAAAAAN8QoD9rxKKoZeIT26tagRNpcG2I"
+      reCaptchaKey={key}
       scriptProps={{
         async: false,
         defer: false,

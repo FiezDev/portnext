@@ -1,9 +1,11 @@
-import { menu } from '@/model/mapdata';
-import { useToggle } from '@/services/hooks';
-import { faBars, faClose } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+
+import { menu } from '@/model/mapdata';
+import { useToggle } from '@/services/hooks';
+
+import { faBars, faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useWindowSize } from 'react-use';
 
 const Nav: React.FC = () => {

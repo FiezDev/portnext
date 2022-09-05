@@ -21,6 +21,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
       const myHeaders = new Headers();
+      const secret = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY;
       myHeaders.append('Access-Control-Allow-Origin', '*');
       myHeaders.append('Access-Control-Allow-Credentials', 'true');
       myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
@@ -28,7 +29,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       fetch('https://www.google.com/recaptcha/api/siteverify', {
         method: 'POST',
         headers: myHeaders,
-        body: `secret=6LfBo9IhAAAAAEXlXtgABpwG-CFJz6en-cmtM5Ev&response=${req.body.gRecaptchaToken}`,
+        body: `secret=${secret}&response=${req.body.gRecaptchaToken}`,
       })
         .then((reCaptchaRes) => reCaptchaRes.json())
         .then(async (reCaptchaRes) => {
@@ -46,7 +47,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
             return res.status(200).json({
               status: 'success',
-              message: 'Enquiry submitted successfully',
+              message: 'Contact Saved Successfully',
             });
           } else {
             return res.status(200).json({
@@ -58,11 +59,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     } catch (err) {
       return res.status(405).json({
         status: 'failure',
-        message: 'Error submitting the enquiry form',
+        message: 'Error submitting the Contact form',
       });
     }
   } else {
-    res.status(405);
-    res.end();
+    return res.status(405).json({
+      status: 'failure',
+      message: 'Error submitting the Contact form',
+    });
   }
 }

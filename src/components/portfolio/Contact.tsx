@@ -1,16 +1,23 @@
-import { codeuse, infouse, siteuse } from '@/model/mapdata';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import React, { useCallback, useState } from 'react';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { codeuse, infouse, siteuse } from '@/model/mapdata';
 import Heading from '../global/Heading';
 
-const Contact: React.FC = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [notification, setNotification] = useState('');
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
+const Contact: React.FC = () => {
+  const [contact, setContact] = useState({
+    name: '',
+    email: '',
+    message: '',
+    reply: false,
+    date: Date.now(),
+  });
+  const [notification, setNotification] = useState('');
+  const [submit, setSubmit] = useState(false);
+  const [captcha, setCaptcha] = useState('');
   const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleSumitForm = useCallback(
@@ -22,38 +29,43 @@ const Contact: React.FC = () => {
       }
       executeRecaptcha('enquiryFormSubmit').then((gReCaptchaToken) => {
         console.log(gReCaptchaToken, 'response Google reCaptcha server');
-        submitEnquiryForm(gReCaptchaToken);
+        setSubmit(true);
+        setCaptcha(gReCaptchaToken);
       });
     },
     [executeRecaptcha]
   );
 
-  const submitEnquiryForm = (gReCaptchaToken: any) => {
-    fetch('/api/fireStoreSet', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        data: { name: name, email: email, message: message },
-        gRecaptchaToken: gReCaptchaToken,
-        collections: 'Contacts',
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res, 'response from backend');
-        if (res?.status === 'success') {
-          setNotification(res?.message);
-        } else {
-          setNotification(res?.message);
-        }
-      });
-  };
+  useEffect(() => {
+    if (submit && captcha) {
+      fetch('/api/fireStoreSet', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: contact,
+          gRecaptchaToken: captcha,
+          collections: 'Contacts',
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res, 'response from backend');
+          if (res?.status === 'success') {
+            setNotification(res?.message);
+            setSubmit(false);
+          } else {
+            setNotification(res?.message);
+            setSubmit(false);
+          }
+        });
+    }
+  }, [captcha, contact, submit]);
 
   return (
-    <section className="container w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 py-15 gap-4 text-xl">
+    <section className="container glass w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 xl:pl-5 xl:pr-[3.75rem] py-10 gap-4 text-xl">
       <div className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">
         <Heading className="pb-5" text={'Contact'} />
         <div className="text-left tracking-wide pb-3">
@@ -84,9 +96,11 @@ const Contact: React.FC = () => {
                 );
               })}
               <div>
-                <span>Site Use</span>
-                <span className="px-4">:</span>
-                <span className="inline-flex items-center gap-4">
+                <span className="flex flex-row flex-wrap items-center gap-4">
+                  <div>
+                    <span>Site Use</span>
+                    <span className="pl-4">:</span>
+                  </div>
                   {siteuse.map(({ id, url, icon, width, height }) => {
                     return (
                       <a
@@ -125,18 +139,24 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="rounded-3xlbasis-full w-full xl:basis-1/3 bg-bg shadow-md p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
+      <div className="round-3xl basis-full w-full xl:basis-1/3 bg-bg shadow-md p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
         <form onSubmit={handleSumitForm}>
           <div className="relative mb-4">
             <label
               htmlFor="email"
-              className="leading-7 text-sm text-gray-400 font-bold"
+              className="leading-7 text-base text-gray-400 font-bold"
             >
-              Name
+              Name*
             </label>
             <input
-              value={name}
-              onChange={(e) => setName(e?.target?.value)}
+              required
+              value={contact.name}
+              onChange={(e) =>
+                setContact((prevState) => ({
+                  ...prevState,
+                  name: e?.target?.value,
+                }))
+              }
               type="name"
               id="name"
               name="name"
@@ -147,13 +167,19 @@ const Contact: React.FC = () => {
           <div className="glass relative mb-4">
             <label
               htmlFor="email"
-              className="leading-7 text-sm text-gray-400 font-bold"
+              className="leading-7 text-base text-gray-400 font-bold"
             >
-              Email
+              Email*
             </label>
             <input
-              value={email}
-              onChange={(e) => setEmail(e?.target?.value)}
+              required
+              value={contact.email}
+              onChange={(e) =>
+                setContact((prevState) => ({
+                  ...prevState,
+                  email: e?.target?.value,
+                }))
+              }
               type="email"
               id="email"
               name="email"
@@ -164,15 +190,21 @@ const Contact: React.FC = () => {
           <div className="relative mb-4">
             <label
               htmlFor="message"
-              className="leading-7 text-sm text-gray-400 font-bold"
+              className="leading-7 text-base text-gray-400 font-bold"
             >
-              Message
+              Message*
             </label>
             <textarea
               rows={3}
+              required
               name="message"
-              value={message}
-              onChange={(e) => setMessage(e?.target?.value)}
+              value={contact.message}
+              onChange={(e) =>
+                setContact((prevState) => ({
+                  ...prevState,
+                  message: e?.target?.value,
+                }))
+              }
               placeholder="Please Enter Message"
               className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 h-32 text-base outline-none text-black py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
             ></textarea>
@@ -184,7 +216,13 @@ const Contact: React.FC = () => {
           >
             Submit
           </button>
-          {notification && <p>{notification}</p>}
+          {notification ? (
+            <p className="pt-3 text-center text-sm">{notification}</p>
+          ) : (
+            <p className="pt-3 text-left text-red-700 text-sm">
+              *** Please fill in all the required fields.
+            </p>
+          )}
         </form>
       </div>
     </section>

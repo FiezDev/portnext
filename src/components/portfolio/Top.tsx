@@ -1,8 +1,9 @@
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { faCodepen, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Switch } from '@material-tailwind/react';
-import Link from 'next/link';
-import { useState } from 'react';
 
 const Top = () => {
   const [lang, setLang] = useState();
