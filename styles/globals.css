@@ -303,3 +303,12 @@ a:hover {
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
 }
+
+.glass2 {
+  box-shadow: 1px 1px 40px 1px rgba(15, 76, 117, 0.5) inset;
+  -webkit-box-shadow: 1px 1px 40px 1px rgba(15, 76, 117, 0.5) inset;
+  -moz-box-shadow: 1px 1px 40px 1px rgba(15, 76, 117, 0.5) inset;
+  background: hsl(200, 100%, 6%, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}

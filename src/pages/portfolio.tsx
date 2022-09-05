@@ -22,7 +22,7 @@ const Portfolio: NextPageWithLayout = () => {
         <Works />
       </div>
       <div className="seembghi" id="contact">
-        <div className="glass">
+        <div className="glass2">
           <Contact />
         </div>
       </div>

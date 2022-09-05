@@ -1,6 +1,5 @@
 import { codeuse, infouse, siteuse } from '@/model/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axios from 'axios';
 import Image from 'next/image';
 import React, { useCallback, useState } from 'react';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
@@ -29,47 +28,44 @@ const Contact: React.FC = () => {
     [executeRecaptcha]
   );
 
-  const submitEnquiryForm = async (gReCaptchaToken: any) => {
-    const dbname = Math.random().toString(36).substring(2, 12);
-    const collections = 'Contacts';
-
-    const headers = {
-      Accept: 'application/json, text/plain, */*',
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true,
-    };
-    const data = { name: name, email: email, message: message };
-    await axios
-      .post('/api/fireStoreSet', data, {
-        headers: headers,
-      })
+  const submitEnquiryForm = (gReCaptchaToken: any) => {
+    fetch('/api/fireStoreSet', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: { name: name, email: email, message: message },
+        gRecaptchaToken: gReCaptchaToken,
+        collections: 'Contacts',
+      }),
+    })
+      .then((res) => res.json())
       .then((res) => {
-        const stat = res?.statusText;
         console.log(res, 'response from backend');
-        if (stat === 'success') {
-          setNotification(stat);
+        if (res?.status === 'success') {
+          setNotification(res?.message);
         } else {
-          setNotification(stat);
+          setNotification(res?.message);
         }
       });
   };
 
   return (
-    <section className="container w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 py-20 gap-4 text-xl">
-      <div className="basis-full xl:basis-2/3 text-center w-full">
+    <section className="container w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 py-15 gap-4 text-xl">
+      <div className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">
         <Heading className="pb-5" text={'Contact'} />
         <div className="text-left tracking-wide pb-3">
           Feel free to contact me for anything!!
         </div>
         <div className="text-left tracking-wide">
           Is there a job opportunity or a short-term project that you want to
-          hire me?
-          <br /> A desire for a collaborative project. Comment on my work, or
-          even just say HI!!. <br /> I will reply to you ASAP.
+          hire me? A desire for a collaborative project. Comment on my work, or
+          even just say HI !!. I will reply to you ASAP.
         </div>
         <div className="flex flex-col md:flex-row h-full text-base md:text-xl uppercase text-left">
-          <div className="basis-full xl:basis-1/2 text-left pt-20">
+          <div className="basis-full xl:basis-1/2 text-left pt-10">
             <ul className="flex flex-col  gap-3">
               {codeuse.map(({ id, url, icon, text }) => {
                 return (
@@ -114,8 +110,8 @@ const Contact: React.FC = () => {
               <span>Ittpol Vongapai Portfolio @ 2022</span>
             </ul>
           </div>
-          <div className="basis-full xl:basis-1/2 pt-20">
-            <ul className="flex flex-col normal-case gap-3">
+          <div className="basis-full xl:basis-1/2 pt-10">
+            <ul className="flex flex-col pl-[20%] normal-case gap-3">
               {infouse.map(({ id, icon, text, url }) => {
                 return (
                   <li key={id}>
@@ -129,10 +125,13 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="glass basis-full w-full xl:basis-1/3 bg-bg shadow-md rounded-3xl p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
+      <div className="rounded-3xlbasis-full w-full xl:basis-1/3 bg-bg shadow-md p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
         <form onSubmit={handleSumitForm}>
           <div className="relative mb-4">
-            <label htmlFor="email" className="leading-7 text-sm text-gray-400">
+            <label
+              htmlFor="email"
+              className="leading-7 text-sm text-gray-400 font-bold"
+            >
               Name
             </label>
             <input
@@ -141,11 +140,15 @@ const Contact: React.FC = () => {
               type="name"
               id="name"
               name="name"
+              placeholder="Name"
               className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
           </div>
-          <div className="relative mb-4">
-            <label htmlFor="email" className="leading-7 text-sm text-gray-400">
+          <div className="glass relative mb-4">
+            <label
+              htmlFor="email"
+              className="leading-7 text-sm text-gray-400 font-bold"
+            >
               Email
             </label>
             <input
@@ -154,13 +157,14 @@ const Contact: React.FC = () => {
               type="email"
               id="email"
               name="email"
+              placeholder="Email"
               className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
           </div>
           <div className="relative mb-4">
             <label
               htmlFor="message"
-              className="leading-7 text-sm text-gray-400"
+              className="leading-7 text-sm text-gray-400 font-bold"
             >
               Message
             </label>
@@ -169,14 +173,14 @@ const Contact: React.FC = () => {
               name="message"
               value={message}
               onChange={(e) => setMessage(e?.target?.value)}
-              placeholder="Message"
+              placeholder="Please Enter Message"
               className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 h-32 text-base outline-none text-black py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
             ></textarea>
           </div>
 
           <button
             type="submit"
-            className="text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg"
+            className="w-full text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg"
           >
             Submit
           </button>
