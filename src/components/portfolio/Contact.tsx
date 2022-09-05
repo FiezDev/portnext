@@ -132,52 +132,57 @@ const Contact: React.FC = () => {
         </div>
       </div>
       <div className="glass basis-full w-full xl:basis-1/3 bg-bg shadow-md rounded-3xl p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
-        <div className="relative mb-4">
-          <label htmlFor="email" className="leading-7 text-sm text-gray-400">
-            Name
-          </label>
-          <input
-            value={name}
-            onChange={(e) => setName(e?.target?.value)}
-            type="name"
-            id="name"
-            name="name"
-            className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-          />
-        </div>
-        <div className="relative mb-4">
-          <label htmlFor="email" className="leading-7 text-sm text-gray-400">
-            Email
-          </label>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e?.target?.value)}
-            type="email"
-            id="email"
-            name="email"
-            className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-          />
-        </div>
-        <div className="relative mb-4">
-          <label htmlFor="message" className="leading-7 text-sm text-gray-400">
-            Message
-          </label>
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e?.target?.value)}
-            id="message"
-            name="message"
-            className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 h-32 text-base outline-none text-gray-100 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
-          ></textarea>
-        </div>
+        <form onSubmit={handleSumitForm}>
+          <div className="relative mb-4">
+            <label htmlFor="email" className="leading-7 text-sm text-gray-400">
+              Name
+            </label>
+            <input
+              value={name}
+              onChange={(e) => setName(e?.target?.value)}
+              type="name"
+              id="name"
+              name="name"
+              className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+            />
+          </div>
+          <div className="relative mb-4">
+            <label htmlFor="email" className="leading-7 text-sm text-gray-400">
+              Email
+            </label>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e?.target?.value)}
+              type="email"
+              id="email"
+              name="email"
+              className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+            />
+          </div>
+          <div className="relative mb-4">
+            <label
+              htmlFor="message"
+              className="leading-7 text-sm text-gray-400"
+            >
+              Message
+            </label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e?.target?.value)}
+              id="message"
+              name="message"
+              className="w-full bg-light rounded border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900 h-32 text-base outline-none text-gray-100 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
+            ></textarea>
+          </div>
 
-        <button
-          onSubmit={handleSumitForm}
-          className="text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg"
-        >
-          Submit
-        </button>
-        {notification && <p>{notification}</p>}
+          <button
+            type="submit"
+            className="text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg"
+          >
+            Submit
+          </button>
+          {notification && <p>{notification}</p>}
+        </form>
       </div>
     </section>
   );
