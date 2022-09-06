@@ -5,6 +5,7 @@ import { codeuse, infouse, siteuse } from '@/model/mapdata';
 import Heading from '../global/Heading';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { DebounceInput } from 'react-debounce-input';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const Contact: React.FC = () => {
@@ -148,8 +149,10 @@ const Contact: React.FC = () => {
             >
               Name*
             </label>
-            <input
+            <DebounceInput
               required
+              element="input"
+              debounceTimeout={300}
               value={contact.name}
               onChange={(e) =>
                 setContact((prevState) => ({
@@ -161,7 +164,7 @@ const Contact: React.FC = () => {
               id="name"
               name="name"
               placeholder="Name"
-              className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-black py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
           </div>
           <div className="glass relative mb-4">
@@ -171,8 +174,10 @@ const Contact: React.FC = () => {
             >
               Email*
             </label>
-            <input
+            <DebounceInput
               required
+              element="input"
+              debounceTimeout={300}
               value={contact.email}
               onChange={(e) =>
                 setContact((prevState) => ({
@@ -184,7 +189,7 @@ const Contact: React.FC = () => {
               id="email"
               name="email"
               placeholder="Email"
-              className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-black py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
           </div>
           <div className="relative mb-4">
@@ -194,9 +199,12 @@ const Contact: React.FC = () => {
             >
               Message*
             </label>
-            <textarea
+
+            <DebounceInput
               rows={3}
               required
+              element="textarea"
+              debounceTimeout={300}
               name="message"
               value={contact.message}
               onChange={(e) =>
@@ -207,7 +215,7 @@ const Contact: React.FC = () => {
               }
               placeholder="Please Enter Message"
               className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 h-32 text-base outline-none text-black py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
-            ></textarea>
+            />
           </div>
 
           <button
