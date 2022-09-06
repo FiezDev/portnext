@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import React, { useState } from 'react';
 
-import { FirestoreFile, ImgixImage } from '@/model/storage';
+import { ImgixImage } from '@/model/storage';
 import Button from '../global/Button';
 import Heading from '../global/Heading';
 
@@ -42,7 +42,10 @@ const About: React.FC = () => {
             <br />
             <br />
             <br />
-            <a href={FirestoreFile.resumepdf} target="blank">
+            <a
+              href={'https://fiez.imgix.net/cv/ITTI_Resume_lowres.pdf'}
+              target="blank"
+            >
               <Button text={'Resume'} />
             </a>
           </p>
