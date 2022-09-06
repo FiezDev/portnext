@@ -39,7 +39,7 @@ export const ImgixImage = {
   //fit=crop?crop=bottom,right&min-w=300&h=1906
   profilepic_me2: `${baseImgix}profilepic/Me2.png`,
   profilepic_meabout: `${baseImgix}profilepic/meabout.jpg`,
-  profilepic_faceMe: `${baseImgix}profilepic/faceMe.jpg`,
+  profilepic_faceMe: `${baseImgix}profilepic/halfme.jpeg`,
   profilepic_faceMeEff: `${baseImgix}profilepic/faceMeEff.jpg`,
   profilepic_guy: `${baseImgix}profilepic/guy.jpg`,
   profilepic_devBg: `${baseImgix}profilepic/devBg.jpg`,
