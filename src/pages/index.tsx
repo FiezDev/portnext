@@ -24,38 +24,20 @@ const Index: NextPageWithLayout = (props: Props) => {
         </Link>
 
         <Link href="/work">
-          <div className="glass overflow-clip flex items-center justify-center">
-            <Image
-              src={ImgixImage.main_portfolio2}
-              layout="fill"
-              alt=""
-              width={480}
-              height={360}
-            />
+          <div className="relative w-full h-full glass overflow-clip flex items-center justify-center">
+            <Image src={ImgixImage.main_portfolio2} layout="fill" alt="" />
           </div>
         </Link>
 
         <Link href="/blog">
-          <div className="glass overflow-clip flex items-center justify-center">
-            <Image
-              src={ImgixImage.main_blog}
-              layout="fill"
-              alt=""
-              width={600}
-              height={405}
-            />
+          <div className="relative w-full h-full glass overflow-clip flex items-center justify-center">
+            <Image src={ImgixImage.main_blog} layout="fill" alt="" />
           </div>
         </Link>
 
         <Link href="/admin">
-          <div className="glass overflow-clip flex items-center justify-center">
-            <Image
-              src={ImgixImage.main_admin}
-              layout="fill"
-              alt=""
-              width={1535}
-              height={864}
-            />
+          <div className="relative w-full h-full glass overflow-clip flex items-center justify-center">
+            <Image src={ImgixImage.main_admin} layout="fill" alt="" />
           </div>
         </Link>
       </section>
