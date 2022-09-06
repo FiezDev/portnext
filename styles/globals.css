@@ -227,31 +227,10 @@ body {
   font-family: 'Titillium Web', -apple-system, BlinkMacSystemFont, Segoe UI,
     Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
     sans-serif;
-  color: white;
-  background: hsla(201, 24%, 14%, 1);
-
-  background: linear-gradient(
-    225deg,
-    hsla(201, 24%, 14%, 1) 0%,
-    hsla(0, 0%, 0%, 1) 50%,
-    hsla(201, 24%, 14%, 1) 100%
-  );
-
-  background: -moz-linear-gradient(
-    225deg,
-    hsla(201, 24%, 14%, 1) 0%,
-    hsla(0, 0%, 0%, 1) 50%,
-    hsla(201, 24%, 14%, 1) 100%
-  );
-
-  background: -webkit-linear-gradient(
-    225deg,
-    hsla(201, 24%, 14%, 1) 0%,
-    hsla(0, 0%, 0%, 1) 50%,
-    hsla(201, 24%, 14%, 1) 100%
-  );
-
-  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#1B262C", endColorstr="#000000", GradientType=1 );
+  color: #fff;
+  background-image: url(https://fiez.imgix.net/seemleesbg54x.jpg);
+  background-repeat: repeat;
+  background-size: 800px;
 }
 
 * {
@@ -280,7 +259,7 @@ a:hover {
 .seembghi {
   background-image: url(https://fiez.imgix.net/seemleesbg.png);
   background-repeat: repeat;
-  background-size: 400px;
+  background-size: 1200px;
 }
 
 .glow :hover {
