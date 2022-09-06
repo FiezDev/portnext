@@ -74,7 +74,7 @@ const ProjectCard = ({
           <h1 className="mt-2">
             {stack.map((item, index) => (
               <Chip
-                className="m-1 text-[9px] bg-normal"
+                className="m-1 text-[9px] text-white bg-head focus:outline-none hover:bg-blue-600"
                 key={index}
                 value={item}
                 variant="filled"

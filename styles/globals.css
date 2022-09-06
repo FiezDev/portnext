@@ -267,11 +267,13 @@ a:hover {
 }
 
 .textglow {
-  text-shadow: 0 0 5px hsl(204, 57%, 46%), 0 0 10px hsl(204, 57%, 41%);
+  text-shadow: 0 0 5px hsl(204, 57%, 46%), 0 0 10px hsl(204, 57%, 41%),
+    0 0 15px hsl(204, 57%, 36%);
 }
 
 .textglow2 {
-  text-shadow: 0 0 5px hsl(204, 77%, 26%), 0 0 10px hsl(204, 77%, 25%);
+  text-shadow: 0 0 5px hsl(204, 77%, 26%), 0 0 10px hsl(204, 77%, 21%),
+    0 0 15px hsl(204, 77%, 16%);
 }
 
 .glass {

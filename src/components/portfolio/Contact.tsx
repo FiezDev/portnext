@@ -66,7 +66,7 @@ const Contact: React.FC = () => {
   }, [captcha, contact, submit]);
 
   return (
-    <section className="container glass w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 xl:pl-5 xl:pr-[3.75rem] py-10 gap-4 text-xl">
+    <section className="container w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 xl:pl-5 xl:pr-[3.75rem] py-10 gap-4 text-xl">
       <div className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">
         <Heading className="pb-5" text={'Contact'} />
         <div className="text-left tracking-wide pb-3">
@@ -140,7 +140,7 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="round-3xl basis-full w-full xl:basis-1/3 bg-bg shadow-md p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
+      <div className="rounded-3xl basis-full w-full xl:basis-1/3 bg-bg shadow-md p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
         <form onSubmit={handleSumitForm}>
           <div className="relative mb-4">
             <label
@@ -220,7 +220,7 @@ const Contact: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg"
+            className="w-full text-white bg-head border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg"
           >
             Submit
           </button>

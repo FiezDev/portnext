@@ -1,7 +1,7 @@
 const def: ButtonProps = {
   text: 'Default',
   className:
-    'flex-shrink-0 text-white bg-head border-0 py-2 px-8 focus:outline-none hover:bg-normal rounded text-lg',
+    'w-full text-white bg-head border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg',
 };
 
 type ButtonProps = {
