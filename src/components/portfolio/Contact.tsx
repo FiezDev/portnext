@@ -21,6 +21,7 @@ const Contact: React.FC = () => {
   const [submit, setSubmit] = useState(false);
   const [captcha, setCaptcha] = useState('');
   const [showNoti, setShowNoti] = useState(false);
+  const [notiStat, setNotiStat] = useState('green');
   const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleSumitForm = useCallback(
@@ -39,9 +40,10 @@ const Contact: React.FC = () => {
     [executeRecaptcha]
   );
 
-  const handlenotification = (noti: string) => {
-    setShowNoti(true);
+  const handlenotification = (noti: string, status: string) => {
+    setNotiStat(status);
     setNotification(noti);
+    setShowNoti(true);
     setTimeout(() => {
       setShowNoti(false);
     }, 3000);
@@ -69,10 +71,10 @@ const Contact: React.FC = () => {
         .then((res) => {
           console.log(res, 'response from backend');
           if (res?.status === 'success') {
-            handlenotification(res?.message);
+            handlenotification(res?.message, res?.status);
             setSubmit(false);
           } else {
-            handlenotification(res?.message);
+            handlenotification(res?.message, res?.status);
             setSubmit(false);
           }
         });
@@ -242,7 +244,7 @@ const Contact: React.FC = () => {
             <div className="flex items-center justify-center h-[30px] pt-[30px] my-2">
               <Alert
                 className="animate-[sloshow_3s_ease-in-out] text-sm"
-                color="green"
+                color={notiStat === 'success' ? 'green' : 'red'}
               >
                 {notification}
               </Alert>
