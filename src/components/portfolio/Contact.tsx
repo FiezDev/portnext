@@ -89,7 +89,7 @@ const Contact: React.FC = () => {
         <div className="text-left tracking-wide">
           Is there a job opportunity or a short-term project that you want to
           hire me? A desire for a collaborative project. Comment on my work, or
-          even just say HI !!. I will reply to you ASAP.
+          even just say HI!! . I will reply to you as soon as possible.
         </div>
         <div className="flex flex-col md:flex-row h-full text-base md:text-xl uppercase text-left">
           <div className="basis-full xl:basis-1/2 text-left pt-10">
