@@ -5,6 +5,7 @@ import { codeuse, infouse, siteuse } from '@/model/mapdata';
 import Heading from '../global/Heading';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Alert } from '@material-tailwind/react';
 import { DebounceInput } from 'react-debounce-input';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
@@ -19,6 +20,7 @@ const Contact: React.FC = () => {
   const [notification, setNotification] = useState('');
   const [submit, setSubmit] = useState(false);
   const [captcha, setCaptcha] = useState('');
+  const [showNoti, setShowNoti] = useState(false);
   const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleSumitForm = useCallback(
@@ -37,6 +39,18 @@ const Contact: React.FC = () => {
     [executeRecaptcha]
   );
 
+  const handlenotification = (noti: string) => {
+    setShowNoti(true);
+    setNotification(noti);
+    setTimeout(() => {
+      setShowNoti(false);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    setShowNoti(false);
+  }, [contact.name, contact.email, contact.message]);
+
   useEffect(() => {
     if (submit && captcha) {
       fetch('/api/fireStoreSet', {
@@ -48,17 +62,17 @@ const Contact: React.FC = () => {
         body: JSON.stringify({
           data: contact,
           gRecaptchaToken: captcha,
-          collections: 'Contacts',
+          collections: process.env.NEXT_PUBLIC_FIRESTORE_CONTACT,
         }),
       })
         .then((res) => res.json())
         .then((res) => {
           console.log(res, 'response from backend');
           if (res?.status === 'success') {
-            setNotification(res?.message);
+            handlenotification(res?.message);
             setSubmit(false);
           } else {
-            setNotification(res?.message);
+            handlenotification(res?.message);
             setSubmit(false);
           }
         });
@@ -224,12 +238,21 @@ const Contact: React.FC = () => {
           >
             Submit
           </button>
-          {notification ? (
-            <p className="pt-3 text-center text-sm">{notification}</p>
+          {showNoti ? (
+            <div className="flex items-center justify-center h-[30px] pt-[30px] my-2">
+              <Alert
+                className="animate-[sloshow_3s_ease-in-out] text-sm"
+                color="green"
+              >
+                {notification}
+              </Alert>
+            </div>
           ) : (
-            <p className="pt-3 text-left text-red-700 text-sm">
-              *** Please fill in all the required fields.
-            </p>
+            <div className="flex items-center h-[30px] pt-[30px] my-2">
+              <p className="text-red-700 text-sm">
+                *** Please fill in all the required fields.
+              </p>
+            </div>
           )}
         </form>
       </div>

@@ -24,6 +24,13 @@ module.exports = withMT({
       black: '#000',
     },
     extend: {
+      keyframes: {
+        sloshow: {
+          '0%, 100%': { opacity: 0 },
+          '25%, 75%': { opacity: 1 },
+        },
+      },
+
       screens: {
         xs: '400px',
         ssm: '539px',
