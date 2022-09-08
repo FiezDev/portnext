@@ -8,8 +8,11 @@ import Typewriter from 'typewriter-effect';
 
 const Main: React.FC = () => {
   return (
-    <main className="md:container md:max-w-[1140px] p-0 md:px-5 mx-auto grid grid-cols-12 gap-0 md:gap-8 items-center justify-center">
-      <section className="z-10 h-screen col-span-3 md:col-span-2 flex pt-20 pl-1 sm:pl-2 md:p-0 items-start md:items-center justify-start md:justify-center bg-[#000] md:bg-transparent">
+    <section
+      id="main"
+      className="md:container md:max-w-[1140px] p-0 md:px-5 mx-auto grid grid-cols-12 gap-0 md:gap-8 items-center justify-center"
+    >
+      <nav className="z-10 h-screen col-span-3 md:col-span-2 flex pt-20 pl-1 sm:pl-2 md:p-0 items-start md:items-center justify-start md:justify-center bg-[#000] md:bg-transparent">
         <ul className="flex flex-col-reverse">
           {main.map(({ display, url }, index) => {
             return (
@@ -31,18 +34,18 @@ const Main: React.FC = () => {
             );
           })}
         </ul>
-      </section>
-      <section className="seembghi rounded-none h-screen w-full flex items-start md:items-end justify-center z-0 p-0 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head">
-        <div className="glass rounded-none h-screen w-full flex items-start md:items-end justify-center z-0 p-0 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head ">
+      </nav>
+      <figure className="seembghi rounded-none h-screen w-full flex items-start md:items-end justify-center z-0 p-0 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head">
+        <main className="glass rounded-none h-screen w-full flex items-start md:items-end justify-center z-0 p-0 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head ">
           <Image
             src={ImgixImage.profilepic_me}
             alt=""
             width={870}
             height={1906}
           />
-        </div>
-      </section>
-      <section className="z-20 h-1/2 md:h-screen font-semibold text-sm sm:text-2xl lg:text-2xl xl:text-4xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
+        </main>
+      </figure>
+      <figcaption className="z-20 h-1/2 md:h-screen font-semibold text-sm sm:text-2xl lg:text-2xl xl:text-4xl col-span-9 md:col-span-5 bg-head md:bg-transparent flex items-end md:items-center">
         <div
           className="absolute flex flex-col items-start justify-center
        glass2 rounded-3xl w-[70vw] md:w-auto md:left-auto left-[calc(0px+15vw)] bottom-[calc(0px+10vw)] md:m-0 p-4 md:p-10 md:static md:bottom-0"
@@ -76,8 +79,8 @@ const Main: React.FC = () => {
             <div>&quot;Passionate to make the remarkable thing&quot;</div>
           </h1>
         </div>
-      </section>
-    </main>
+      </figcaption>
+    </section>
   );
 };
 

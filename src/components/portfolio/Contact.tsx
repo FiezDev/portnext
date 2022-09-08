@@ -82,17 +82,20 @@ const Contact: React.FC = () => {
   }, [captcha, contact, submit]);
 
   return (
-    <section className="container w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 xl:pl-5 xl:pr-[3.75rem] py-10 gap-4 text-xl">
-      <div className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">
+    <section
+      id="contact"
+      className="container w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 xl:pl-5 xl:pr-[3.75rem] py-10 gap-4 text-xl"
+    >
+      <section className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">
         <Heading className="pb-5" text={'Contact'} />
-        <div className="text-left tracking-wide pb-3">
+        <p className="text-left tracking-wide pb-3">
           Feel free to contact me for anything!!
-        </div>
-        <div className="text-left tracking-wide">
+        </p>
+        <p className="text-left tracking-wide">
           Is there a job opportunity or a short-term project that you want to
           hire me? A desire for a collaborative project. Comment on my work, or
           even just say HI!! . I will reply to you as soon as possible.
-        </div>
+        </p>
         <div className="flex flex-col md:flex-row h-full text-base md:text-xl uppercase text-left">
           <div className="basis-full xl:basis-1/2 text-left pt-10">
             <ul className="flex flex-col  gap-3">
@@ -155,7 +158,7 @@ const Contact: React.FC = () => {
             </ul>
           </div>
         </div>
-      </div>
+      </section>
       <div className="rounded-3xl basis-full w-full xl:basis-1/3 bg-bg shadow-md p-8 flex flex-col md md:ml-auto mt-10 md:mt-0 relative z-10">
         <form onSubmit={handleSumitForm}>
           <div className="relative mb-4">

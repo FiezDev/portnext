@@ -15,9 +15,12 @@ const Works: React.FC = () => {
   }, []);
 
   return (
-    <div className="container px-5 py-24 mx-auto flex flex-col items-center justify-center">
+    <section
+      id="works"
+      className="container px-5 py-24 mx-auto flex flex-col items-center justify-center"
+    >
       <Heading className={'pb-16'} text={'Works'} />
-      <div className="flex flex-wrap -m-4 items-center justify-evenly">
+      <article className="flex flex-wrap -m-4 items-center justify-evenly">
         {project.map(
           ({
             projectID,
@@ -51,8 +54,8 @@ const Works: React.FC = () => {
             />
           )
         )}
-      </div>
-    </div>
+      </article>
+    </section>
   );
 };
 

@@ -14,19 +14,11 @@ const Portfolio: NextPageWithLayout = () => {
         <title>Ittipol Portfolio</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <div id="main">
-        <Main />
-      </div>
-      <div id="about">
-        <About />
-      </div>
-      <div id="skills">
-        <Skills />
-      </div>
-      <div id="works">
-        <Works />
-      </div>
-      <div className="seembghi" id="contact">
+      <Main />
+      <About />
+      <Skills />
+      <Works />
+      <div className="seembghi">
         <div className="glass">
           <Contact />
         </div>
