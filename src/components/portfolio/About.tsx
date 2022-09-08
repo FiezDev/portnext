@@ -25,8 +25,9 @@ const About: React.FC = () => {
         </div>
         <div className="glass p-10 md:p-16 w-full h-full md:w-2/3 grid grid-cols-2 items-start text-left text-base md:text-2xl rounded-3xl gap-10">
           <p className="col-span-2">
-            Self taught developer based in thailand. with 1+ year of experience.
-            Currently interested in reactJS,AI Generated Art and Frontend.
+            A self-taught developer based in Thailand. with 1+ year of
+            experience. I am currently interested in ReactJS,AI Generated Art,
+            and Frontend.
           </p>
           <p className="col-span-2 xs:col-span-1">
             <span className="text-normal">Favourite</span>
