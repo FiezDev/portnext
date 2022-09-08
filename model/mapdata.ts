@@ -231,31 +231,31 @@ export const menu = [
   {
     id: 1,
     display: 'Contact',
-    url: '/portfolio/contact',
+    url: '#contact',
     picurl: faAddressBook,
   },
   {
     id: 2,
     display: 'Work',
-    url: '/portfolio/works',
+    url: '#works',
     picurl: faLaptopFile,
   },
   {
     id: 3,
     display: 'Skill',
-    url: '/portfolio/skills',
+    url: '#skills',
     picurl: faUserGear,
   },
   {
     id: 4,
     display: 'About',
-    url: '/portfolio/about',
+    url: '#about',
     picurl: faAddressCard,
   },
   {
     id: 5,
     display: 'Home',
-    url: '/portfolio/main',
+    url: '#main',
     picurl: faHouseChimney,
   },
 ];
