@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 import Heading from '../global/Heading';
 import ProjectCard from '../global/ProjectCard';
 
