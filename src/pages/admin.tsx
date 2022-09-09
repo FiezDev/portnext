@@ -6,7 +6,6 @@ const Admin: NextPageWithLayout = () => {
   return (
     <section>
       <HeaderAdmin />
-      <main></main>
     </section>
   );
 };
