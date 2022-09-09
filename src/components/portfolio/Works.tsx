@@ -8,7 +8,7 @@ const Works: React.FC = () => {
   useEffect(() => {
     const colname = 'Projects';
     fetch(
-      `${process.env.NEXT_PUBLIC_BACKURL}api/fireStoreGetAll?colname=${colname}`
+      `https://nextbackend-fiezdev.vercel.app/api/fireStoreGetAll?colname=${colname}`
     )
       .then((res) => res.json())
       .then((data) => {
