@@ -55,7 +55,7 @@ const Contact: React.FC = () => {
 
   useEffect(() => {
     if (submit && captcha) {
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/fireStoreSet`, {
+      fetch('https://nextbackend-fiezdev.vercel.app/api/fireStoreSet', {
         method: 'POST',
         headers: {
           Accept: 'application/json, text/plain, */*',
