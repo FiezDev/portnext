@@ -1,9 +1,14 @@
 import AdminLayout from '@/layouts/layout.Admin';
-import WUC from '../components/global/Wuc';
+import { HeaderAdmin } from '../components/admin/HeaderAdmin';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
 const Admin: NextPageWithLayout = () => {
-  return <WUC linktext={''} backlink={''} />;
+  return (
+    <section>
+      <HeaderAdmin />
+      <main></main>
+    </section>
+  );
 };
 
 export default Admin;
