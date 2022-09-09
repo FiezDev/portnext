@@ -7,7 +7,10 @@ const Works: React.FC = () => {
   const [project, SetProject] = useState([]);
 
   useEffect(() => {
-    fetch('api/fireStoreGetAll')
+    const colname = 'Projects';
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}api/fireStoreGetAll?colname=${colname}`
+    )
       .then((res) => res.json())
       .then((data) => {
         SetProject(data);

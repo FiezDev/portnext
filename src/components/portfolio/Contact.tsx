@@ -55,7 +55,7 @@ const Contact: React.FC = () => {
 
   useEffect(() => {
     if (submit && captcha) {
-      fetch('/api/fireStoreSet', {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/fireStoreSet`, {
         method: 'POST',
         headers: {
           Accept: 'application/json, text/plain, */*',
