@@ -81,6 +81,11 @@ export enum REQ_TYPE {
   single,
 }
 
+export enum CONTACT_STATUS {
+  reply = 'reply',
+  nonreply = 'nonreply',
+}
+
 export enum PROJECT_TYPE {
   Work = 'Work',
   Mini = 'Mini',
