@@ -30,3 +30,13 @@ export type project = {
 };
 
 export type Projects = Array<project>;
+
+export type contact = {
+  name: string;
+  email: string;
+  message: string;
+  reply: string;
+  date: number;
+};
+
+export type Contacts = Array<contact>;
