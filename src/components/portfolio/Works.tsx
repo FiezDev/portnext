@@ -7,9 +7,7 @@ const Works: React.FC = () => {
 
   useEffect(() => {
     const colname = 'Projects';
-    fetch(
-      `${process.env.NEXT_PUBLIC_BACKURL}api/fireStoreGetAll?colname=${colname}`
-    )
+    fetch(`api/fireStoreGetAll?colname=${colname}`)
       .then((res) => res.json())
       .then((data) => {
         SetProject(data);
