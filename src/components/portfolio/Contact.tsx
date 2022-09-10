@@ -59,7 +59,7 @@ const Contact: React.FC = () => {
         method: 'POST',
         headers: {
           Accept: 'application/json, text/plain, */*',
-          'Content-Type': 'application/x-www-form-urlencoden',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           data: contact,
