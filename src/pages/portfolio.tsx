@@ -4,10 +4,15 @@ import Main from '@/components/portfolio/Main';
 import Skills from '@/components/portfolio/Skills';
 import Works from '@/components/portfolio/Works';
 import PortfolioLayout from '@/layouts/layout.Portfolio';
+import { project } from '@/model/object';
+import axios from 'axios';
+import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
-const Portfolio: NextPageWithLayout = () => {
+const Portfolio: NextPageWithLayout<
+  InferGetStaticPropsType<typeof getStaticProps>
+> = ({ project }) => {
   return (
     <>
       <Head>
@@ -17,7 +22,11 @@ const Portfolio: NextPageWithLayout = () => {
       <Main />
       <About />
       <Skills />
-      <Works />
+      <Works
+        props={{
+          project: project,
+        }}
+      />
       <div className="seembghi">
         <div className="glass">
           <Contact />
@@ -28,6 +37,20 @@ const Portfolio: NextPageWithLayout = () => {
 };
 
 export default Portfolio;
+
+export async function getStaticProps() {
+  const colname = 'Projects';
+  const res = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKURL}api/fireStoreGetAll?colname=${colname}`
+  );
+
+  const data: Array<project> = await res.data;
+  return {
+    props: {
+      project: data,
+    },
+  };
+}
 
 Portfolio.getLayout = (page) => {
   return <PortfolioLayout>{page}</PortfolioLayout>;

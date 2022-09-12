@@ -1,21 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import Heading from '../global/Heading';
 import ProjectCard from '../global/ProjectCard';
 
-import axios from 'axios';
+import { project } from '@/model/object';
 
-const Works: React.FC = () => {
-  const [project, SetProject] = useState([]);
+type props = { props: { project: Array<project> } };
 
-  useEffect(() => {
-    const colname = 'Projects';
-    axios
-      .get(
-        `${process.env.NEXT_PUBLIC_BACKURL}api/fireStoreGetAll?colname=${colname}`
-      )
-      .then((res) => SetProject(res.data));
-  }, []);
+const Works = (props: props) => {
+  const [project, SetProject] = useState(props.props.project);
 
   return (
     <section
