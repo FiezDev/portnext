@@ -6,6 +6,7 @@ import Heading from '../global/Heading';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Alert } from '@material-tailwind/react';
+import axios from 'axios';
 import { DebounceInput } from 'react-debounce-input';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
@@ -55,29 +56,31 @@ const Contact: React.FC = () => {
 
   useEffect(() => {
     if (submit && captcha) {
-      fetch(`${process.env.NEXT_PUBLIC_BACKURL}api/fireStoreSet`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json, text/plain, */*',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: contact,
-          gRecaptchaToken: captcha,
-          collections: process.env.NEXT_PUBLIC_FIRESTORE_CONTACT,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res, 'response from backend');
-          if (res?.status === 'success') {
-            handlenotification(res?.message, res?.status);
+      axios
+        .post(
+          `${process.env.NEXT_PUBLIC_BACKURL}api/fireStoreSet`,
+          {
+            data: contact,
+            gRecaptchaToken: captcha,
+            collections: process.env.NEXT_PUBLIC_FIRESTORE_CONTACT,
+          },
+          {
+            headers: {
+              Accept: 'application/json, text/plain, */*',
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          if (response?.data.status === 'success') {
+            handlenotification(response?.data.message, response?.data.status);
             setSubmit(false);
           } else {
-            handlenotification(res?.message, res?.status);
+            handlenotification(response?.data.message, response?.data.status);
             setSubmit(false);
           }
-        });
+        })
+        .catch((error) => console.log(error));
     }
   }, [captcha, contact, submit]);
 
