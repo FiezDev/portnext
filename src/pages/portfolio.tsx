@@ -1,3 +1,6 @@
+import { InferGetStaticPropsType } from 'next';
+import Head from 'next/head';
+
 import About from '@/components/portfolio/About';
 import Contact from '@/components/portfolio/Contact';
 import Main from '@/components/portfolio/Main';
@@ -5,10 +8,9 @@ import Skills from '@/components/portfolio/Skills';
 import Works from '@/components/portfolio/Works';
 import PortfolioLayout from '@/layouts/layout.Portfolio';
 import { project } from '@/model/object';
-import axios from 'axios';
-import { InferGetStaticPropsType } from 'next';
-import Head from 'next/head';
 import { NextPageWithLayout } from '../pageWithLayouts';
+
+import axios from 'axios';
 
 const Portfolio: NextPageWithLayout<
   InferGetStaticPropsType<typeof getStaticProps>

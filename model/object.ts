@@ -40,3 +40,17 @@ export type contact = {
 };
 
 export type Contacts = Array<contact>;
+
+export type chatroom = {
+  roomname: string;
+  Name: string;
+  Message: [
+    {
+      side: string;
+      text: string;
+      time: number;
+    }
+  ];
+  status: string;
+  date: number;
+};

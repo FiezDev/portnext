@@ -60,6 +60,8 @@ export const ImgixImage = {
   main_blog: `${baseImgix}blog.jpeg`,
   main_admin: `${baseImgix}admin.jpeg`,
   main_blueline: `${baseImgix}BlueLine.png`,
+  main_chat: `${baseImgix}chat.svg`,
+  main_send: `${baseImgix}send.png`,
   //error
   error_404: `${baseImgix}error/404.jpeg`,
   error_wuc: `${baseImgix}error/WUC.png`,
