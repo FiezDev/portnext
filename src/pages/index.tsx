@@ -40,7 +40,7 @@ const Index: NextPageWithLayout = (props: Props) => {
           </div>
         </Link>
 
-        <Link href="/admin">
+        <Link href="/admin/dashboard">
           <div className="relative w-full h-full glass overflow-clip flex items-center justify-center">
             <Image src={ImgixImage.main_admin} layout="fill" alt="" />
           </div>

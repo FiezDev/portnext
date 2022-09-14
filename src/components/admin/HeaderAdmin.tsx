@@ -1,48 +1,18 @@
-import {
-  Tab,
-  TabPanel,
-  Tabs,
-  TabsBody,
-  TabsHeader,
-} from '@material-tailwind/react';
-
 export const HeaderAdmin = () => {
-  const data = [
-    {
-      label: 'Contact',
-      value: 'contact',
-      desc: `It really matters and then like it really doesn't matter.
-        What matters is the people who are sparked by it. And the people 
-        who are like offended by it, it doesn't matter.`,
-    },
-    {
-      label: 'Project',
-      value: 'Project',
-      desc: `Because it's about motivating the doers. Because I'm here
-        to follow my dreams and inspire other people to follow their dreams, too.`,
-    },
-  ];
   return (
-    <>
-      <header className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center text-gray-600 body-font">
-        <Tabs className="w-full" value="html">
-          <TabsHeader>
-            {data.map(({ label, value }) => (
-              <Tab key={value} value={value}>
-                {label}
-              </Tab>
-            ))}
-          </TabsHeader>
-          <TabsBody>
-            {data.map(({ value, desc }) => (
-              <TabPanel key={value} value={value}>
-                {desc}
-              </TabPanel>
-            ))}
-          </TabsBody>
-        </Tabs>
-      </header>
-      \
-    </>
+    <div className="h-full flex p-5 flex-col md:flex-row items-center bg-normal justify-between">
+      <a className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+        <span className="ml-3 text-base">FIEZ ADMIN</span>
+      </a>
+      <nav className="flex flex-wrap items-center text-base justify-center text-black">
+        <a className="mr-5 text-black">First Link</a>
+        <a className="mr-5 text-black">Second Link</a>
+        <a className="mr-5 text-black">Third Link</a>
+        <a className="mr-5 text-black">Fourth Link</a>
+      </nav>
+      <button className="inline-flex items-center bg-head border-0 py-1 px-3 focus:outline-none hover:bg-normal rounded text-base ">
+        Button
+      </button>
+    </div>
   );
 };

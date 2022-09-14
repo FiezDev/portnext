@@ -1,4 +1,4 @@
-import Nav from '@/components/portfolio/Sidenav';
+import Nav from '@/src/components/portfolio/Sidenav_portfolio';
 import LiveChat from '../components/global/Livechat';
 
 export interface IPortfolioLayout
