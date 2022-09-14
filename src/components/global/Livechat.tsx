@@ -6,11 +6,6 @@ import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { DebounceInput } from 'react-debounce-input';
 
-const def: LiveChatProps = {
-  linktext: 'Go Back',
-  backlink: '/',
-};
-
 type LiveChatProps = {
   linktext: string;
   backlink: string;
@@ -37,7 +32,7 @@ const LiveChat = () => {
       ) : (
         <section className="fixed right-0 bottom-[calc(0px+90px)] z-30">
           <main className="glass w-[350px] h-[500px] rounded-bl-2xl rounded-tl-2xl text-white flex flex-col p-4 pt-0 border-2 border-r-0 ">
-            <section className="flex flex-row">
+            <section className="flex flex-row mb-2">
               <header className="w-full pt-4 pb-2 border-b-2">
                 Live Chat - Admin@fiez.dev
               </header>
