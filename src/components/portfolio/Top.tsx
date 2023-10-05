@@ -10,8 +10,8 @@ const Top = () => {
   return (
     <header className="fixed z-50 top-0 w-full">
       <div className="container flex items-center justify-end mx-auto text-xs sm:text-base xl:text-xl uppercase gap-6 pt-10 px-5">
-        <Switch defaultChecked />
-        <Switch defaultChecked />
+        <Switch defaultChecked crossOrigin="anonymous" />
+        <Switch defaultChecked crossOrigin="anonymous" />
         <Link
           className="w-[13px] sm:w-[20px] md:w-[40px] flex content-center text-white"
           href="https://github.com/FiezDev"
