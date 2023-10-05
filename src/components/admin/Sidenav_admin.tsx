@@ -32,7 +32,7 @@ const Sidenav_admin: React.FC = () => {
                 key={id}
                 className="hover:text-white text-center text-white block uppercase tracking-wider h-[100px]"
               >
-                <Link href={url}>
+                <Link href={url} legacyBehavior>
                   <li className=" flex items-center justify-center p-[10px] hover:bg-normal hover:duration-500 h-[80px] w-[200px] ">
                     <span className="hover:scale-x-100">{display}</span>
                   </li>

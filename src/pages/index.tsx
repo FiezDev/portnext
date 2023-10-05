@@ -17,7 +17,7 @@ const Index: NextPageWithLayout = (props: Props) => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <section className="container mx-auto h-[calc(100vw)] md:h-screen grid grid-cols-2 grid-rows-2 md:grid-rows-3 gap-5">
-        <Link href="/portfolio">
+        <Link href="/portfolio" legacyBehavior>
           <div className="glass row-span-1 md:row-span-full items-start md:items-end lg:items-start overflow-clip flex justify-center ">
             <Image
               src={ImgixImage.profilepic_me}
@@ -28,19 +28,19 @@ const Index: NextPageWithLayout = (props: Props) => {
           </div>
         </Link>
 
-        <Link href="/work">
+        <Link href="/work" legacyBehavior>
           <div className="relative w-full h-full glass overflow-clip flex items-center justify-center">
             <Image src={ImgixImage.main_portfolio2} layout="fill" alt="" />
           </div>
         </Link>
 
-        <Link href="/blog">
+        <Link href="/blog" legacyBehavior>
           <div className="relative w-full h-full glass overflow-clip flex items-center justify-center">
             <Image src={ImgixImage.main_blog} layout="fill" alt="" />
           </div>
         </Link>
 
-        <Link href="/admin/dashboard">
+        <Link href="/admin/dashboard" legacyBehavior>
           <div className="relative w-full h-full glass overflow-clip flex items-center justify-center">
             <Image src={ImgixImage.main_admin} layout="fill" alt="" />
           </div>

@@ -20,7 +20,7 @@ const Main: React.FC = () => {
                 key={index}
                 className="textglow last:hidden first-letter:text-normal first-letter:textglow2 hover:text-white font-bold text-sm sm:text-2xl lg:text-3xl xl:text-4xl first-letter:text-2xl sm:first-letter:text-4xl lg:first-letter:text-5xl xl:first-letter:text-6xl text-white block uppercase tracking-wider"
               >
-                <Link href={url}>
+                <Link href={url} legacyBehavior>
                   <li
                     className="relative p-[10px] duration-500
               hover:scale-x-110 hover:duration-500

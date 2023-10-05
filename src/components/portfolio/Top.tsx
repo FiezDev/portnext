@@ -17,7 +17,7 @@ const Top = () => {
           href="https://github.com/FiezDev"
           target="_blank"
           rel="noopener noreferrer"
-        >
+          legacyBehavior>
           <FontAwesomeIcon icon={faGithub} className="gap-4" />
         </Link>
         <Link
@@ -25,7 +25,7 @@ const Top = () => {
           href="https://codepen.io/fiezdev"
           target="_blank"
           rel="noopener noreferrer"
-        >
+          legacyBehavior>
           <FontAwesomeIcon icon={faCodepen} />
         </Link>
       </div>
