@@ -1,7 +1,7 @@
 import IndexLayout from '@/layouts/layout.Index';
 import { ImgixImage } from '@/model/storage';
 import Head from 'next/head';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 import Link from 'next/link';
 import { NextPageWithLayout } from '../pageWithLayouts';
 

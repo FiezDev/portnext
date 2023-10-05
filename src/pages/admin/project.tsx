@@ -1,5 +1,5 @@
 import { ImgixImage } from '@/model/storage';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 
 import AdminLayout from '@/src/layouts/layout.Admin';
 import { NextPageWithLayout } from '@/src/pageWithLayouts';

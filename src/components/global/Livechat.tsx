@@ -2,7 +2,7 @@ import { chatroom } from '@/model/object';
 import { ImgixImage } from '@/model/storage';
 import { faClose, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 import { useRef, useState } from 'react';
 import { DebounceInput } from 'react-debounce-input';
 
