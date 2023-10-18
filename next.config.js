@@ -15,6 +15,9 @@ const nextConfig = {
       },
     ];
   },
+  experimental: {
+    appDir: true,
+  },
   distDir: 'nextjs',
   reactStrictMode: true,
   swcMinify: true,
