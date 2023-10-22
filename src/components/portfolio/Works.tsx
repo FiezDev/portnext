@@ -39,6 +39,7 @@ const Works = (props: props) => {
               projectID={projectID}
               projectType={projectType}
               projectName={projectName}
+              projectIntro={projectIntro}
               projectDesc={projectDesc}
               projectPic={{
                 picurl: { height, pic, width },

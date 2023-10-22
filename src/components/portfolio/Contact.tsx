@@ -144,7 +144,7 @@ const Contact: React.FC = () => {
                   })}
                 </span>
               </div>
-              <span>Ittpol Vongapai Portfolio @ 2022</span>
+              <span>FiezDev Portfolio @ 2023</span>
             </ul>
           </div>
           <div className="basis-full xl:basis-1/2 pt-10">
@@ -166,7 +166,7 @@ const Contact: React.FC = () => {
         <form onSubmit={handleSumitForm}>
           <div className="relative mb-4">
             <label
-              htmlFor="email"
+              htmlFor="name"
               className="leading-7 text-base text-gray-400 font-bold"
             >
               Name*
@@ -183,7 +183,7 @@ const Contact: React.FC = () => {
                 }))
               }
               type="name"
-              id="name"
+              id="name" // Make sure this matches the "for" attribute in the label
               name="name"
               placeholder="Name"
               className="form-control w-full bg-light rounded border border-bg focus:border-blue-500 focus:ring-2 focus:ring-blue-900 text-base outline-none text-black py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
@@ -216,7 +216,7 @@ const Contact: React.FC = () => {
           </div>
           <div className="relative mb-4">
             <label
-              htmlFor="message"
+              htmlFor="content"
               className="leading-7 text-base text-gray-400 font-bold"
             >
               Message*
@@ -227,7 +227,7 @@ const Contact: React.FC = () => {
               required
               element="textarea"
               debounceTimeout={300}
-              name="message"
+              name="content"
               value={contact.message}
               onChange={(e) =>
                 setContact((prevState) => ({

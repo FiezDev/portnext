@@ -20,6 +20,8 @@ const ProjectCard = ({
   status,
   stack,
 }: project) => {
+  console.log('projectName:', projectName); // Debugging log
+  console.log('projectIntro:', projectIntro); //
   return (
     <div className="seembg w-[90%] mb-5">
       <div
@@ -70,6 +72,15 @@ const ProjectCard = ({
             <span className="text-white antialiased text-lg ">
               {projectName}
             </span>
+
+            {projectName != projectIntro ? (
+              <>
+                <br />
+                <span className="text-white antialiased text-lg ">
+                  {projectIntro}
+                </span>
+              </>
+            ) : null}
           </h1>
           <h1 className="mt-2">
             {stack.map((item, index) => (

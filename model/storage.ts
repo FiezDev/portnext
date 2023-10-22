@@ -17,6 +17,8 @@ export const ImgixImage = {
   cv_resumepdf: `${baseImgix}cv/ITTI_Resume.pdf`,
   cv_resumepdfhi: `${baseImgix}cv/ITTI_Resume_hires.pdf`,
   cv_resumejpg: `${baseImgix}cv/ITTI_Resume.jpg`,
+  resumepdf: `${baseImgix}cv/resume.pdf`,
+
   //icon
   icon_close: `${baseImgix}icon/close.svg`,
   icon_ham: `${baseImgix}icon/ham.svg`,
@@ -35,6 +37,11 @@ export const ImgixImage = {
   icon_firebase: `${baseImgix}icon/firebase.svg`,
   icon_vercel: `${baseImgix}icon/vercel.svg`,
   icon_nextjs: `${baseImgix}icon/next.svg`,
+  icon_python: `${baseImgix}icon/python.svg`,
+  icon_django: `${baseImgix}icon/django.svg`,
+  icon_jquery: `${baseImgix}icon/jquery.svg`,
+  icon_gcp: `${baseImgix}icon/gcp.svg`,
+
   //profilepic
   profilepic_me: `${baseImgix}profilepic/newMe.png?w=870&h=1906&auto=undefined%2Cenhance%2Ccompress&fit=crop&crop=focalpoint&fp-x=0.37&fp-y=0.15&fp-z=1`,
   //fit=crop?crop=bottom,right&min-w=300&h=1906

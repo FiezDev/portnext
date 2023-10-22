@@ -21,6 +21,7 @@ const Portfolio: NextPageWithLayout<
         <title>Ittipol Portfolio</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
+      {/* <Top /> */}
       <Main />
       <About />
       <Skills />
@@ -43,7 +44,7 @@ export default Portfolio;
 export async function getStaticProps() {
   const colname = 'Projects';
   const res = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKURL}api/fireStoreGetAll?colname=${colname}`
+    `https://nextbackend-fiezdev.vercel.app/api/fireStoreGetAll?colname=${colname}`
   );
 
   const data: Array<project> = await res.data;
