@@ -30,10 +30,8 @@ const Portfolio: NextPageWithLayout<
           project: project,
         }}
       />
-      <div className="seembghi">
-        <div className="glass">
-          <Contact />
-        </div>
+      <div className="glass">
+        <Contact />
       </div>
     </>
   );

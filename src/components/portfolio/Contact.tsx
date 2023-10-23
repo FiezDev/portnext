@@ -91,13 +91,11 @@ const Contact: React.FC = () => {
     >
       <section className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">
         <Heading className="pb-5" text={'Contact'} />
-        <p className="text-left tracking-wide pb-3">
-          Feel free to contact me for anything!!
-        </p>
         <p className="text-left tracking-wide">
-          Is there a job opportunity or a short-term project that you want to
-          hire me? A desire for a collaborative project. Comment on my work, or
-          even just say HI!! . I will reply to you as soon as possible.
+          If you&apos;re interested in hiring me for a job or a short-term
+          project, looking for a collaboration, or simply want to share your
+          thoughts on my work, feel free to reach out. I&apos;ll get back to you
+          as promptly as I can.
         </p>
         <div className="flex flex-col md:flex-row h-full text-base md:text-xl uppercase text-left">
           <div className="basis-full xl:basis-1/2 text-left pt-10">

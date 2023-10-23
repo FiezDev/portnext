@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Heading from '../global/Heading';
 import ProjectCard from '../global/ProjectCard';
@@ -9,6 +9,10 @@ type props = { props: { project: Array<project> } };
 
 const Works = (props: props) => {
   const [project, SetProject] = useState(props.props.project);
+
+  useEffect(() => {
+    SetProject([...props.props.project].reverse());
+  }, [props.props.project]);
 
   return (
     <section

@@ -35,7 +35,7 @@ const Main: React.FC = () => {
           })}
         </ul>
       </nav>
-      <figure className="seembghi rounded-none h-screen w-full flex items-start md:items-end justify-center z-0 p-0 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head">
+      <figure className="seembgblur rounded-none h-screen w-full flex items-start md:items-end justify-center z-0 p-0 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head">
         <main className="glass rounded-none h-screen w-full flex items-start md:items-end justify-center z-0 p-0 pb-0 col-span-9 md:col-span-5 overflow-hidden bg-head ">
           <Image
             src={ImgixImage.profilepic_me}
