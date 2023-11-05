@@ -47,7 +47,7 @@ const About: React.FC = () => {
             <br />
             <br />
             <br />
-            <a href={'https://fiez.imgix.net/cv/resume.pdf'} target="blank">
+            <a href={'https://fiez.imgix.net/cv/resume_com.pdf'} target="blank">
               <Button text={'Resume'} />
             </a>
           </p>

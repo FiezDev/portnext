@@ -18,6 +18,7 @@ export const ImgixImage = {
   cv_resumepdfhi: `${baseImgix}cv/ITTI_Resume_hires.pdf`,
   cv_resumejpg: `${baseImgix}cv/ITTI_Resume.jpg`,
   resumepdf: `${baseImgix}cv/resume.pdf`,
+  resumecompdf: `${baseImgix}cv/resume_com.pdf`,
 
   //icon
   icon_close: `${baseImgix}icon/close.svg`,
