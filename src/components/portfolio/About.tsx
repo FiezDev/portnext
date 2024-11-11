@@ -47,8 +47,11 @@ const About: React.FC = () => {
             <br />
             <br />
             <br />
-            <a href={'https://fiez.imgix.net/cv/resume_com.pdf'} target="blank">
-              <Button text={'Resume'} />
+            <a
+              href={'https://fiez.imgix.net/cv/ittipol_cv_v0.pdf'}
+              target="blank"
+            >
+              <Button text={'CV'} />
             </a>
           </p>
         </article>

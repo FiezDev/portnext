@@ -142,7 +142,7 @@ const Contact: React.FC = () => {
                   })}
                 </span>
               </div>
-              <span>FiezDev Portfolio @ 2023</span>
+              <span>FiezDev Portfolio @ 2022 - 2024</span>
             </ul>
           </div>
           <div className="basis-full xl:basis-1/2 pt-10">

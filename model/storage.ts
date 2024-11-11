@@ -14,9 +14,8 @@ export const ImgixImage = {
   bg4k: `${baseImgix}4kbg.jpeg`,
   //bg
   //resume
-  cv_resumepdf: `${baseImgix}cv/ITTI_Resume.pdf`,
-  cv_resumepdfhi: `${baseImgix}cv/ITTI_Resume_hires.pdf`,
-  cv_resumejpg: `${baseImgix}cv/ITTI_Resume.jpg`,
+  resume_pdf: `${baseImgix}cv/ITTI_Resume.pdf`,
+  cv_pdf: `${baseImgix}cv/ittipol_cv_v0.pdf`,
   resumepdf: `${baseImgix}cv/resume.pdf`,
   resumecompdf: `${baseImgix}cv/resume_com.pdf`,
 
