@@ -1,4 +1,4 @@
-import { ImgixImage } from '@/model/storage';
+import { ImgixImage } from '@/src/constants/storage';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -9,8 +9,6 @@ import { NextPageWithLayout } from '../pageWithLayouts';
 type Props = {};
 
 const e404: NextPageWithLayout = (props: Props) => {
-  // const { locale } = useRouter();
-
   return (
     <>
       <Head>

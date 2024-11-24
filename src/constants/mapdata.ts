@@ -111,6 +111,7 @@ export const infouse = [
     url: 'https://www.fiez.dev/portfolio',
   },
 ];
+
 //skills
 export const icon = [
   {

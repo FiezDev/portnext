@@ -7,7 +7,7 @@ import Main from '@/components/portfolio/Main';
 import Skills from '@/components/portfolio/Skills';
 import Works from '@/components/portfolio/Works';
 import PortfolioLayout from '@/layouts/layout.Portfolio';
-import { project } from '@/model/object';
+import { project } from '@/src/types/object';
 import { NextPageWithLayout } from '../pageWithLayouts';
 
 import axios from 'axios';

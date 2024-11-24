@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { menu } from '@/model/mapdata';
-import { useToggle } from '@/services/hooks';
+import { menu } from '@/src/constants/mapdata';
+import { useToggle } from '@/src/hooks/common';
 
 import { faBars, faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useWindowSize } from 'react-use';
 
-const Nav: React.FC = () => {
+const Nav = () => {
   const { width, height } = useWindowSize();
   const [showSidebar, setShowSidebar] = useToggle();
   const [isNavVisible, setIsNavVisible] = useState(false);
@@ -35,19 +35,11 @@ const Nav: React.FC = () => {
     <>
       {isNavVisible && (
         <>
-          {showSidebar ? (
-            <FontAwesomeIcon
-              className="flex w-[25px] sm:w-[35px] lg:w-[40px] z-[70] items-center fixed left-3 top-4 sm:left-8 sm:top-7 duration-500"
-              onClick={setShowSidebar}
-              icon={faClose}
-            />
-          ) : (
-            <FontAwesomeIcon
-              className="flex w-[25px] sm:w-[35px] lg:w-[40px] z-[70] items-center fixed left-3 top-4 sm:left-8 sm:top-7 duration-500"
-              onClick={setShowSidebar}
-              icon={faBars}
-            />
-          )}
+          <FontAwesomeIcon
+            className="flex w-[25px] sm:w-[35px] lg:w-[40px] z-[70] items-center fixed left-3 top-4 sm:left-8 sm:top-7 duration-500"
+            onClick={setShowSidebar}
+            icon={showSidebar ? faClose : faBars}
+          />
           <nav className="top-0 text-white fixed h-screen z-30 lg:w-[200px] sm:w-[100px] -left-[50px] lg:-left-[200px] sm:-left-[100px]">
             <div
               className={`bg-black z-20 fixed pt-40  h-screen ease-in-out duration-300

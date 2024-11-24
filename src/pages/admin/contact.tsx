@@ -1,4 +1,4 @@
-import { ImgixImage } from '@/model/storage';
+import { ImgixImage } from '@/src/constants/storage';
 import Image from 'next/image';
 
 import AdminLayout from '@/src/layouts/layout.Admin';

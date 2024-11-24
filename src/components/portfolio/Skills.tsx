@@ -1,8 +1,8 @@
-import { coreicon } from '@/model/mapdata';
+import { coreicon } from '@/src/constants/mapdata';
 import Heading from '../global/Heading';
 import StackIcon from '../global/StackIcon';
 
-const Skills: React.FC = () => {
+const Skills = () => {
   return (
     <section
       id="skills"

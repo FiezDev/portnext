@@ -1,4 +1,4 @@
-import { project } from '@/model/object';
+import { project } from '@/src/types/object';
 import { Chip } from '@material-tailwind/react';
 import Image from 'next/image';
 import { Carousel } from 'react-responsive-carousel';

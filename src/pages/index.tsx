@@ -1,5 +1,5 @@
 import IndexLayout from '@/layouts/layout.Index';
-import { ImgixImage } from '@/model/storage';
+import { ImgixImage } from '@/src/constants/storage';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,8 +8,6 @@ import { NextPageWithLayout } from '../pageWithLayouts';
 type Props = {};
 
 const Index: NextPageWithLayout = (props: Props) => {
-  // const { locale } = useRouter();
-
   return (
     <div className="absolute top-1/2 left-0 w-full -mt-[calc(100vw)/2] md:static md:mt-0 md:h-auto">
       <Head>

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Heading from '../global/Heading';
 import ProjectCard from '../global/ProjectCard';
 
-import { project } from '@/model/object';
+import { project } from '@/src/types/object';
 
 type props = { props: { project: Array<project> } };
 
