@@ -7,7 +7,6 @@ import Heading from '../global/Heading';
 
 const FAVORITES = ['Blue', 'Cat', 'Basketball', 'Motorcycle', 'Mobile MOBA'];
 const LOCATION = 'Samutprakarn, Thailand';
-const CV_LINK = 'https://fiez.imgix.net/cv/ittipol_cv_v0.pdf';
 
 const About = () => {
   const [src, setSrc] = useState<string>(ImgixImage.profilepic_faceMeEff);
@@ -54,7 +53,11 @@ const About = () => {
             <h3 className="text-normal mb-2">Location</h3>
             <p>{LOCATION}</p>
             <div className="mt-6">
-              <a href={CV_LINK} target="_blank" rel="noopener noreferrer">
+              <a
+                href={ImgixImage.cv_pdf2}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button text="Download CV" />
               </a>
             </div>

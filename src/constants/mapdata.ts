@@ -16,7 +16,7 @@ import {
 import { ImgixImage } from './storage';
 
 //contact
-export const siteuse = [
+export const siteUse = [
   {
     id: 1,
     url: 'https://www.typescriptlang.org/',
@@ -68,7 +68,7 @@ export const siteuse = [
   },
 ];
 
-export const codeuse = [
+export const codeUse = [
   {
     id: 1,
     url: 'https://github.com/FiezDev',
@@ -84,7 +84,7 @@ export const codeuse = [
   },
 ];
 
-export const infouse = [
+export const infoUse = [
   {
     id: 1,
     icon: faEnvelope,

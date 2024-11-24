@@ -1,4 +1,4 @@
-import { codeuse, infouse, siteuse } from '@/src/constants/mapdata';
+import { codeUse, infoUse, siteUse } from '@/src/constants/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import React from 'react';
@@ -16,7 +16,7 @@ const ContactInfo: React.FC = () => (
     <div className="flex flex-col md:flex-row h-full text-base md:text-xl uppercase text-left mt-5">
       <div className="basis-full xl:basis-1/2 text-left pt-10">
         <ul className="flex flex-col gap-3">
-          {codeuse.map(({ id, url, icon, text }) => (
+          {codeUse.map(({ id, url, icon, text }) => (
             <li className="flex flex-row gap-4" key={id}>
               <span>{text}</span>
               <span>:</span>
@@ -32,10 +32,10 @@ const ContactInfo: React.FC = () => (
           ))}
           <li className="flex flex-col">
             <span className="flex items-center gap-4">
-              <span>SiteUse</span>
+              <span>siteUse</span>
               <span>:</span>
               <div className="flex gap-4 mt-2">
-                {siteuse.map(({ id, url, icon, width, height }) => (
+                {siteUse.map(({ id, url, icon, width, height }) => (
                   <a
                     key={id}
                     href={url}
@@ -59,7 +59,7 @@ const ContactInfo: React.FC = () => (
       </div>
       <div className="basis-full xl:basis-1/2 pt-10">
         <ul className="flex flex-col pl-5 normal-case gap-3">
-          {infouse.map(({ id, icon, text, url }) => (
+          {infoUse.map(({ id, icon, text, url }) => (
             <li className="flex flex-row gap-4" key={id}>
               <FontAwesomeIcon icon={icon} className="w-[20px]" />
               <span>:</span>

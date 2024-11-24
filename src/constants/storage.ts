@@ -15,7 +15,8 @@ export const ImgixImage = {
   //bg
   //resume
   resume_pdf: `${baseImgix}cv/ITTI_Resume.pdf`,
-  cv_pdf: `${baseImgix}cv/ittipol_cv_v0.pdf`,
+  cv_pdf0: `${baseImgix}cv/ittipol_cv_v0.pdf`,
+  cv_pdf2: `${baseImgix}cv/ittipol_cv_v2.pdf`,
   resumepdf: `${baseImgix}cv/resume.pdf`,
   resumecompdf: `${baseImgix}cv/resume_com.pdf`,
 
@@ -74,7 +75,7 @@ export const ImgixImage = {
   //error
   error_404: `${baseImgix}error/404.jpeg`,
   error_wuc: `${baseImgix}error/WUC.png`,
-  
+
   ///screenshot
   screenshot_project1_1: `${baseImgix}screenshot/projectone1.jpeg`,
   screenshot_project1_2: `${baseImgix}screenshot/projectone2.jpeg`,
