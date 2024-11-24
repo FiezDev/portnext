@@ -22,7 +22,6 @@ export const ImgixImage = {
   //icon
   icon_close: `${baseImgix}icon/close.svg`,
   icon_ham: `${baseImgix}icon/ham.svg`,
-
   icon_html: `${baseImgix}icon/html.svg`,
   icon_css: `${baseImgix}icon/css.svg`,
   icon_javascript: `${baseImgix}icon/javascript.svg`,
@@ -44,6 +43,7 @@ export const ImgixImage = {
 
   //profilepic
   profilepic_me: `${baseImgix}profilepic/newMe.png?w=870&h=1906&auto=undefined%2Cenhance%2Ccompress&fit=crop&crop=focalpoint&fp-x=0.37&fp-y=0.15&fp-z=1`,
+
   //fit=crop?crop=bottom,right&min-w=300&h=1906
   profilepic_me2: `${baseImgix}profilepic/Me2.png`,
   profilepic_meabout: `${baseImgix}profilepic/meabout.jpg`,
@@ -54,6 +54,7 @@ export const ImgixImage = {
   profilepic_workBg1: `${baseImgix}profilepic/workBg1.jpg`,
   profilepic_workBg2: `${baseImgix}profilepic/workBg2.jpg`,
   profilepic_workBg3: `${baseImgix}profilepic/workBg3.jpg`,
+
   //misc
   main_avatar1: `${baseImgix}avatar1.jpg`,
   main_avatar2: `${baseImgix}avatar2.jpg`,
@@ -69,9 +70,11 @@ export const ImgixImage = {
   main_blueline: `${baseImgix}BlueLine.png`,
   main_chat: `${baseImgix}chat.svg`,
   main_send: `${baseImgix}send.png`,
+
   //error
   error_404: `${baseImgix}error/404.jpeg`,
   error_wuc: `${baseImgix}error/WUC.png`,
+  
   ///screenshot
   screenshot_project1_1: `${baseImgix}screenshot/projectone1.jpeg`,
   screenshot_project1_2: `${baseImgix}screenshot/projectone2.jpeg`,

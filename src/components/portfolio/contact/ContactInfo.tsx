@@ -1,5 +1,3 @@
-// components/Contact/ContactInfo.tsx
-
 import { codeuse, infouse, siteuse } from '@/src/constants/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';

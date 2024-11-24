@@ -38,4 +38,7 @@ config.json
 #nextdist
 nextjs/
 
+.env.local
+
+
 

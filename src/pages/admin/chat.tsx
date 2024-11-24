@@ -5,7 +5,6 @@ import Head from 'next/head';
 type Props = {};
 
 const chat: NextPageWithLayout = (props: Props) => {
-  // const { locale } = useRouter();
 
   return (
     <>

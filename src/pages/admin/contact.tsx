@@ -8,7 +8,6 @@ import Head from 'next/head';
 type Props = {};
 
 const contact: NextPageWithLayout = (props: Props) => {
-  // const { locale } = useRouter();
 
   return (
     <>

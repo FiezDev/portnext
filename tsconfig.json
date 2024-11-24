@@ -10,6 +10,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "incremental": true,
@@ -67,7 +69,7 @@
     "**/*.tsx",
     "**/*.d.ts",
     "nextjs/types/**/*.ts"
-  ],
+, "src/hooks/useAnalytics.ts"  ],
   "exclude": [
     "node_modules"
   ]

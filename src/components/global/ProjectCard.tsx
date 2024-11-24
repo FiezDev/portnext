@@ -2,7 +2,7 @@ import { project } from '@/src/types/object';
 import { Chip } from '@material-tailwind/react';
 import Image from 'next/image';
 import { Carousel } from 'react-responsive-carousel';
-import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const ProjectCard = ({
   projectID,
@@ -20,8 +20,8 @@ const ProjectCard = ({
   status,
   stack,
 }: project) => {
-  console.log('projectName:', projectName); // Debugging log
-  console.log('projectIntro:', projectIntro); //
+  console.log('projectName:', projectName);
+  console.log('projectIntro:', projectIntro);
   return (
     <div className="seembg w-[90%] mb-5">
       <div
