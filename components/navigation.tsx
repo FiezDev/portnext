@@ -1,13 +1,13 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { MoonIcon, SunIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-export function Navigation() {
+const Navigation = () => {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
@@ -59,4 +59,6 @@ export function Navigation() {
       </div>
     </nav>
   );
-}
+};
+
+export default Navigation;
