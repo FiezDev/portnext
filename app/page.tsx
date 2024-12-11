@@ -1,15 +1,19 @@
-import { PortfolioHero } from '@/components/portfolio/hero';
-import { PortfolioProjects } from '@/components/portfolio/projects';
-import { PortfolioSkills } from '@/components/portfolio/skills';
-import { PortfolioContact } from '@/components/portfolio/contact';
+import MainContent from '@/components/Main.Index';
+import Navigation from '@/components/navigation';
+import { Toaster } from '@/components/ui/toaster';
 
-export default function Home() {
+const Home = () => {
   return (
-    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
-      <PortfolioHero />
-      <PortfolioProjects />
-      <PortfolioSkills />
-      <PortfolioContact />
-    </div>
+    <>
+      <Navigation />
+      <main className="min-h-screen">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
+          <MainContent />
+        </div>
+      </main>
+      <Toaster />
+    </>
   );
-}
+};
+
+export default Home;
