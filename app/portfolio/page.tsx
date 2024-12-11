@@ -1,5 +1,7 @@
+import PortfolioContent from '@/components/Portfolio.index';
+
 const Portfolio = () => {
-  return <div>Portfolio</div>;
+  return <PortfolioContent />;
 };
 
 export default Portfolio;
