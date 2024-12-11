@@ -1,0 +1,6 @@
+{
+  "hooks": {
+    "pre-commit": "git rev-parse -q --no-revs --verify MERGE_HEAD || lint-staged",
+    "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+  }
+}

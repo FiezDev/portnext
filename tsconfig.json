@@ -1,76 +1,27 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "webworker"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "incremental": true,
     "esModuleInterop": true,
     "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "moduleResolution": "node",
     "isolatedModules": true,
-    "jsx": "preserve",
-    "baseUrl": ".",
-    "paths": {
-      "@/public/*": [
-        "public/*"
-      ],
-      "@/context/*": [
-        "context/*"
-      ],
-      "@/services/*": [
-        "services/*"
-      ],
-      "@/model/*": [
-        "model/*"
-      ],
-      "@/src/*": [
-        "src/*"
-      ],
-      "@/styles/*": [
-        "styles/*"
-      ],
-      "@/components/*": [
-        "src/components/*"
-      ],
-      "@/pages/*": [
-        "src/pages/*"
-      ],
-      "@/layouts/*": [
-        "src/layouts/*"
-      ],
-      "@/images/*": [
-        "public/images/*"
-      ],
-      "@/fonts/*": [
-        "public/fonts/*"
-      ]
-    },
+    "jsx": "react-jsx",
+    "incremental": true,
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.d.ts",
-    "nextjs/types/**/*.ts"
-, "src/hooks/useAnalytics.ts"  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
