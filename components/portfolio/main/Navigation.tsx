@@ -25,10 +25,12 @@ const Navigation = ({ items }: NavigationProps) => {
                 <li
                   className="relative p-[10px] duration-500
           hover:scale-x-110 hover:duration-500
-         sm:p-[15px] hover:lg:translate-x-[40px] hover:md:translate-x-[30px] hover:translate-x-[10px]
+         sm:p-[15px] hover:lg:translate-x-[40px] hover:md:translate-x-[30px] hover:translate-x-[10px] first-letter:text-5xl
             "
                 >
-                  <span className="hover:scale-x-100">{display}</span>
+                  <span className="text-light text-3xl hover:scale-x-100 ">
+                    {display}
+                  </span>
                 </li>
               </Link>
             </div>

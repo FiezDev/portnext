@@ -5,22 +5,31 @@ import Skills from '@/components/portfolio/Skills';
 import Works from '@/components/portfolio/Works';
 
 import Head from 'next/head';
+import Sidenav from './portfolio/Sidenav';
 
 const PortfolioContent = () => {
   return (
-    <>
-      <Head>
-        <title>Ittipol Portfolio</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <Main />
-      <About />
-      <Skills />
-      <Works />
-      <div className="glass">
-        <Contact />
+    <div className="min-h-screen flex flex-col">
+      <div className="flex flex-col md:flex-row flex-1">
+        <Sidenav />
+        <div className="flex-1 seembg">
+          <Head>
+            <title>Ittipol Portfolio</title>
+            <meta
+              name="viewport"
+              content="initial-scale=1.0, width=device-width"
+            />
+          </Head>
+          <Main />
+          <About />
+          <Skills />
+          <Works />
+          <div className="glass">
+            <Contact />
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

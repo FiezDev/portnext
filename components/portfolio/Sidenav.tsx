@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -8,7 +10,7 @@ import useWindowSize from '@/hooks/useWindowSize';
 import { faBars, faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const Nav = () => {
+const Sidenav = () => {
   const { width, height } = useWindowSize();
   const [showSidebar, setShowSidebar] = useToggle();
   const [isNavVisible, setIsNavVisible] = useState(false);
@@ -48,7 +50,7 @@ const Nav = () => {
               <ul className="flex flex-col-reverse">
                 {menu.map(({ id, display, url, picurl }) => {
                   return (
-                    <a
+                    <div
                       key={id}
                       className="hover:text-white text-center text-white block uppercase tracking-wider glow"
                     >
@@ -61,14 +63,14 @@ const Nav = () => {
                   before:hover:bg-normal before:hover:brightness-75
                    "
                         >
-                          {width >= 540 ? (
+                          {width >= 650 ? (
                             <span className="hover:scale-x-100">{display}</span>
                           ) : (
                             <FontAwesomeIcon icon={picurl} />
                           )}
                         </li>
                       </Link>
-                    </a>
+                    </div>
                   );
                 })}
               </ul>
@@ -80,4 +82,4 @@ const Nav = () => {
   );
 };
 
-export default Nav;
+export default Sidenav;
