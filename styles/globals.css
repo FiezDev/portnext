@@ -93,3 +93,23 @@ a:hover {
   height: 100vh;
   width: 100%;
 }
+
+/*
+ * TypeWriting
+ */
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: black;
+  margin-left: 2px;
+  animation: blink 1s step-start infinite;
+  vertical-align: bottom;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

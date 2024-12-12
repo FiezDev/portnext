@@ -9,7 +9,7 @@ import { DebounceInput } from 'react-debounce-input';
 interface LiveChatProps {
   linktext: string;
   backlink: string;
-};
+}
 
 const LiveChat = () => {
   const [showChat, setShowChat] = useState(false);
