@@ -12,10 +12,17 @@ import { DotButton, useDotButton } from './CarouselDotButton';
 interface EmblaCarouselProp {
   items: string[];
   options?: EmblaOptionsType;
-};
+}
 
 const EmblaCarousel = ({ items, options }: EmblaCarouselProp) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel(options, [Autoplay()]);
+  const [emblaRef, emblaApi] = useEmblaCarousel(options, [
+    Autoplay({
+      playOnInit: true,
+      delay: 2000,
+      stopOnInteraction: false,
+      stopOnMouseEnter: false,
+    }),
+  ]);
 
   const onNavButtonClick = useCallback((emblaApi: EmblaCarouselType) => {
     const autoplay = emblaApi?.plugins()?.autoplay;
