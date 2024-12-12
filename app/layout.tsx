@@ -1,11 +1,15 @@
 import { ThemeProvider } from '@/components/theme-provider';
+import '@/styles/globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { ReactNode } from 'react';
-import './globals.css';
 import Providers from './providers';
+import { Titillium_Web } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] });
+const titillium = Titillium_Web({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Portfolio | Developer & Designer',
@@ -19,7 +23,7 @@ type RootLayoutProps = {
 const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={titillium.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

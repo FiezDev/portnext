@@ -3,9 +3,10 @@ import Contact from '@/components/portfolio/Contact';
 import Main from '@/components/portfolio/Main';
 import Skills from '@/components/portfolio/Skills';
 import Works from '@/components/portfolio/Works';
+
 import Head from 'next/head';
 
-const Portfolio = () => {
+const PortfolioContent = () => {
   return (
     <>
       <Head>
@@ -23,4 +24,4 @@ const Portfolio = () => {
   );
 };
 
-export default Portfolio;
+export default PortfolioContent;

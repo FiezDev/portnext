@@ -13,7 +13,6 @@ const app = next({
 const handle = app.getRequestHandler();
 
 const server = functions.https.onRequest((request, response) => {
-  console.log('File: ' + request.originalUrl);
   return app.prepare().then(() => handle(request, response));
 });
 

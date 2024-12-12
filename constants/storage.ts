@@ -1,5 +1,5 @@
 const baseurl = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_URL;
-const baseImgix = '';
+const baseImgix = process.env.NEXT_PUBLIC_IMGIX_URL;
 
 export const FirestoreFile = {
   baseurl,

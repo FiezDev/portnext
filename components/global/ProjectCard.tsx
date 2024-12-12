@@ -20,8 +20,6 @@ const ProjectCard = ({
   status,
   stack,
 }: project) => {
-  console.log('projectName:', projectName);
-  console.log('projectIntro:', projectIntro);
   return (
     <div className="seembg w-[90%] mb-5">
       <div

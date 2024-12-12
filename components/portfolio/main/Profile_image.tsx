@@ -12,7 +12,7 @@ const ProfileImage = () => {
           alt="Profile Picture"
           width={870}
           height={1906}
-          className="w-full object-contain object-bottom"
+          className="w-full object-cover object-bottom"
         />
       </main>
     </figure>
