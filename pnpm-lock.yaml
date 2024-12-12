@@ -92,6 +92,9 @@ importers:
       react-easy-swipe:
         specifier: ^0.0.23
         version: 0.0.23
+      react-google-recaptcha-v3:
+        specifier: ^1.10.1
+        version: 1.10.1(react-dom@19.0.0)(react@19.0.0)
       react-hook-form:
         specifier: ^7.54.0
         version: 7.54.0(react@19.0.0)
@@ -6865,6 +6868,12 @@ packages:
       minimalistic-crypto-utils: 1.0.1
     dev: true
 
+  /hoist-non-react-statics@3.3.2:
+    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
+    dependencies:
+      react-is: 16.13.1
+    dev: false
+
   /html-encoding-sniffer@3.0.0:
     resolution: {integrity: sha512-oWv4T4yJ52iKrufjnyZPkrN0CH3QnrUqdB6In1g5Fe1mia8GmF36gnfNySxoZtxD5+NmYw1EElVXiBk93UeskA==}
     engines: {node: '>=12'}
@@ -9063,6 +9072,17 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       prop-types: 15.8.1
+    dev: false
+
+  /react-google-recaptcha-v3@1.10.1(react-dom@19.0.0)(react@19.0.0):
+    resolution: {integrity: sha512-K3AYzSE0SasTn+XvV2tq+6YaxM+zQypk9rbCgG4OVUt7Rh4ze9basIKefoBz9sC0CNslJj9N1uwTTgRMJQbQJQ==}
+    peerDependencies:
+      react: ^16.3 || ^17.0 || ^18.0
+      react-dom: ^17.0 || ^18.0
+    dependencies:
+      hoist-non-react-statics: 3.3.2
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
     dev: false
 
   /react-hook-form@7.54.0(react@19.0.0):

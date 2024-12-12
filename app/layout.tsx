@@ -2,8 +2,8 @@ import { ThemeProvider } from '@/lib/theme-provider';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
-import Providers from './providers';
 import { Titillium_Web } from 'next/font/google'
+import Providers from '@/lib/reqct-query-providers';
 
 const titillium = Titillium_Web({
   subsets: ['latin'],

@@ -49,6 +49,7 @@
     "react-day-picker": "^9.4.2",
     "react-dom": "19.0.0",
     "react-easy-swipe": "^0.0.23",
+    "react-google-recaptcha-v3": "^1.10.1",
     "react-hook-form": "^7.54.0",
     "react@lastest": "link:testing-library/react@lastest",
     "sonner": "^1.7.1",

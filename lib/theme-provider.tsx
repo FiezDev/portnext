@@ -1,9 +1,9 @@
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { Attribute, ThemeProvider as NextThemesProvider } from 'next-themes';
 import React from 'react';
 
 interface CustomThemeProviderProps {
   children: React.ReactNode;
-  attribute?: string;
+  attribute?: Attribute | Attribute[];
   defaultTheme?: string;
   enableSystem?: boolean;
   disableTransitionOnChange?: boolean;
@@ -27,5 +27,3 @@ export function ThemeProvider({
     </NextThemesProvider>
   );
 }
-
-
