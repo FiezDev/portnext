@@ -7,10 +7,10 @@ const def: WUCProps = {
   backlink: '/',
 };
 
-type WUCProps = {
+interface WUCProps {
   linktext: string;
   backlink: string;
-};
+}
 
 const WUC = ({ linktext, backlink }: WUCProps) => {
   const linktextProp = linktext ? linktext : def.linktext;

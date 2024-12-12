@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-type ButtonProps = {
+interface ButtonProps {
   text: string;
   className?: string;
 };

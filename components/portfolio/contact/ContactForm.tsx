@@ -1,10 +1,9 @@
 'use client';
 
 import { useContactForm } from '@/hooks/useContactForm';
-import React from 'react';
 import Notification from '../../global/Notification';
 
-const ContactForm: React.FC = () => {
+const ContactForm = () => {
   const { register, handleSubmit, onSubmit, errors, notification } =
     useContactForm();
 

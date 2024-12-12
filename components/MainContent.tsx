@@ -2,7 +2,6 @@ import { ImgixImage } from '@/constants/storage';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
 
 const MainContent = () => {
   return (
@@ -18,7 +17,7 @@ const MainContent = () => {
               className="object-cover object-top"
               src={ImgixImage.profilepic_me}
               alt=""
-              fill
+              fill={true}
             />
           </Link>
         </div>

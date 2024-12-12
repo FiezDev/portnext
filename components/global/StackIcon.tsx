@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
-type StackIconProps = {
+interface StackIconProps {
   url: string;
   icon: string;
   width: number;

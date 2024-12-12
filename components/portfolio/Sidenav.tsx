@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react';
 
 import { menu } from '@/constants/mapdata';
 
-
+import { useToggle } from '@/hooks/useToggle';
 import useWindowSize from '@/hooks/useWindowSize';
 import { faBars, faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useToggle } from '@/hooks/useToggle';
 
 const Nav = () => {
   const { width, height } = useWindowSize();

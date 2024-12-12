@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { DebounceInput } from 'react-debounce-input';
 
-type LiveChatProps = {
+interface LiveChatProps {
   linktext: string;
   backlink: string;
 };

@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/lib/theme-provider';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';

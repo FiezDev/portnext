@@ -3,10 +3,9 @@
 import { codeUse, infoUse, siteUse } from '@/constants/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import React from 'react';
 import Heading from '../../global/Heading';
 
-const ContactInfo: React.FC = () => (
+const ContactInfo = () => (
   <div className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">
     <Heading className="pb-5" text="Contact" />
     <p className="text-left tracking-wide">
