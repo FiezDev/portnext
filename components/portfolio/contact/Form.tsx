@@ -3,7 +3,7 @@
 import { useContactForm } from '@/hooks/useContactForm';
 import Notification from '../../global/Notification';
 
-const ContactForm = () => {
+const Form = () => {
   const { register, handleSubmit, onSubmit, errors, notification } =
     useContactForm();
 
@@ -99,4 +99,4 @@ const ContactForm = () => {
   );
 };
 
-export default ContactForm;
+export default Form;

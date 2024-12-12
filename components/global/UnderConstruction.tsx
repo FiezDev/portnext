@@ -12,7 +12,7 @@ interface WUCProps {
   backlink: string;
 }
 
-const WUC = ({ linktext, backlink }: WUCProps) => {
+const UnderConstruction = ({ linktext, backlink }: WUCProps) => {
   const linktextProp = linktext ? linktext : def.linktext;
   const backlinkProp = backlink ? backlink : def.backlink;
   return (
@@ -27,4 +27,4 @@ const WUC = ({ linktext, backlink }: WUCProps) => {
   );
 };
 
-export default WUC;
+export default UnderConstruction;

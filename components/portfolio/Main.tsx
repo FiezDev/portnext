@@ -1,7 +1,7 @@
 import { main } from '@/constants/mapdata';
 import Introduction from './main/Introduction';
 import Navigation from './main/Navigation';
-import ProfileImage from './main/Profile_image';
+import ProfileImage from './main/ProfileImage';
 
 const Main = () => {
   return (

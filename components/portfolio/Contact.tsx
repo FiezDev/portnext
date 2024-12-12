@@ -1,5 +1,5 @@
-import ContactForm from '@/components/portfolio/contact/ContactForm';
-import ContactInfo from '@/components/portfolio/contact/ContactInfo';
+import ContactForm from '@/components/portfolio/contact/Form';
+import ContactInfo from '@/components/portfolio/contact/Info';
 
 const Contact = () => (
   <section
