@@ -1,14 +1,29 @@
 'use client';
 
+import Recaptcha from '@/components/global/Recapcha';
 import { Button } from '@/components/ui/button';
 import { useContactForm } from '@/hooks/useContactForm';
 import { cn } from '@/lib/utils';
-import React from 'react';
+import React, { useCallback } from 'react';
 import Notification from '../../global/Notification';
 
 const ContactForm: React.FC = () => {
-  const { register, handleSubmit, onSubmit, errors, isValid, notification } =
-    useContactForm();
+  const {
+    register,
+    handleSubmit,
+    onSubmit,
+    errors,
+    isValid,
+    notification,
+    setRecaptchaToken,
+  } = useContactForm();
+
+  const handleVerify = useCallback(
+    (token: string) => {
+      setRecaptchaToken(token);
+    },
+    [setRecaptchaToken]
+  );
 
   return (
     <div className="rounded-3xl basis-full w-full xl:basis-1/3 bg-bg shadow-md p-8 flex flex-col md:ml-auto mt-10 md:mt-0 relative z-10">
@@ -55,7 +70,7 @@ const ContactForm: React.FC = () => {
             <p className="text-error text-sm mt-1">{errors.email.message}</p>
           )}
         </div>
-        <div className="relative mb-4">
+        <div className="relative">
           <label
             htmlFor="message"
             className="block text-base text-gray-400 font-bold mb-1"
@@ -76,6 +91,12 @@ const ContactForm: React.FC = () => {
             <p className="text-error text-sm mt-1">{errors.message.message}</p>
           )}
         </div>
+        <div className="pt-2 pb-4 flex justify-center items-center">
+          <Recaptcha
+            siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+            onVerify={handleVerify}
+          />
+        </div>
         <Button
           type="submit"
           disabled={!isValid}
@@ -86,6 +107,7 @@ const ContactForm: React.FC = () => {
         >
           Submit
         </Button>
+
         {notification ? (
           <Notification
             message={notification.message}

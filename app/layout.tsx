@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/lib/theme-provider';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { Titillium_Web } from 'next/font/google';
+import Script from 'next/script';
 import { ReactNode } from 'react';
 
 const titillium = Titillium_Web({
@@ -23,6 +24,12 @@ type RootLayoutProps = {
 const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script
+          src="https://www.google.com/recaptcha/api.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className={titillium.className}>
         <ThemeProvider
           attribute="class"
@@ -30,7 +37,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
           enableSystem
           disableTransitionOnChange
         >
-          <ReactQueryProviders>{children} </ReactQueryProviders>
+          <ReactQueryProviders>{children}</ReactQueryProviders>
         </ThemeProvider>
       </body>
     </html>
