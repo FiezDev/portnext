@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 export const contactFormSchema = z.object({
@@ -12,6 +11,7 @@ export type ContactFormInputs = z.infer<typeof contactFormSchema>;
 export interface ContactData extends ContactFormInputs {
   reply: boolean;
   date: number;
+  recaptchaToken: string;
 }
 
 export interface NotificationProps {

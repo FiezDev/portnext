@@ -15,6 +15,7 @@ export const useContactForm = () => {
   const [notification, setNotification] = useState<NotificationProps | null>(
     null
   );
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   const {
     register,
@@ -28,9 +29,18 @@ export const useContactForm = () => {
 
   const onSubmit: SubmitHandler<ContactFormInputs> = useCallback(
     async (data) => {
+      if (!recaptchaToken) {
+        setNotification({
+          message: 'Please complete the reCAPTCHA',
+          type: 'error',
+        });
+        return;
+      }
+
       try {
         const contactData: ContactData = {
           ...data,
+          recaptchaToken,
           reply: false,
           date: Date.now(),
         };
@@ -42,6 +52,7 @@ export const useContactForm = () => {
         if (response.status === 'success') {
           setNotification({ message: response.message, type: 'success' });
           reset();
+          setRecaptchaToken(null);
         } else {
           setNotification({ message: response.message, type: 'error' });
         }
@@ -53,7 +64,7 @@ export const useContactForm = () => {
         });
       }
     },
-    [reset]
+    [recaptchaToken, reset]
   );
 
   useEffect(() => {
@@ -71,5 +82,6 @@ export const useContactForm = () => {
     errors,
     isValid,
     notification,
+    setRecaptchaToken,
   };
 };

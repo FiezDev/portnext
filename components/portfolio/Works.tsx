@@ -8,7 +8,7 @@ const Works = async () => {
   const fetchProjects = async (): Promise<project[]> => {
     try {
       const response = await axios.get(
-        `https://nextbackend-fiezdev.vercel.app/api/fireStoreGetAll?colname=Projects`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}api/fireStoreGetAll?colname=Projects`
       );
 
       if (Array.isArray(response.data)) {
