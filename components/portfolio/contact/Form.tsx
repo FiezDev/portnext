@@ -94,7 +94,7 @@ const ContactForm: React.FC = () => {
           />
         ) : (
           <div className="flex items-center h-[30px] pt-4 my-2">
-            <p className="text-red-700 text-sm">
+            <p className="text-error text-sm">
               *** Please fill in all the required fields.
             </p>
           </div>

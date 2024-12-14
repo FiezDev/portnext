@@ -7,6 +7,7 @@ import { menu } from '@/constants/mapdata';
 
 import { useToggle } from '@/hooks/useToggle';
 import useWindowSize from '@/hooks/useWindowSize';
+import { cn } from '@/lib/utils';
 import { faBars, faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -44,8 +45,10 @@ const Sidenav = () => {
           />
           <nav className="top-0 text-white fixed h-screen z-30 lg:w-[200px] sm:w-[100px] -left-[50px] lg:-left-[200px] sm:-left-[100px]">
             <div
-              className={`bg-black z-20 fixed pt-40  h-screen ease-in-out duration-300
-        ${!showSidebar ? 'translate-x-0 ' : 'translate-x-full'}`}
+              className={cn(
+                'bg-black z-20 fixed pt-40  h-screen ease-in-out duration-300',
+                !showSidebar ? 'translate-x-0 ' : 'translate-x-full'
+              )}
             >
               <ul className="flex flex-col-reverse">
                 {menu.map(({ id, display, url, picurl }) => {
@@ -56,15 +59,18 @@ const Sidenav = () => {
                     >
                       <Link href={url}>
                         <li
-                          className="relative p-[10px] duration-500 
-                  hover:bg-normal   hover:scale-x-110 hover:duration-500 
-                  w-[50px] lg:w-[200px] sm:w-[100px] sm:p-[15px] hover:lg:translate-x-[20px] hover:md:translate-x-[15px] hover:translate-x-[5px]
-                  before:absolute before:top-0 before:left-[-10px] before:w-[10px] before:h-full before:bg-head before:brightness-75 before:origin-right
-                  before:hover:bg-normal before:hover:brightness-75
-                   "
+                          className={cn(
+                            'relative p-[10px] duration-500 ',
+                            'w-[50px] lg:w-[200px] sm:w-[100px] sm:p-[15px] hover:lg:translate-x-[20px]',
+                            'hover:bg-normal hover:scale-x-110 hover:duration-500 hover:md:translate-x-[15px] hover:translate-x-[5px]',
+                            'before:absolute before:top-0 before:left-[-10px] before:w-[10px] before:h-full',
+                            'before:bg-head before:brightness-75 before:origin-right',
+                            'before:hover:bg-normal before:hover:brightness-75',
+                            'hover:text-white'
+                          )}
                         >
                           {width >= 650 ? (
-                            <span className="hover:scale-x-100">{display}</span>
+                            <div className="hover:scale-x-100">{display}</div>
                           ) : (
                             <FontAwesomeIcon icon={picurl} />
                           )}
