@@ -2,32 +2,6 @@ import { project } from '@/types/object';
 
 export const projectsData: project[] = [
   {
-    stack: ['VueJS', 'Vuetify', 'C#', 'MySQL'],
-    projectID: 1,
-    projectIntro: 'Short URL Service Website',
-    updateDate: 1662146433881,
-    status: 'Finish',
-    createDate: 1662146433881,
-    projectFullName: '',
-    projectPic: {
-      picurl: {
-        height: 600,
-        width: 800,
-        pic: [
-          'screenshot/projectone1.jpg',
-          'screenshot/projectone2.jpg',
-          'screenshot/projectone3.jpg',
-        ],
-      },
-    },
-    projectType: 'Work',
-    projectName: 'Short URL Service Website',
-    projectDesc: [
-      '- Work closely with UX/UI designers to execute both front-end and back-end features of the Admin Panel for enterprise and corporate clients.',
-    ],
-    activeFlag: true,
-  },
-  {
     projectName: 'Health Insurance WebApp',
     activeFlag: true,
     status: 'Finish',
