@@ -8,7 +8,6 @@ interface FirestoreSetResponse {
 
 export const submitContactForm = async (
   contactData: ContactData,
-  token: string,
   collections: string
 ): Promise<FirestoreSetResponse> => {
   const backUrl = process.env.NEXT_PUBLIC_BACKURL || '';
@@ -17,7 +16,6 @@ export const submitContactForm = async (
     `${backUrl}api/fireStoreSet`,
     {
       data: contactData,
-      gRecaptchaToken: token,
       collections,
     },
     {

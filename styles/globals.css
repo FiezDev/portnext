@@ -94,6 +94,14 @@ a:hover {
   width: 100%;
 }
 
+.text-shadow {
+  text-shadow: 0 0 5px #3498db, 0 0 10px #3498db, 0 0 20px #3498db, 0 0 40px #3498db, 0 0 80px #3498db;
+}
+
+.no-text-shadow {
+  text-shadow: none;
+}
+
 /*
  * TypeWriting
  */

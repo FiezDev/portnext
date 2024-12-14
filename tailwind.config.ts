@@ -25,8 +25,11 @@ const config: Config = {
       light: '#BBE1FA',
       lightH: 'hsl(204, 86%, 86%)',
 
+      error: '#f66',
+
       white: '#fff',
       black: '#000',
+      grey: '#888',
     },
     extend: {
       keyframes: {
@@ -34,6 +37,25 @@ const config: Config = {
           '0%, 100%': { opacity: '0' },
           '25%, 75%': { opacity: '1' },
         },
+        neonFlash: {
+          '0%, 100%': {
+            color: '#3498db',
+            textShadow: `
+              0 0 5px #3498db,
+              0 0 10px #3498db,
+              0 0 20px #3498db,
+              0 0 40px #3498db,
+              0 0 80px #3498db
+            `,
+          },
+          '50%': {
+            color: '#0d0d0d',
+            textShadow: 'none',
+          },
+        },
+      },
+      animation: {
+        neonFlash: 'neonFlash 3s infinite',
       },
 
       screens: {
