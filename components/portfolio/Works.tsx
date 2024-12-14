@@ -6,9 +6,11 @@ import ProjectCard from '../global/ProjectCard';
 
 const Works = async () => {
   const fetchProjects = async (): Promise<project[]> => {
+    const backUrl = process.env.NEXT_PUBLIC_BACKURL || '';
+
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}api/fireStoreGetAll?colname=Projects`
+        `${backUrl}api/fireStoreGetAll?colname=Projects`
       );
 
       if (Array.isArray(response.data)) {
