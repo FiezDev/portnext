@@ -1,6 +1,6 @@
 import { project } from '@/types/object';
 import { Badge } from '../ui/badge';
-import EmblaCarousel from './EmbiaCarousel';
+import EmblaCarousel from '../global/EmbiaCarousel/Index';
 
 const ProjectCard = ({
   projectName,
