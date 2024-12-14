@@ -1,9 +1,9 @@
+import ReactQueryProviders from '@/lib/react-query-providers';
 import { ThemeProvider } from '@/lib/theme-provider';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
+import { Titillium_Web } from 'next/font/google';
 import { ReactNode } from 'react';
-import { Titillium_Web } from 'next/font/google'
-import Providers from '@/lib/reqct-query-providers';
 
 const titillium = Titillium_Web({
   subsets: ['latin'],
@@ -30,7 +30,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
           enableSystem
           disableTransitionOnChange
         >
-          <Providers>{children} </Providers>
+          <ReactQueryProviders>{children} </ReactQueryProviders>
         </ThemeProvider>
       </body>
     </html>

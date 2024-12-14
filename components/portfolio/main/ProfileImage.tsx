@@ -1,5 +1,3 @@
-'use client';
-
 import { ImgixImage } from '@/constants/storage';
 import Image from 'next/image';
 

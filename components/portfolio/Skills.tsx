@@ -6,7 +6,7 @@ const Skills = () => {
   return (
     <section
       id="skills"
-      className="container flex flex-col items-center justify-center mx-auto pt-16 md:pt-36 px-5 gap-10"
+      className="container flex flex-col items-center justify-center mx-auto pt-16 md:pt-24 px-5 gap-10"
     >
       <Heading className="pb-8" text={'Core Skills'} />
       <article className="flex flex-wrap w-full">

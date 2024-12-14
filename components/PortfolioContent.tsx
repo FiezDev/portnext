@@ -5,6 +5,7 @@ import Skills from '@/components/portfolio/Skills';
 import Works from '@/components/portfolio/Works';
 
 import Head from 'next/head';
+import SuspenseWrapper from './global/SuspenseWrapper';
 import Sidenav from './portfolio/Sidenav';
 
 const PortfolioContent = () => {
@@ -23,7 +24,12 @@ const PortfolioContent = () => {
           <Main />
           <About />
           <Skills />
-          <Works />
+          <SuspenseWrapper
+            text="Loading Works..."
+            errorText="Failed to load Works. Please try again later."
+          >
+            <Works />
+          </SuspenseWrapper>
           <div className="glass">
             <Contact />
           </div>

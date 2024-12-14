@@ -11,10 +11,12 @@ export const queryClient = new QueryClient({
   },
 });
 
-const Providers = ({ children }: Readonly<{ children: ReactNode }>) => {
+const ReactQueryProviders = ({
+  children,
+}: Readonly<{ children: ReactNode }>) => {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
 
-export default Providers;
+export default ReactQueryProviders;

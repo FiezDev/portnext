@@ -1,5 +1,3 @@
-'use client';
-
 import { codeUse, infoUse, siteUse } from '@/constants/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';

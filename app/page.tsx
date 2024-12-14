@@ -5,7 +5,6 @@ const Home = () => {
     <>
       {/* <Navigation /> */}
       <MainContent />
-      {/* <Toaster /> */}
     </>
   );
 };

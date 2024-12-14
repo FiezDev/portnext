@@ -1,7 +1,4 @@
-'use client';
-
 import Image from 'next/image';
-import { useState } from 'react';
 
 import Button from '@/components/global/Button';
 import Heading from '@/components/global/Heading';
@@ -11,27 +8,28 @@ const FAVORITES = ['Blue', 'Cat', 'Basketball', 'Motorcycle', 'Mobile MOBA'];
 const LOCATION = 'Samutprakarn, Thailand';
 
 const About = () => {
-  const [src, setSrc] = useState<string>(ImgixImage.profilepic_faceMeEff);
-
-  const handleMouseEnter = () => setSrc(ImgixImage.profilepic_faceMe);
-  const handleMouseLeave = () => setSrc(ImgixImage.profilepic_faceMeEff);
-
   return (
     <section
       id="about"
-      className="container flex flex-col items-center justify-center mx-auto pt-16 md:pt-36 px-5"
+      className="container flex flex-col items-center justify-center mx-auto pt-16 md:pt-24 px-5"
     >
       <Heading className="pb-16" text="About Me" />
       <main className="flex flex-col md:flex-row items-center justify-center gap-4">
-        <figure className="w-full md:w-1/3">
+        <figure className="w-full md:w-1/3 relative group">
           <Image
-            src={src}
-            className="rounded-3xl"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            src={ImgixImage.profilepic_faceMeEff}
+            className="rounded-3xl transition-opacity duration-300"
             width={1000}
             height={1000}
             alt="Profile picture of [Your Name]"
+            priority
+          />
+          <Image
+            src={ImgixImage.profilepic_faceMe}
+            className="absolute top-0 left-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            width={1000}
+            height={1000}
+            alt="Profile picture of [Your Name] on hover"
             priority
           />
         </figure>
