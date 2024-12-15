@@ -7,10 +7,9 @@ const Info = () => (
   <div className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">
     <Heading className="pb-5" text="Contact" />
     <p className="text-left tracking-wide">
-      If you&apos;re interested in hiring me for a job or a short-term project,
-      looking for a collaboration, or simply want to share your thoughts on my
-      work, feel free to reach out. I&apos;ll get back to you as promptly as I
-      can.
+      If you&apos;re interested in hiring me, working on a short-term project,
+      collaborating, or sharing your thoughts on my work, please feel free to
+      contact me. I&apos;ll respond as soon as possible."
     </p>
     <div className="flex flex-col md:flex-row h-full text-base md:text-xl uppercase text-left mt-5">
       <div className="basis-full xl:basis-1/2 text-left pt-10">

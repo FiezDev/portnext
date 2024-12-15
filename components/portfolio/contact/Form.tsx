@@ -101,18 +101,16 @@ const ContactForm: React.FC = () => {
           type="submit"
           disabled={!isValid}
           className={cn(
-            'w-full text-white bg-head border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg transition-colors duration-200',
+            'w-full text-white bg-head border-0 pt-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg transition-colors duration-200',
             !isValid && 'bg-grey'
           )}
         >
           Submit
         </Button>
-
         {notification ? (
           <Notification
             message={notification.message}
             type={notification.type}
-            className="mt-4"
           />
         ) : (
           <div className="flex items-center h-[30px] pt-4 my-2">

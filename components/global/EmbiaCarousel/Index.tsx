@@ -63,7 +63,7 @@ const EmblaCarousel = ({ items, options }: EmblaCarouselProp) => {
               key={index}
             >
               <Image
-                className="rounded-3xl object-contain shadow-inner border-2 border-gray-300"
+                className="rounded-3xl object-contain shadow-inner"
                 src={`${process.env.NEXT_PUBLIC_IMGIX_URL}${item}`}
                 fill
                 alt={`Slide ${index + 1}`}

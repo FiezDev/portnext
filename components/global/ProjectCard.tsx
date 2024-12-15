@@ -1,6 +1,6 @@
 import { project } from '@/types/object';
-import { Badge } from '../ui/badge';
 import EmblaCarousel from '../global/EmbiaCarousel/Index';
+import { Badge } from '../ui/badge';
 
 const ProjectCard = ({
   projectName,
@@ -28,7 +28,7 @@ const ProjectCard = ({
           <h1 className="pt-4">
             {stack.map((item, index) => (
               <Badge
-                className="m-1 text-[14px] text-white bg-head focus:outline-none hover:bg-blue-600"
+                className="m-1 text-sm font-semibold tracking-wider text-white bg-head focus:outline-none hover:bg-blue-600"
                 key={index}
                 variant="default"
               >
