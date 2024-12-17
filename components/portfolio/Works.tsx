@@ -10,7 +10,7 @@ const Works = async () => {
 
     try {
       const response = await axios.get(
-        `${backUrl}api/fireStoreGetAll?colname=Projects`
+        `${backUrl}api/getAllWork?colname=Projects`
       );
 
       if (Array.isArray(response.data)) {

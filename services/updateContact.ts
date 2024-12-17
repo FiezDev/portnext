@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ContactData } from '../types/contactForm';
 
-interface FirestoreSetResponse {
+interface CreateContactResponse {
   status: 'success' | 'error';
   message: string;
 }
@@ -9,11 +9,11 @@ interface FirestoreSetResponse {
 export const submitContactForm = async (
   contactData: ContactData,
   collections: string
-): Promise<FirestoreSetResponse> => {
+): Promise<CreateContactResponse> => {
   const backUrl = process.env.NEXT_PUBLIC_BACKURL || '';
 
-  const response = await axios.post<FirestoreSetResponse>(
-    `${backUrl}api/fireStoreSet`,
+  const response = await axios.post<CreateContactResponse>(
+    `${backUrl}api/createContact`,
     {
       data: contactData,
       collections,
