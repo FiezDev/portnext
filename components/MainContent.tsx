@@ -15,7 +15,7 @@ const MainContent = () => {
           <Link href="/portfolio">
             <Image
               className="object-cover object-top"
-              src={ImgixImage.profilepic_me}
+              src={ImgixImage.profilepic_NewMeEff}
               alt=""
               fill={true}
             />
