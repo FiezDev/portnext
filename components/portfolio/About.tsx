@@ -18,18 +18,10 @@ const About = () => {
         <figure className="w-full md:w-1/3 relative group">
           <Image
             src={ImgixImage.profilepic_faceMeEff}
-            className="rounded-3xl transition-opacity duration-300"
+            className="rounded-3xl"
             width={1000}
             height={1000}
-            alt="Profile picture of [Your Name]"
-            priority
-          />
-          <Image
-            src={ImgixImage.profilepic_faceMe}
-            className="absolute top-0 left-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            width={1000}
-            height={1000}
-            alt="Profile picture of [Your Name] on hover"
+            alt="Profile picture of Me"
             priority
           />
         </figure>

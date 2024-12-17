@@ -39,7 +39,7 @@ const Sidenav = () => {
       {isNavVisible && (
         <>
           <FontAwesomeIcon
-            className="flex w-[25px] sm:w-[35px] lg:w-[40px] z-[70] items-center fixed left-3 top-4 sm:left-8 sm:top-7 duration-500"
+            className="flex w-[25px] h-[25px] sm:w-[35px] sm:h-[35px] z-[70] items-center fixed left-3 top-4 sm:left-8 sm:top-7 duration-500"
             onClick={setShowSidebar}
             icon={showSidebar ? faClose : faBars}
           />
@@ -60,13 +60,12 @@ const Sidenav = () => {
                       <Link href={url}>
                         <li
                           className={cn(
-                            'relative p-[10px] duration-500 ',
+                            'relative p-[10px] duration-500 text-white',
                             'w-[50px] lg:w-[200px] sm:w-[100px] sm:p-[15px] hover:lg:translate-x-[20px]',
                             'hover:bg-normal hover:scale-x-110 hover:duration-500 hover:md:translate-x-[15px] hover:translate-x-[5px]',
                             'before:absolute before:top-0 before:left-[-10px] before:w-[10px] before:h-full',
                             'before:bg-head before:brightness-75 before:origin-right',
-                            'before:hover:bg-normal before:hover:brightness-75',
-                            'hover:text-white'
+                            'before:hover:bg-normal before:hover:brightness-75'
                           )}
                         >
                           {width >= 650 ? (

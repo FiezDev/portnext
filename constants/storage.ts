@@ -43,7 +43,8 @@ export const ImgixImage = {
   icon_gcp: `${baseImgix}icon/gcp.svg`,
 
   //profilepic
-  profilepic_me: `${baseImgix}profilepic/newMe.png?w=870&h=1906&auto=undefined%2Cenhance%2Ccompress&fit=crop&crop=focalpoint&fp-x=0.37&fp-y=0.15&fp-z=1`,
+  profilepic_NewMe: `${baseImgix}profilepic/HalfMe1.png?w=871&h=1303&auto=undefined%2Cenhance%2Ccompress&fit=crop`,
+  profilepic_NewMeEff: `${baseImgix}profilepic/HalfMe2.png?w=871&h=1303&auto=undefined%2Cenhance%2Ccompress&fit=crop`,
 
   //fit=crop?crop=bottom,right&min-w=300&h=1906
   profilepic_me2: `${baseImgix}profilepic/Me2.png`,
