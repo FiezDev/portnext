@@ -13,8 +13,9 @@ const titillium = Titillium_Web({
 });
 
 export const metadata: Metadata = {
-  title: 'Portfolio | Developer & Designer',
-  description: 'Professional portfolio showcasing development and design work',
+  title: 'Ittipol Portfolio',
+  description:
+    'Professional portfolio showcasing development and personal profile',
 };
 
 type RootLayoutProps = {
