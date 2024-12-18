@@ -7,7 +7,7 @@ const Contact = () => (
     className="container w-full flex flex-col xl:flex-row items-start justify-center mx-auto p-5 xl:px-[3.75rem] mt-16 md:mt-24 gap-4 text-xl"
   >
     <ContactInfo />
-    <ContactForm />
+    {/* <ContactForm /> */}
   </section>
 );
 
