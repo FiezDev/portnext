@@ -6,11 +6,9 @@ import ProjectCard from '../global/ProjectCard';
 
 const Works = async () => {
   const fetchProjects = async (): Promise<project[]> => {
-    const backUrl = process.env.NEXT_PUBLIC_BACKURL || '';
-
     try {
       const response = await axios.get(
-        `${backUrl}api/getAllWork?colname=Projects`
+        `${process.env.NEXT_PUBLIC_BACKURL}api/getAllWork?colname=Projects`
       );
 
       if (Array.isArray(response.data)) {

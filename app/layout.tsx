@@ -22,9 +22,16 @@ type RootLayoutProps = {
 };
 
 const RootLayout = ({ children }: RootLayoutProps) => {
+  const shouldLoadScript = process.env.VERCEL_ENV !== 'production';
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {shouldLoadScript && (
+          <Script
+            src="https://unpkg.com/react-scan/dist/auto.global.js"
+            async
+          />
+        )}
         <Script
           src="https://www.google.com/recaptcha/api.js"
           strategy="beforeInteractive"

@@ -14,7 +14,9 @@ const ProjectCard = ({
   return (
     <div className="seembg w-[90%] mb-5">
       <div className="glass rounded-3xl p-4 h-auto flex flex-col lg:flex-row gap-4 ">
-        <EmblaCarousel items={pic} options={{ loop: true }} />
+        <div className="flex items-center justify-center">
+          <EmblaCarousel items={pic} options={{ loop: true }} />
+        </div>
         <div className="p-5 pb-0 lg:pb-5 w-full lg:w-[calc(((100%-300px)/5)*2)] xl:w-[calc(((100%-400px)/5)*2)]">
           <div className="text-normal text-3xl font-[700] antialiased tracking-wide uppercase pb-4">
             Project

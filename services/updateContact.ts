@@ -10,10 +10,8 @@ export const submitContactForm = async (
   contactData: ContactData,
   collections: string
 ): Promise<CreateContactResponse> => {
-  const backUrl = process.env.NEXT_PUBLIC_BACKURL || '';
-
   const response = await axios.post<CreateContactResponse>(
-    `${backUrl}api/createContact`,
+    `${process.env.NEXT_PUBLIC_BACKURL}api/createContact`,
     {
       data: contactData,
       collections,
