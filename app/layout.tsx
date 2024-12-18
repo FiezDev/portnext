@@ -22,13 +22,14 @@ type RootLayoutProps = {
 };
 
 const RootLayout = ({ children }: RootLayoutProps) => {
-  const shouldLoadScript = process.env.VERCEL_ENV !== 'production';
+  const isNotProduction = process.env.NODE_ENV !== 'production';
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
-        {shouldLoadScript && (
+        {isNotProduction && (
           <Script
             src="https://unpkg.com/react-scan/dist/auto.global.js"
+            strategy="lazyOnload"
             async
           />
         )}
