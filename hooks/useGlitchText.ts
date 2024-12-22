@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface UseGlitchTextProps {
   texts: string[];
@@ -31,6 +31,8 @@ export const useGlitchText = ({
   const [displayText, setDisplayText] = useState('');
   const [glitching, setGlitching] = useState(false);
 
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
   const getRandomChar = useCallback(() => {
     return glitchChars[Math.floor(Math.random() * glitchChars.length)];
   }, []);
@@ -59,34 +61,32 @@ export const useGlitchText = ({
       );
       const stepDuration = duration / textLength;
 
-      let currentText = Array.from(text)
+      const revealedIndices = new Set<number>();
+      const initialText = Array.from(text)
         .map(() => getRandomChar())
         .join('');
-      let revealedIndices = new Set<number>();
 
       indices.forEach((index, step) => {
-        setTimeout(() => {
-          revealedIndices.add(index); // Add this index to revealed characters
-          currentText = glitchifyTextContinuously(
-            currentText,
+        const timeout = setTimeout(() => {
+          revealedIndices.add(index);
+          const updatedText = glitchifyTextContinuously(
+            initialText,
             text,
             revealedIndices
           );
-          setDisplayText(currentText);
+          setDisplayText(updatedText);
         }, step * stepDuration);
+
+        timeoutsRef.current.push(timeout);
       });
 
-      // Ensure the text is fully correct at the end
-      setTimeout(() => setDisplayText(text), duration);
+      const finalTimeout = setTimeout(() => setDisplayText(text), duration);
+      timeoutsRef.current.push(finalTimeout);
     },
     [getRandomChar, glitchifyTextContinuously]
   );
 
   useEffect(() => {
-    let glitchTimeout: NodeJS.Timeout;
-    let revealTimeout: NodeJS.Timeout;
-    let intervalTimeout: NodeJS.Timeout;
-
     const glitchCycle = () => {
       setGlitching(true);
       const initialText = texts[currentIndex];
@@ -94,24 +94,26 @@ export const useGlitchText = ({
         glitchifyTextContinuously(initialText, initialText, new Set())
       );
 
-      glitchTimeout = setTimeout(() => {
+      const glitchTimeout = setTimeout(() => {
         setGlitching(false);
         revealTextRandom(initialText, randomToFinishDuration);
 
-        revealTimeout = setTimeout(() => {
-          intervalTimeout = setTimeout(() => {
+        const revealTimeout = setTimeout(() => {
+          const intervalTimeout = setTimeout(() => {
             setCurrentIndex((prevIndex) => (prevIndex + 1) % texts.length);
           }, afterRandom);
+          timeoutsRef.current.push(intervalTimeout);
         }, randomToFinishDuration);
+        timeoutsRef.current.push(revealTimeout);
       }, delayBeforeChangeText);
+      timeoutsRef.current.push(glitchTimeout);
     };
 
     glitchCycle();
 
     return () => {
-      clearTimeout(glitchTimeout);
-      clearTimeout(revealTimeout);
-      clearTimeout(intervalTimeout);
+      timeoutsRef.current.forEach(clearTimeout);
+      timeoutsRef.current = [];
     };
   }, [
     texts,
