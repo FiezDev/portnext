@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 interface NavItem {
@@ -17,16 +18,18 @@ const Navigation = ({ items }: NavigationProps) => {
           return (
             <div
               key={index}
-              className="textglow last:hidden first-letter:text-normal first-letter:textglow2 hover:text-white font-bold text-sm sm:text-2xl lg:text-3xl xl:text-4xl first-letter:text-2xl sm:first-letter:text-4xl lg:first-letter:text-5xl xl:first-letter:text-6xl text-white block uppercase tracking-wider"
+              className={cn(
+                'textglow last:hidden first-letter:text-normal first-letter:textglow2 hover:text-white font-bold text-sm sm:text-2xl lg:text-3xl xl:text-4xl',
+                'text-white block uppercase tracking-wider'
+              )}
             >
               <Link href={url}>
                 <li
                   className="relative p-[10px] duration-500
           hover:scale-x-110 hover:duration-500
-         sm:p-[15px] hover:lg:translate-x-[40px] hover:md:translate-x-[30px] hover:translate-x-[10px] first-letter:text-5xl
-            "
+         sm:p-[15px] hover:lg:translate-x-[40px] hover:md:translate-x-[30px] hover:translate-x-[10px] first-letter:text-lg sm:first-letter:text-4xl xl:first-letter:text-6xl"
                 >
-                  <span className="text-light text-3xl hover:scale-x-100 ">
+                  <span className="text-light text-sm sm:text-2xl xl:text-4xl hover:scale-x-100 ">
                     {display}
                   </span>
                 </li>
