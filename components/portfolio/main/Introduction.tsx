@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import Typewriter from './Typewriter';
+import GlitchText from './GlitchText';
 
 const Introduction = () => {
   return (
@@ -14,9 +14,18 @@ const Introduction = () => {
           <div className="flex flex-row md:flex-col mb-2">
             <span className="mr-2 md:mr-0 py-1 xl:py-2">Hello!!</span>
           </div>
-          <div className="flex flex-row md:flex-col">
-            <span className="py-1 xl:py-2 text-white">I&apos;m&nbsp;</span>
-            <Typewriter />
+          <div className="flex flex-row md:flex-col items-center md:items-start">
+            <span className="py-1 xl:py-2 mr-2 md:mb-2 md:mr-0 text-white">
+              I&apos;m&nbsp;
+            </span>
+            <GlitchText
+              className="text-sm sm:text-2xl lg:text-2xl xl:text-4xl"
+              texts={[
+                'Fullstack Developer',
+                'Frontend Developer',
+                'Web Developer',
+              ]}
+            />
           </div>
         </div>
         <h1 className="w-full p-6 sm:py-12 md:py-16 md:px-0 text-normalH uppercase">
