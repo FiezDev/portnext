@@ -1,29 +1,18 @@
 import { projectsData } from '@/mocks/projectMock';
+import { apiClient } from '@/services/baseApi';
+import { ApiResponse } from '@/types/common';
 import { project } from '@/types/object';
-import axios from 'axios';
 import Heading from '../global/Heading';
 import ProjectCard from '../global/ProjectCard';
 
 const Works = async () => {
-  const fetchProjects = async (): Promise<project[]> => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKURL}api/getAllWork?colname=Projects`
-      );
+  const response = await apiClient.get<ApiResponse<project[]>>('v1/project', {
+    params: {
+      collection: 'Projects',
+    },
+  });
 
-      if (Array.isArray(response.data)) {
-        return response.data;
-      } else {
-        console.error('Unexpected response format:', response.data);
-        return [];
-      }
-    } catch (error: any) {
-      console.error('Error fetching projects:', error);
-      return [];
-    }
-  };
-
-  const projects: project[] = await fetchProjects();
+  const projects = response.data.status === 200 ? response.data.data : [];
 
   const sortedData =
     projects.length > 0
