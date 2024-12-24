@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import React from 'react';
-import { NotificationProps } from '../../types/contactForm';
+import { NotificationProps } from '@/types/contactForm';
 
 interface Props extends NotificationProps {
   className?: string;

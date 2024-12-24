@@ -1,7 +1,7 @@
 import { codeUse, infoUse, siteUse } from '@/constants/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import Heading from '../../global/Heading';
+import Heading from '@/components/global/Heading'
 
 const Info = () => (
   <div className="p-10 rounded-3xl basis-full xl:basis-2/3 text-center w-full">

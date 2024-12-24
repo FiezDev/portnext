@@ -7,7 +7,6 @@ import Works from '@/components/portfolio/Works';
 import Head from 'next/head';
 import SuspenseWrapper from './global/SuspenseWrapper';
 import Sidenav from './portfolio/Sidenav';
-import Fallback from './global/SuspenseWrapper/Fallback';
 
 const PortfolioContent = () => {
   return (

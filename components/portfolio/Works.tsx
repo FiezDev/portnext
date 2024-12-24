@@ -1,23 +1,14 @@
+import Heading from '@/components/global/Heading';
+import ProjectCard from '@/components/global/ProjectCard';
 import { projectsData } from '@/mocks/projectMock';
-import { apiClient } from '@/services/baseApi';
-import { ApiResponse } from '@/types/common';
-import { project } from '@/types/object';
-import Heading from '../global/Heading';
-import ProjectCard from '../global/ProjectCard';
+import { useGetProject } from '@/services/project';
 
 const Works = async () => {
-  const response = await apiClient.get<ApiResponse<project[]>>('v1/project', {
-    params: {
-      collection: 'Projects',
-    },
-  });
+  const fetchedProjects = await useGetProject('Projects', '');
 
-  const projects = response.data.status === 200 ? response.data.data : [];
+  const projects = fetchedProjects || projectsData;
 
-  const sortedData =
-    projects.length > 0
-      ? [...projects].sort((a, b) => b.projectID - a.projectID)
-      : [...projectsData].sort((a, b) => b.projectID - a.projectID);
+  const sortedData = [...projects].sort((a, b) => b.projectID - a.projectID);
 
   return (
     <section
@@ -31,14 +22,12 @@ const Works = async () => {
             projectID,
             projectType,
             projectName,
-            projectFullName,
             projectIntro,
             projectDesc,
             projectPic: {
               picurl: { height, pic, width },
             },
             createDate,
-            updateDate,
             activeFlag,
             status,
             stack,

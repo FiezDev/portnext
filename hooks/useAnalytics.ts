@@ -1,6 +1,6 @@
 import { logEvent } from 'firebase/analytics';
 import { useEffect } from 'react';
-import { analytics } from '../lib/firebase/initFirebase';
+import { analytics } from '@/lib/firebase/initFirebase';
 
 const useAnalytics = () => {
   useEffect(() => {

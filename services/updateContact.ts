@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ContactData } from '../types/contactForm';
+import { ContactData } from '@/types/contactForm';
 
 interface CreateContactResponse {
   status: 'success' | 'error';

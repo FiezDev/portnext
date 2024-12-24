@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useContactForm } from '@/hooks/useContactForm';
 import { cn } from '@/lib/utils';
 import React, { useCallback } from 'react';
-import Notification from '../../global/Notification';
+import Notification from '@/components/global/Notification';
 
 const ContactForm: React.FC = () => {
   const {

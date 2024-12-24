@@ -1,6 +1,6 @@
 import { coreicon } from '@/constants/mapdata';
-import Heading from '../global/Heading';
-import StackIcon from '../global/StackIcon';
+import Heading from '@/components/global/Heading';
+import StackIcon from '@/components/global/StackIcon';
 
 const Skills = () => {
   return (

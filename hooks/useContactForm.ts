@@ -9,7 +9,7 @@ import {
   ContactFormInputs,
   contactFormSchema,
   NotificationProps,
-} from '../types/contactForm';
+} from '@/types/contactForm';
 
 export const useContactForm = () => {
   const [notification, setNotification] = useState<NotificationProps | null>(
