@@ -1,5 +1,5 @@
 import ReactQueryProviders from '@/lib/react-query-providers';
-import { ThemeProvider } from '@/lib/theme-provider';
+// import { ThemeProvider } from '@/lib/theme-provider';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { Titillium_Web } from 'next/font/google';
@@ -14,8 +14,7 @@ const titillium = Titillium_Web({
 
 export const metadata: Metadata = {
   title: 'Ittipol Portfolio',
-  description:
-    'Professional portfolio showcasing development and personal profile',
+  description: 'Portfolio showcasing development and personal profile',
 };
 
 type RootLayoutProps = {
@@ -40,14 +39,14 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         />
       </head>
       <body className={titillium.className}>
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        >
-          <ReactQueryProviders>{children}</ReactQueryProviders>
-        </ThemeProvider>
+        > */}
+        <ReactQueryProviders>{children}</ReactQueryProviders>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );
