@@ -10,7 +10,7 @@ import {
 import { useCreateContact } from '@/src/services/contact';
 import { ContactFormInputs } from '@/src/types/contactForm';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Recaptcha from '../../global/Recapcha';
 
@@ -20,7 +20,9 @@ const ContactForm = () => {
     message: string;
     type: 'error' | 'success';
   } | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recaptchaKey, setRecaptchaKey] = useState(0);
 
   const mutateCreateContact = useCreateContact();
 
@@ -33,6 +35,32 @@ const ContactForm = () => {
     resolver: zodResolver(contactFormSchema),
     mode: 'onChange',
   });
+
+  useEffect(() => {
+    if (notification) {
+      const timeoutId = setTimeout(() => {
+        setIsAnimating(true);
+        setTimeout(() => {
+          setNotification(null);
+          setIsAnimating(false);
+          if (notification.type === 'error') {
+            setRecaptchaKey((prev) => prev + 1);
+            setRecaptchaToken(null);
+          }
+        }, 300); // Match the animation duration
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [notification]);
+
+  const resetForm = () => {
+    reset();
+    setRecaptchaToken(null);
+    setRecaptchaKey((prev) => prev + 1);
+  };
 
   const onSubmit = async (value: ContactFormData) => {
     if (!recaptchaToken) {
@@ -47,7 +75,7 @@ const ContactForm = () => {
     try {
       const formData = {
         ...value,
-        recaptchaToken: recaptchaToken,
+        recaptchaToken,
       };
 
       const result = await mutateCreateContact.mutateAsync(formData);
@@ -56,7 +84,7 @@ const ContactForm = () => {
           message: 'Your message has been sent successfully.',
           type: 'success',
         });
-        reset();
+        resetForm();
       } else {
         setNotification({
           message: result?.message || 'Something went wrong.',
@@ -141,6 +169,7 @@ const ContactForm = () => {
         </div>
         <div className="pt-2 pb-4 flex justify-center items-center">
           <Recaptcha
+            key={recaptchaKey}
             siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
             onVerify={setRecaptchaToken}
           />
@@ -156,10 +185,19 @@ const ContactForm = () => {
           {isSubmitting ? 'Submitting...' : 'Submit'}{' '}
         </Button>
         {notification && (
-          <Notification
-            message={notification.message}
-            type={notification.type}
-          />
+          <div
+            className={cn(
+              'transition-transform duration-300 transform',
+              isAnimating
+                ? '-translate-y-full opacity-0'
+                : 'translate-y-0 opacity-100'
+            )}
+          >
+            <Notification
+              message={notification.message}
+              type={notification.type}
+            />
+          </div>
         )}
       </form>
     </div>
