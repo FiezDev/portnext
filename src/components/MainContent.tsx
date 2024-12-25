@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const MainContent = () => {
   return (
-    <div className="absolute top-1/2 left-0 w-full -mt-[calc(100vw)/2] md:static md:mt-0 md:h-auto">
+    <div className="absolute top-1/2 left-0 w-full -mt-[calc(100vw)/2] md:static md:mt-0 md:h-auto seembg">
       <Head>
         <title>Fiez WebSite Index</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />

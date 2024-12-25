@@ -1,5 +1,5 @@
-import { ApiResponse } from '@/types/common';
-import { project } from '@/types/object';
+import { ApiResponse } from '@/src/types/common';
+import { project } from '@/src/types/object';
 import { QueryClient } from '@tanstack/react-query';
 import { apiClient } from './baseApi';
 

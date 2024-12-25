@@ -1,5 +1,5 @@
 import { ImgixImage } from '@/constants/storage';
-import { chatroom } from '@/types/object';
+import { chatroom } from '@/src/types/object';
 import { faClose, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';

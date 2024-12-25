@@ -1,6 +1,6 @@
 'use client';
 
-import '@/src/styles/globals.css';
+import '@/styles/globals.css';
 
 interface FallbackProps {
   text?: string;

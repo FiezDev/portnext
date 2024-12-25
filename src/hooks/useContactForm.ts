@@ -1,15 +1,15 @@
 'use client';
 
 import { submitContactForm } from '@/services/updateContact';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   ContactData,
   ContactFormInputs,
   contactFormSchema,
   NotificationProps,
-} from '@/types/contactForm';
+} from '@/src/types/contactForm';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 export const useContactForm = () => {
   const [notification, setNotification] = useState<NotificationProps | null>(
