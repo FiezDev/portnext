@@ -1,6 +1,6 @@
 // import { ThemeProvider } from '@/lib/theme-provider';
 import ReactQueryProviders from '@/lib/react-query-providers';
-import '@/styles/globals.css';
+import '@/src/styles/globals.css';
 import type { Metadata } from 'next';
 import { Titillium_Web } from 'next/font/google';
 import Script from 'next/script';
