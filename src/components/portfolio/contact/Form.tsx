@@ -20,7 +20,6 @@ const ContactForm = () => {
     message: string;
     type: 'error' | 'success';
   } | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recaptchaKey, setRecaptchaKey] = useState(0);
 
@@ -39,15 +38,13 @@ const ContactForm = () => {
   useEffect(() => {
     if (notification) {
       const timeoutId = setTimeout(() => {
-        setIsAnimating(true);
         setTimeout(() => {
           setNotification(null);
-          setIsAnimating(false);
           if (notification.type === 'error') {
             setRecaptchaKey((prev) => prev + 1);
             setRecaptchaToken(null);
           }
-        }, 300); // Match the animation duration
+        }, 0);
       }, 3000);
 
       return () => {
@@ -72,33 +69,30 @@ const ContactForm = () => {
     }
 
     setIsSubmitting(true);
-    try {
-      const formData = {
-        ...value,
-        recaptchaToken,
-      };
+    const formData = {
+      ...value,
+      recaptchaToken,
+    };
 
-      const result = await mutateCreateContact.mutateAsync(formData);
-      if (result?.status === 200) {
+    const result = await mutateCreateContact.mutateAsync(formData, {
+      onSuccess: () => {
         setNotification({
           message: 'Your message has been sent successfully.',
           type: 'success',
         });
         resetForm();
-      } else {
+      },
+      onError: () => {
         setNotification({
           message: result?.message || 'Something went wrong.',
           type: 'error',
         });
-      }
-    } catch (err) {
-      setNotification({
-        message: 'An error occurred. Please try again later.',
-        type: 'error',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+        resetForm();
+      },
+      onSettled: () => {
+        setIsSubmitting(false);
+      },
+    });
   };
 
   return (
@@ -184,19 +178,18 @@ const ContactForm = () => {
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}{' '}
         </Button>
-        {notification && (
-          <div
-            className={cn(
-              'transition-transform duration-300 transform',
-              isAnimating
-                ? '-translate-y-full opacity-0'
-                : 'translate-y-0 opacity-100'
-            )}
-          >
+        {notification ? (
+          <div className="animate-[sloshow_3s_ease-in-out]">
             <Notification
               message={notification.message}
               type={notification.type}
             />
+          </div>
+        ) : (
+          <div className="flex items-center h-[30px] pt-[30px] my-2">
+            <p className="text-error text-sm">
+              *** Please fill in all the required fields.
+            </p>
           </div>
         )}
       </form>
