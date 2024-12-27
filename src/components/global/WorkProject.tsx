@@ -1,8 +1,8 @@
 import EmblaCarousel from '@/components/global/EmbiaCarousel/Index';
 import { Badge } from '@/components/ui/badge';
-import { project } from '@/src/types/object';
+import { WorkProjectObj } from '@/src/types/object';
 
-const ProjectCard = ({
+const WorkProject = ({
   projectName,
   projectIntro,
   projectDesc,
@@ -10,7 +10,7 @@ const ProjectCard = ({
     picurl: { pic },
   },
   stack,
-}: project) => {
+}: WorkProjectObj) => {
   return (
     <div className="seembg w-[90%] mb-5">
       <div className="glass rounded-3xl p-4 h-auto flex flex-col lg:flex-row gap-4 ">
@@ -51,4 +51,4 @@ const ProjectCard = ({
   );
 };
 
-export default ProjectCard;
+export default WorkProject;

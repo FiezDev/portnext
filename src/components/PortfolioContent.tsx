@@ -2,10 +2,9 @@ import About from '@/components/portfolio/About';
 import Contact from '@/components/portfolio/Contact';
 import Main from '@/components/portfolio/Main';
 import Skills from '@/components/portfolio/Skills';
-import Works from '@/components/portfolio/Works';
-
 import Head from 'next/head';
 import SuspenseWrapper from './global/SuspenseWrapper';
+import Projects from './portfolio/Projects';
 import Sidenav from './portfolio/Sidenav';
 
 const PortfolioContent = () => {
@@ -28,7 +27,7 @@ const PortfolioContent = () => {
             text="Loading Works..."
             errorText="Failed to load Works. Please try again later."
           >
-            <Works />
+            <Projects />
           </SuspenseWrapper>
           <div className="glass">
             <Contact />

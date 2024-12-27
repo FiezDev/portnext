@@ -14,7 +14,7 @@ const ProfileImage = () => {
         />
         <Image
           src={ImgixImage.profilepic_NewMe}
-          className="absolute inset-0 w-full h-full object-contain object-bottom lg:object-contain lg:object-bottom translate-y-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+          className="absolute inset-0 w-full h-full object-contain object-center sm:object-bottom lg:object-contain lg:object-bottom translate-y-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
           fill={true}
           alt="Profile Picture"
           priority

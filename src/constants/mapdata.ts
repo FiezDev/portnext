@@ -2,11 +2,11 @@ import {
   faCodepen,
   faGithub,
   faLine,
+  faLinkedin,
 } from '@fortawesome/free-brands-svg-icons';
 import {
   faAddressBook,
   faAddressCard,
-  faEnvelope,
   faGlobe,
   faHouseChimney,
   faLaptopFile,
@@ -87,25 +87,24 @@ export const codeUse = [
 export const infoUse = [
   {
     id: 1,
-    icon: faEnvelope,
-    text: 'itti.task@gmail.com',
-    url: 'mailto: itti.task@gmail.com',
+    icon: faLinkedin,
+    text: 'Ittipol Vongapai',
+    url: 'https://www.linkedin.com/in/fiezdev/',
   },
-
   {
-    id: 2,
+    id: 3,
     icon: faPhone,
     text: '+66917210274',
     url: 'tel:+66917210274',
   },
   {
-    id: 3,
+    id: 4,
     icon: faLine,
     text: 'gdrx1135',
     url: 'http://line.me/ti/p/~gdrx1135',
   },
   {
-    id: 4,
+    id: 5,
     icon: faGlobe,
     text: 'fiez.dev/portfolio',
     url: 'https://www.fiez.dev/portfolio',
@@ -367,8 +366,8 @@ export const menu = [
   },
   {
     id: 2,
-    display: 'Work',
-    url: '#works',
+    display: 'Projects',
+    url: '#projects',
     picurl: faLaptopFile,
   },
   {
@@ -397,8 +396,8 @@ export const main = [
     url: '#contact',
   },
   {
-    display: 'Work',
-    url: '#works',
+    display: 'Projects',
+    url: '#projects',
   },
   {
     display: 'Skill',
