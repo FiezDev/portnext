@@ -1,6 +1,6 @@
-import { project } from '@/src/types/object';
+import { SideProjectObj, WorkProjectObj } from '@/src/types/object';
 
-export const projectsData: project[] = [
+export const WorkProjects: WorkProjectObj[] = [
   {
     projectName: 'Health Insurance WebApp',
     activeFlag: true,
@@ -113,5 +113,65 @@ export const projectsData: project[] = [
     projectFullName: '',
     projectID: 5,
     createDate: 1697999736000,
+  },
+];
+
+export const SideProjects: SideProjectObj[] = [
+  {
+    projectName: 'PortFolio FrontEnd',
+    projectIntro: 'A web application showcasing my work and projects.',
+    stack: [
+      'Typescript',
+      'React',
+      'Next.js',
+      'Tailwindcss',
+      'Firebase',
+      'Vercel',
+      'Shadcn',
+      'Imgix',
+    ],
+    projectDesc: [
+      'A central hub to showcase all my work, built with Next.js and TypeScript. Styled using Tailwind CSS and ShadCN, with images hosted on Imgix CDN and Google Storage. The application is deployed on Vercel.',
+    ],
+    ghlink: 'github.com/FiezDev/portnext',
+    weblink: 'fiez.dev/portfolio',
+  },
+  {
+    projectName: 'PortFolio BackEnd',
+    projectIntro: 'A Django-based backend for LangChain integration.',
+    stack: [
+      'Python',
+      'Django',
+      'LangChain',
+      'NeonDB',
+      'PostgreSQL',
+      'AWS EC2',
+      'Swagger',
+    ],
+    projectDesc: [
+      'A Python backend hosted on AWS EC2 with PostgreSQL using NeonDB. It provides REST API endpoints and integrates LangChain for future AI projects.',
+    ],
+    ghlink: '',
+    weblink: '',
+  },
+  {
+    projectName: 'FlightClone',
+    projectIntro: 'A mini-site for searching airport flights.',
+    stack: [
+      'React',
+      'TypeScript',
+      'MUI',
+      'Zod',
+      'nuqs',
+      'ReactQuery',
+      'ReactHookForm',
+      'AmadeusApi',
+    ],
+    projectDesc: [
+      'A mini-site built to explore consuming complex API endpoints and experiment with new React concepts. It integrates the Amadeus API for flight search functionality.',
+    ],
+    ghlink: 'github.com/FiezDev/FlightClone',
+    weblink: 'flight-clone.vercel.app',
+    apilink: 'developers.amadeus.com/self-service/category/flights',
   },
 ];

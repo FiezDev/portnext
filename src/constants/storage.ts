@@ -83,4 +83,11 @@ export const ImgixImage = {
   screenshot_project1_3: `${baseImgix}screenshot/projectone3.jpeg`,
   screenshot_project2_1: `${baseImgix}screenshot/projecttwo1.jpeg`,
   screenshot_project3_1: `${baseImgix}screenshot/projectthree1.jpeg`,
+
+  ///sideproject screenshot
+  
+  sideproject1bg: `${baseImgix}screenshot/sideproject1bg.jpeg`,
+  sideproject3bg: `${baseImgix}screenshot/sideproject3bg.jpeg`,
+
+
 };

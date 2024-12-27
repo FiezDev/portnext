@@ -1,12 +1,12 @@
 import Heading from '@/components/global/Heading';
-import ProjectCard from '@/components/global/ProjectCard';
-import { projectsData } from '@/mocks/projectMock';
+import { WorkProjects } from '@/mocks/projectMock';
 import { useGetProject } from '@/services/project';
+import WorkProject from '@/src/components/global/WorkProject';
 
 const Works = async () => {
   const fetchedProjects = await useGetProject('Projects', '');
 
-  const projects = fetchedProjects || projectsData;
+  const projects = fetchedProjects || WorkProjects;
 
   const sortedData = [...projects].sort((a, b) => b.projectID - a.projectID);
 
@@ -15,7 +15,7 @@ const Works = async () => {
       id="works"
       className="container px-5 pt-16 md:pt-24 mx-auto flex flex-col items-center justify-center"
     >
-      <Heading className="pb-16" text="Works" />
+      <Heading className="pb-16" text="Projects" />
       <article className="flex flex-wrap -m-4 items-center justify-evenly">
         {sortedData.map(
           ({
@@ -32,7 +32,7 @@ const Works = async () => {
             status,
             stack,
           }) => (
-            <ProjectCard
+            <WorkProject
               key={projectID}
               projectID={projectID}
               projectType={projectType}

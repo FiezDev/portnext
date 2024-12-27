@@ -1,10 +1,23 @@
-export type project = {
-  projectID: number;
-  projectType: string;
+export type SideProjectObj = {
+  projectName: string;
+  projectDesc: string[];
+  projectIntro?: string;
+  stack: string[];
+  ghlink: string;
+  weblink: string;
+  apilink?: string;
+};
+
+export type WorkProjectObj = {
   projectName: string;
   projectFullName?: string;
   projectIntro?: string;
   projectDesc: string[];
+  stack: string[];
+  projectID: number;
+  projectType: string;
+  createDate: number;
+  updateDate?: number;
   projectPic: {
     picurl: {
       pic: string[];
@@ -22,11 +35,8 @@ export type project = {
       height: number;
     };
   };
-  createDate: number;
-  updateDate?: number;
   activeFlag: boolean;
   status: string;
-  stack: string[];
 };
 
 export type contact = {

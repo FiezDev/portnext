@@ -89,6 +89,14 @@ a:hover {
   -webkit-backdrop-filter: blur(5px);
 }
 
+.glassnobg {
+  box-shadow: 1px 1px 40px 1px rgba(15, 76, 117, 0.5) inset;
+  -webkit-box-shadow: 1px 1px 40px 1px rgba(15, 76, 117, 0.5) inset;
+  -moz-box-shadow: 1px 1px 40px 1px rgba(15, 76, 117, 0.5) inset;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
 #section1 {
   height: 100vh;
   width: 100%;
