@@ -55,17 +55,29 @@ const SideProject = ({
         </ul>
         <ul className="flex gap-4">
           {weblink && (
-            <Link href={`//${weblink}`} passHref>
+            <Link
+              href={`//${weblink}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FontAwesomeIcon icon={faGlobe} size="xl" color="white" />
             </Link>
           )}
           {ghlink && (
-            <Link href={`//${ghlink}`} passHref>
+            <Link
+              href={`//${ghlink}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FontAwesomeIcon icon={faGithub} size="xl" color="white" />
             </Link>
           )}
           {apilink && (
-            <Link href={`//${apilink}`} passHref>
+            <Link
+              href={`//${apilink}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <span className="text-light">AmadeusFlightAPI</span>
             </Link>
           )}

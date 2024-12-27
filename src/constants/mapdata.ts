@@ -367,7 +367,7 @@ export const menu = [
   {
     id: 2,
     display: 'Projects',
-    url: '#projects',
+    url: '#project',
     picurl: faLaptopFile,
   },
   {
@@ -397,7 +397,7 @@ export const main = [
   },
   {
     display: 'Projects',
-    url: '#projects',
+    url: '#project',
   },
   {
     display: 'Skill',

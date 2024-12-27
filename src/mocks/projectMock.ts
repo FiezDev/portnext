@@ -134,7 +134,7 @@ export const SideProjects: SideProjectObj[] = [
       'A central hub to showcase all my work, built with Next.js and TypeScript. Styled using Tailwind CSS and ShadCN, with images hosted on Imgix CDN and Google Storage. The application is deployed on Vercel.',
     ],
     ghlink: 'github.com/FiezDev/portnext',
-    weblink: 'fiez.dev/portfolio',
+    weblink: '',
   },
   {
     projectName: 'PortFolio BackEnd',
