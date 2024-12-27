@@ -26,12 +26,13 @@ const About = () => {
           />
         </figure>
         <article className="glass p-10 md:p-16 w-full h-full md:w-2/3 grid grid-cols-2 items-start text-left text-base md:text-2xl rounded-3xl gap-10">
-          <p className="col-span-2">
-            A self-driven, introverted software developer with 3 years of
+          <div className="col-span-2">
+            My name is Ittipol Vongapai.
+            <br />A self-driven, introverted software developer with 3 years of
             experience, I&apos;m based in Thailand and powered by a steady diet
             of ramen and juice. My current focus areas include ReactJS,
             generative AI technologies, and frontend development.
-          </p>
+          </div>
           <section className="col-span-2 xs:col-span-1">
             <h3 className="text-normal mb-2">Favorites</h3>
             <ul className="list-disc list-inside">
