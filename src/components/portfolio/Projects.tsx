@@ -4,8 +4,8 @@ import Works from './projects/Works';
 const Projects = () => {
   return (
     <>
-      <Works />
       <Sides />
+      <Works />
     </>
   );
 };
