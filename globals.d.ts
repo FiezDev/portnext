@@ -3,6 +3,7 @@ export {};
 declare global {
   interface Window {
     grecaptcha: Grecaptcha;
+    gtag: (...args: any[]) => void;
   }
 
   interface Grecaptcha {
