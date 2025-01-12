@@ -1,5 +1,5 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getAnalytics, Analytics, isSupported } from "firebase/analytics";
+import { Analytics, getAnalytics, isSupported } from 'firebase/analytics';
+import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -12,11 +12,13 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID!,
 };
 
-const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app: FirebaseApp = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
 
 let analytics: Analytics | null = null;
 
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   isSupported()
     .then((supported) => {
       if (supported) {
@@ -24,8 +26,8 @@ if (typeof window !== "undefined") {
       }
     })
     .catch((err) => {
-      console.error("Firebase Analytics is not supported:", err);
+      console.error('Firebase Analytics is not supported:', err);
     });
 }
 
-export { app, analytics };
+export { analytics, app };

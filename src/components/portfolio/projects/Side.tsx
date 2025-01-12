@@ -16,6 +16,7 @@ const Sides = async () => {
             index
           ) => (
             <SideProject
+              key={`${index}-${projectName}`}
               projectName={projectName}
               projectDesc={projectDesc}
               stack={stack}

@@ -2,11 +2,11 @@ import { Attribute, ThemeProvider as NextThemesProvider } from 'next-themes';
 import React from 'react';
 
 interface CustomThemeProviderProps {
-  children: React.ReactNode;
-  attribute?: Attribute | Attribute[];
-  defaultTheme?: string;
-  enableSystem?: boolean;
-  disableTransitionOnChange?: boolean;
+  readonly children: React.ReactNode;
+  readonly attribute?: Attribute | Attribute[];
+  readonly defaultTheme?: string;
+  readonly enableSystem?: boolean;
+  readonly disableTransitionOnChange?: boolean;
 }
 
 export function ThemeProvider({
