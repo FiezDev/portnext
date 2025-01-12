@@ -3,7 +3,7 @@ import { ThemeProvider } from '@/lib/theme-provider';
 import type { Metadata } from 'next';
 import { Titillium_Web } from 'next/font/google';
 import Script from 'next/script';
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import AnalyticsTracker from '../components/global/AnalyticsTracker';
 import '../styles/globals.css';
 
@@ -46,7 +46,9 @@ const RootLayout = ({ children }: RootLayoutProps) => {
           enableSystem
           disableTransitionOnChange
         >
-          <AnalyticsTracker />
+          <Suspense>
+            <AnalyticsTracker />
+          </Suspense>
           <ReactQueryProviders>{children}</ReactQueryProviders>
         </ThemeProvider>
       </body>
