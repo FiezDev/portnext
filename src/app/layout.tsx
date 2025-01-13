@@ -1,5 +1,5 @@
 import ReactQueryProviders from '@/lib/react-query-providers';
-import { ThemeProvider } from '@/lib/theme-provider';
+// import { ThemeProvider } from '@/lib/theme-provider';
 import type { Metadata } from 'next';
 import { Titillium_Web } from 'next/font/google';
 import Script from 'next/script';
@@ -40,17 +40,17 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         />
       </head>
       <body className={titillium.className}>
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        >
-          <Suspense>
-            <AnalyticsTracker />
-          </Suspense>
-          <ReactQueryProviders>{children}</ReactQueryProviders>
-        </ThemeProvider>
+        > */}
+        <Suspense>
+          <AnalyticsTracker />
+        </Suspense>
+        <ReactQueryProviders>{children}</ReactQueryProviders>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );
