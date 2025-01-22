@@ -68,7 +68,7 @@ const ContactForm = () => {
 
     try {
       const response = await fetch(
-        'https://formsubmit.co/itti.task@gmail.com',
+        `https://formsubmit.co/${process.env.NEXT_FORMSUBMIT_MAILHASH}`,
         {
           method: 'POST',
           body: data,
