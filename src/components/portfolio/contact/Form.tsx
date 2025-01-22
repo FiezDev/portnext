@@ -60,11 +60,12 @@ const ContactForm = () => {
   };
 
   const sendToFormSubmit = async (formData: ContactFormData) => {
+    const time = new Date();
     const data = new FormData();
     data.append('name', formData.name);
     data.append('email', formData.email);
     data.append('message', formData.message);
-    data.append('g-recaptcha-response', recaptchaToken || '');
+    data.append('time', time.toString());
 
     try {
       const response = await fetch(
