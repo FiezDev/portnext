@@ -171,7 +171,7 @@ export const SideProjects: SideProjectObj[] = [
       'A mini-site built to explore consuming complex API endpoints and experiment with new React concepts. It integrates the Amadeus API for flight search functionality.',
     ],
     ghlink: 'github.com/FiezDev/FlightClone',
-    weblink: 'flight-clone.vercel.app',
+    weblink: 'flight.fiez.dev',
     apilink: 'developers.amadeus.com/self-service/category/flights',
   },
 ];
