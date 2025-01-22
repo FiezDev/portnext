@@ -59,6 +59,31 @@ const ContactForm = () => {
     setRecaptchaKey((prev) => prev + 1);
   };
 
+  const sendToFormSubmit = async (formData: ContactFormData) => {
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('email', formData.email);
+    data.append('message', formData.message);
+    data.append('g-recaptcha-response', recaptchaToken || '');
+
+    try {
+      const response = await fetch(
+        'https://formsubmit.co/itti.task@gmail.com',
+        {
+          method: 'POST',
+          body: data,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to send data to FormSubmit');
+      }
+    } catch (error) {
+      console.error('FormSubmit Error:', error);
+      throw error;
+    }
+  };
+
   const onSubmit = async (value: ContactFormData) => {
     if (!recaptchaToken) {
       setNotification({
@@ -76,6 +101,7 @@ const ContactForm = () => {
 
     const result = await mutateCreateContact.mutateAsync(formData, {
       onSuccess: () => {
+        sendToFormSubmit(value);
         setNotification({
           message: 'Your message has been sent successfully.',
           type: 'success',
