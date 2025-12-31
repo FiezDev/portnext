@@ -9,6 +9,7 @@
   "scripts": {
     "preinstall": "node scripts/check-package-manager.js",
     "dev": "next dev --turbopack",
+    "dev:clean": "./scripts/dev.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
