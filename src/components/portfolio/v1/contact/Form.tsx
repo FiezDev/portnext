@@ -1,18 +1,18 @@
 'use client';
 
 import Notification from '@/components/global/Notification';
+import Recaptcha from '@/components/global/Recapcha';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
-  ContactFormData,
-  contactFormSchema,
+    ContactFormData,
+    contactFormSchema,
 } from '@/src/lib/validations/contact';
 import { useCreateContact } from '@/src/services/contact';
 import { ContactFormInputs } from '@/src/types/contactForm';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Recaptcha from '../../global/Recapcha';
 
 const ContactForm = () => {
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);

@@ -1,6 +1,6 @@
 import Heading from '@/components/global/Heading';
+import SideProject from '@/components/global/SideProject';
 import { SideProjects } from '@/mocks/projectMock';
-import SideProject from '../../global/SideProject';
 
 const Sides = async () => {
   return (

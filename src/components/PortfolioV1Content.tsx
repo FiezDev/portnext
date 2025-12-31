@@ -1,13 +1,13 @@
-import About from '@/components/portfolio/About';
-import Contact from '@/components/portfolio/Contact';
-import Main from '@/components/portfolio/Main';
-import Skills from '@/components/portfolio/Skills';
+import About from '@/components/portfolio/v1/About';
+import Contact from '@/components/portfolio/v1/Contact';
+import Main from '@/components/portfolio/v1/Main';
+import Skills from '@/components/portfolio/v1/Skills';
 import Head from 'next/head';
 import SuspenseWrapper from './global/SuspenseWrapper';
-import Projects from './portfolio/Projects';
-import Sidenav from './portfolio/Sidenav';
+import Projects from './portfolio/v1/Projects';
+import Sidenav from './portfolio/v1/Sidenav';
 
-const PortfolioContent = () => {
+const PortfolioV1Content = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex flex-col md:flex-row flex-1">
@@ -38,4 +38,4 @@ const PortfolioContent = () => {
   );
 };
 
-export default PortfolioContent;
+export default PortfolioV1Content;

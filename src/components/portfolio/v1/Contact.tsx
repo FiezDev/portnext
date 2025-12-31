@@ -1,4 +1,4 @@
-import ContactInfo from '@/components/portfolio/contact/Info';
+import ContactInfo from '@/components/portfolio/v1/contact/Info';
 import ContactForm from './contact/Form';
 
 const Contact = () => (

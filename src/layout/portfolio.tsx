@@ -1,4 +1,4 @@
-import Nav from '@/components/portfolio/Sidenav';
+import Nav from '@/components/portfolio/v1/Sidenav';
 import { ReactNode } from 'react';
 import LiveChat from '../components/global/Livechat';
 
