@@ -1,6 +1,64 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@source '../components/**/*.{js,ts,jsx,tsx,mdx}';
+@source '../app/**/*.{js,ts,jsx,tsx,mdx}';
+
+/* Custom Theme */
+@theme {
+  /* Colors */
+  --color-bg: #1B262C;
+  --color-bg-h: hsl(201, 24%, 14%);
+  --color-head: #0F4C75;
+  --color-head-h: hsl(204, 77%, 26%);
+  --color-normal: #3282B8;
+  --color-normal-h: hsl(204, 57%, 46%);
+  --color-dark: #00141f;
+  --color-light: #BBE1FA;
+  --color-light-h: hsl(204, 86%, 86%);
+  --color-success: #5cb85c;
+  --color-error: #f66;
+  --color-grey: #888;
+
+  /* Screens */
+  --breakpoint-xs: 400px;
+  --breakpoint-ssm: 539px;
+
+  /* Animations */
+  --animate-neon-flash: neonFlash 3s infinite;
+  --animate-glitch: glitch 0.5s infinite;
+}
+
+/* Keyframes */
+@keyframes neonFlash {
+  0%, 100% {
+    color: #3498db;
+    text-shadow:
+      0 0 5px #3498db,
+      0 0 10px #3498db,
+      0 0 20px #3498db,
+      0 0 40px #3498db,
+      0 0 80px #3498db;
+  }
+  50% {
+    color: #0d0d0d;
+    text-shadow: none;
+  }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes sloshow {
+  0%, 100% { opacity: 0; }
+  25%, 75% { opacity: 1; }
+}
 
 html,
 body {
