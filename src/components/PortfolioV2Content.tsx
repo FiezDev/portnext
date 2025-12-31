@@ -1,39 +1,54 @@
-import Head from 'next/head';
-import Link from 'next/link';
+'use client';
+
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import Final_Depth from './portfolio/v2/final/variants/Final_Depth';
+import Final_Silhouette from './portfolio/v2/final/variants/Final_Silhouette';
+
+const VARIANTS = [
+  { id: 'about', name: 'About', component: Final_Depth },
+  { id: 'silhouette', name: 'Silhouette', component: Final_Silhouette },
+];
 
 const PortfolioV2Content = () => {
+  const [activeVariantId, setActiveVariantId] = useState<string>('about');
+
+  const ActiveComponent = VARIANTS.find((v) => v.id === activeVariantId)?.component || Final_Depth;
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-      <Head>
-        <title>Ittipol Portfolio V2</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      
-      {/* Small V1 Link */}
-      <div className="absolute top-4 right-4">
-        <Link 
-          href="/portfolio/v1" 
-          className="text-xs text-gray-400 hover:text-white transition-colors px-3 py-1 border border-gray-600 rounded-full hover:border-gray-400"
-        >
-          View V1 →
-        </Link>
+    <div className="relative w-full h-screen bg-black overflow-hidden font-sans">
+      {/* Variant Content */}
+      <div className="w-full h-full">
+        <ActiveComponent />
       </div>
 
-      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center max-w-4xl">
-          <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-6">
-            Ittipol Portfolio
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8">
-            V2 - Coming Soon
-          </p>
-          <div className="text-gray-400">
-            <p>This is the new portfolio main page.</p>
-            <p className="mt-2">Content will be added here.</p>
-          </div>
+      {/* Floating Variant Switcher */}
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[100] flex gap-2 p-2 bg-black/80 backdrop-blur-md rounded-full border border-white/10 shadow-2xl">
+        <div className="flex bg-white/5 rounded-full p-1 border border-white/5">
+            {VARIANTS.map((variant) => (
+            <button
+                key={variant.id}
+                onClick={() => setActiveVariantId(variant.id)}
+                className={cn(
+                  'relative px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300',
+                  activeVariantId === variant.id
+                    ? 'text-black'
+                    : 'text-gray-400 hover:text-white'
+                )}
+            >
+                {activeVariantId === variant.id && (
+                <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-white rounded-full"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+                )}
+                <span className="relative z-10">{variant.name}</span>
+            </button>
+            ))}
         </div>
-      </main>
+      </div>
     </div>
   );
 };
