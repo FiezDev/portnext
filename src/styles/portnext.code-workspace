@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "path": "../.."
+    },
+    {
+      "path": "../../../nextbackend"
+    },
+    {
+      "path": "../../../FlightClone"
+    }
+  ],
+  "settings": {}
+}

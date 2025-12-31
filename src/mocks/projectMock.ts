@@ -114,6 +114,47 @@ export const WorkProjects: WorkProjectObj[] = [
     projectID: 5,
     createDate: 1697999736000,
   },
+  {
+    projectDesc: [
+      '- Collaborated on planning and implementing a modern React and Next.js stack, integrating zod, shadcn, Tailwind CSS, react-query, and react-hook-form.',
+      '- Planned and structured components, managing application architecture',
+      '- Engaged in Agile workflows, including grooming, planning, and retrospectives.',
+      '- Designed features based on UX/UI requirements.',
+      '- Refined code to align with company standards and best practices.',
+      '- Conducted code reviews to enhance codebase quality.',
+    ],
+    status: 'Finish',
+    activeFlag: true,
+    projectName: 'LotteryPlus',
+    projectPic: {
+      picurl: {
+        width: 150,
+        pic: [
+          'screenshot/projectsix1.jpg',
+          'screenshot/projectsix2.jpg',
+          'screenshot/projectsix3.jpg',
+          'screenshot/projectsix4.jpg',
+        ],
+        height: 300,
+      },
+    },
+    projectIntro: 'Lottery Service WebApp and BackOffice',
+    projectType: 'Work',
+    updateDate: 1735201459636,
+    stack: [
+      'React',
+      'Typescript',
+      'Next',
+      'Zustand',
+      'Zod',
+      'Tailwindcss',
+      'Shadcn',
+      'React Hook Form',
+    ],
+    projectFullName: '',
+    projectID: 6,
+    createDate: 1697999736000,
+  },
 ];
 
 export const SideProjects: SideProjectObj[] = [

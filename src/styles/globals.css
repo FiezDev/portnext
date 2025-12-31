@@ -1,6 +1,64 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@source '../components/**/*.{js,ts,jsx,tsx,mdx}';
+@source '../app/**/*.{js,ts,jsx,tsx,mdx}';
+
+/* Custom Theme */
+@theme {
+  /* Colors */
+  --color-bg: #1B262C;
+  --color-bg-h: hsl(201, 24%, 14%);
+  --color-head: #0F4C75;
+  --color-head-h: hsl(204, 77%, 26%);
+  --color-normal: #3282B8;
+  --color-normal-h: hsl(204, 57%, 46%);
+  --color-dark: #00141f;
+  --color-light: #BBE1FA;
+  --color-light-h: hsl(204, 86%, 86%);
+  --color-success: #5cb85c;
+  --color-error: #f66;
+  --color-grey: #888;
+
+  /* Screens */
+  --breakpoint-xs: 400px;
+  --breakpoint-ssm: 539px;
+
+  /* Animations */
+  --animate-neon-flash: neonFlash 3s infinite;
+  --animate-glitch: glitch 0.5s infinite;
+}
+
+/* Keyframes */
+@keyframes neonFlash {
+  0%, 100% {
+    color: #3498db;
+    text-shadow:
+      0 0 5px #3498db,
+      0 0 10px #3498db,
+      0 0 20px #3498db,
+      0 0 40px #3498db,
+      0 0 80px #3498db;
+  }
+  50% {
+    color: #0d0d0d;
+    text-shadow: none;
+  }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes sloshow {
+  0%, 100% { opacity: 0; }
+  25%, 75% { opacity: 1; }
+}
 
 html,
 body {
@@ -127,5 +185,117 @@ a:hover {
 @keyframes blink {
   50% {
     opacity: 0;
+  }
+}
+
+/*
+ * Honeycomb Menu Styles
+ */
+
+/* Hexagon clip path */
+.hexagon-clip {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Honeycomb container - responsive grid */
+.honeycomb-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  max-width: 100%;
+}
+
+/* Desktop: honeycomb pattern */
+@media (min-width: 768px) {
+  .honeycomb-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, auto);
+    gap: 0;
+    max-width: 800px;
+    padding: 40px;
+  }
+
+  .honeycomb-item {
+    justify-self: center;
+    align-self: center;
+  }
+
+  /* Row 1: items 0, 1 - offset right */
+  .honeycomb-item-0 {
+    grid-column: 1;
+    grid-row: 1;
+    transform: translateX(50%);
+  }
+
+  .honeycomb-item-1 {
+    grid-column: 2;
+    grid-row: 1;
+    transform: translateX(50%);
+  }
+
+  /* Row 2: items 2, 3, 4 - full width */
+  .honeycomb-item-2 {
+    grid-column: 1;
+    grid-row: 2;
+    transform: translateY(-25%);
+  }
+
+  .honeycomb-item-3 {
+    grid-column: 2;
+    grid-row: 2;
+    transform: translateY(-25%);
+  }
+
+  .honeycomb-item-4 {
+    grid-column: 3;
+    grid-row: 2;
+    transform: translateY(-25%);
+  }
+
+  /* Hover overrides for proper stacking */
+  .honeycomb-item:hover {
+    transform: scale(1.1);
+    z-index: 20;
+  }
+
+  .honeycomb-item-0:hover {
+    transform: translateX(50%) scale(1.1);
+  }
+
+  .honeycomb-item-1:hover {
+    transform: translateX(50%) scale(1.1);
+  }
+
+  .honeycomb-item-2:hover,
+  .honeycomb-item-3:hover,
+  .honeycomb-item-4:hover {
+    transform: translateY(-25%) scale(1.1);
+  }
+}
+
+/* Large desktop: bigger honeycomb */
+@media (min-width: 1024px) {
+  .honeycomb-container {
+    max-width: 1000px;
+  }
+}
+
+/* Mobile: simple grid */
+@media (max-width: 767px) {
+  .honeycomb-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 16px;
+  }
+
+  /* Center the last item if odd count */
+  .honeycomb-item:last-child:nth-child(odd) {
+    grid-column: span 2;
+    justify-self: center;
   }
 }
