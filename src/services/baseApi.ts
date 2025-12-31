@@ -3,6 +3,7 @@ import axios from 'axios';
 const createApiClient = () => {
   return axios.create({
     baseURL: process.env.NEXT_PUBLIC_AWSBACK,
+    timeout: 10000, // 10 second timeout to prevent indefinite hanging
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',

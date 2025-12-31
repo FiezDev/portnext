@@ -1,14 +1,9 @@
 import Heading from '@/components/global/Heading';
 import { WorkProjects } from '@/mocks/projectMock';
-import { useGetProject } from '@/services/project';
 import WorkProject from '@/src/components/global/WorkProject';
 
-const Works = async () => {
-  const fetchedProjects = await useGetProject('Projects', '');
-
-  const projects = fetchedProjects || WorkProjects;
-
-  const sortedData = [...projects].sort((a, b) => b.projectID - a.projectID);
+const Works = () => {
+  const sortedData = [...WorkProjects].sort((a, b) => b.projectID - a.projectID);
 
   return (
     <section
