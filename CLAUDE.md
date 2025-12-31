@@ -4,7 +4,7 @@
 
 **Portnext** is a personal portfolio website built with modern web technologies. This is Ittipol's portfolio showcasing development work and personal profile.
 
-## Tech Stack
+## Tech Stack..
 
 | Category             | Technology                                        |
 | -------------------- | ------------------------------------------------- |
