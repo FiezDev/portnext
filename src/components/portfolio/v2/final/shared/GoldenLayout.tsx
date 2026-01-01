@@ -9,8 +9,8 @@ interface GoldenRatioProps {
 // A container that enforces a max-width based on golden ratio preferences or aspect ratio
 export const GoldenContainer = ({ children, className }: GoldenRatioProps) => {
   return (
-    <div className={cn("w-full h-full flex items-center justify-center p-4", className)}>
-      <div className="relative w-full max-w-[1618px] aspect-[1.618/1] bg-white shadow-xl overflow-hidden border border-gray-100">
+    <div className={cn("w-full h-screen flex items-center justify-center", className)}>
+      <div className="relative w-full h-full bg-white overflow-hidden">
         {children}
       </div>
     </div>

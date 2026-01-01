@@ -1,3 +1,4 @@
+// Force TS check
 import PortfolioV2Content from '@/components/PortfolioV2Content';
 
 const Portfolio = () => {

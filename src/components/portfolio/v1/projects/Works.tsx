@@ -1,6 +1,6 @@
 import Heading from '@/components/global/Heading';
+import WorkProject from '@/components/global/WorkProject';
 import { WorkProjects } from '@/mocks/projectMock';
-import WorkProject from '@/src/components/global/WorkProject';
 
 const Works = () => {
   const sortedData = [...WorkProjects].sort((a, b) => b.projectID - a.projectID);
