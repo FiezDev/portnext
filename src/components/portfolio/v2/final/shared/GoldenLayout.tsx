@@ -7,10 +7,15 @@ interface GoldenRatioProps {
 }
 
 // A container that enforces a max-width based on golden ratio preferences or aspect ratio
+// Outer wrapper: Full viewport width for background/side areas
+// Inner container: Max-width 1366px, centered
 export const GoldenContainer = ({ children, className }: GoldenRatioProps) => {
   return (
     <div className={cn("w-full h-screen flex items-center justify-center", className)}>
-      <div className="relative w-full h-full bg-white overflow-hidden">
+      <div 
+        className="relative w-full h-full bg-white overflow-hidden"
+        style={{ maxWidth: 'var(--max-content-width, 1366px)' }}
+      >
         {children}
       </div>
     </div>

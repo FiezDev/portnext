@@ -20,6 +20,9 @@
   --color-error: #f66;
   --color-grey: #888;
 
+  /* Layout */
+  --max-content-width: 1366px;
+
   /* Screens */
   --breakpoint-xs: 400px;
   --breakpoint-ssm: 539px;

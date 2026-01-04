@@ -12,13 +12,16 @@ const PortfolioV2Content = () => {
   const [currentPage, setCurrentPage] = useState<PageId>('About');
 
   return (
-    <div className="relative w-full h-screen bg-white overflow-hidden font-sans">
-      {/* Main Content */}
-      <div className="w-full h-full">
+    <div className="relative w-full min-h-screen bg-white overflow-hidden font-sans flex justify-center">
+      {/* Main Content - Max width 1366px, centered */}
+      <div 
+        className="w-full h-screen"
+        style={{ maxWidth: 'var(--max-content-width, 1366px)' }}
+      >
         <Final_Depth currentPage={currentPage} />
       </div>
 
-      {/* Fixed Bottom Navigation Menu */}
+      {/* Fixed Bottom Navigation Menu - Stays centered relative to viewport */}
       <div className="fixed bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-[100] flex gap-2 p-2 bg-black/80 backdrop-blur-md rounded-full border border-white/10 shadow-2xl">
         <div className="flex bg-white/5 rounded-full p-1 border border-white/5">
             {PAGE_ITEMS.map((page) => (
