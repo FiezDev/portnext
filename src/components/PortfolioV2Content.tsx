@@ -52,4 +52,3 @@ const PortfolioV2Content = () => {
 };
 
 export default PortfolioV2Content;
-

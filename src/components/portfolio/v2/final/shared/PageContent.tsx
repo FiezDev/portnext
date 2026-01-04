@@ -1,5 +1,8 @@
+import { motion } from 'framer-motion';
 import GoldHeading from '../../shared/GoldHeading';
 import { PageId } from './useComplexTransition';
+
+const MOTTO_TEXT = "PASSIONATE TO MAKE THE REMARKABLE THING";
 
 export const PageContent = ({ page }: { page: PageId }) => {
   switch (page) {
@@ -35,6 +38,18 @@ export const PageContent = ({ page }: { page: PageId }) => {
                         ))}
                     </div>
                 </div>
+                
+                {/* Tagline Motto */}
+                <motion.div 
+                    className="pt-6 md:pt-8"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                >
+                    <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-600 font-medium">
+                        "{MOTTO_TEXT}"
+                    </p>
+                </motion.div>
            </div>
         </div>
       );
