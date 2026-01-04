@@ -33,7 +33,8 @@ const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
 
   useEffect(() => {
      // 1. Generate a single master list of words so they don't overlap with each other
-     const totalWords = 300;
+     // Reduced from 300 to 150 for better performance
+     const totalWords = 150;
      const allWords = generateRadialPackedWords(totalWords);
      
      // 2. Distribute words across layers
@@ -74,9 +75,9 @@ const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
      if (wordCloudLayers.length === 0) return;
      
      const interval = setInterval(() => {
-         // 1. Pick 3 random words
+         // 1. Pick 5 random words
          const candidates:Array<{l: number, i: number}> = [];
-         for (let k = 0; k < 3; k++) {
+         for (let k = 0; k < 5; k++) {
             const randomLayerIndex = Math.floor(Math.random() * wordCloudLayers.length);
             const layer = wordCloudLayers[randomLayerIndex];
             if (layer && layer.items.length > 0) {
@@ -85,17 +86,16 @@ const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
             }
          }
          
-         // 2. Trigger Glow (Fade In)
-         setHighlightedIndices(candidates);
+         // 2. Trigger Glow (Fade In - takes 1.5s)
+          setHighlightedIndices(candidates);
 
-         // 3. Clear Glow (Fade Out) after 1.5s
-         // Fade out transition takes 0.5s, so total active = 2s
-         // Interval is 3s, leaving 1s gap before next cycle
-         setTimeout(() => {
-             setHighlightedIndices([]);
-         }, 1500);
+          // 3. Clear Glow after 3.5s (1.5s fade in + 2s hold)
+          // Fade out takes 1.5s, completing at 5s when next cycle starts
+          setTimeout(() => {
+              setHighlightedIndices([]);
+          }, 3500);
 
-     }, 3000); // 3s total loop: 1.5s ON + 0.5s fade out + 1s gap
+      }, 5000); // 5s cycle: 1.5s fade in + 2s hold + 1.5s fade out
 
      return () => clearInterval(interval);
   }, [wordCloudLayers]);
@@ -145,25 +145,77 @@ const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
                                         {layer.items.map((item: any, itemIndex: number) => {
                                             const isHighlighted = highlightedIndices.some(h => h.l === layerIndex && h.i === itemIndex);
                                             
+                                            // Random animation timing for silver breathing
+                                            const animDelay = ((layerIndex * 17 + itemIndex * 31) % 100) / 100 * 2;
+                                            const animDuration = 2.5 + ((layerIndex + itemIndex) % 2) * 0.5;
+                                            
+                                            // Common text props
+                                            const textProps = {
+                                                x: item.x,
+                                                y: item.y,
+                                                fontFamily: "monospace",
+                                                fontWeight: "bold",
+                                                fontSize: item.fontSize,
+                                                textAnchor: "middle" as const,
+                                                dominantBaseline: "middle" as const,
+                                                transform: `rotate(${item.rotation}, ${item.x}, ${item.y})`,
+                                                className: "select-none pointer-events-none",
+                                            };
+                                            
                                             return (
                                                 <motion.text
-                                                    key={`${layerIndex}-${itemIndex}`}
+                                                        {...textProps}
+                                                        fill="rgba(80,85,95,0.7)"
+                                                        initial={{ opacity: 0.3 }}
+                                                        animate={{ 
+                                                            opacity: isHighlighted ? 0 : [0.3, 0.75, 0.3],
+                                                            filter: isHighlighted 
+                                                                ? 'none' 
+                                                                : [
+                                                                    'drop-shadow(0px 0px 0px transparent)',
+                                                                    'drop-shadow(0px 0px 8px rgba(192, 208, 224, 0.9))',
+                                                                    'drop-shadow(0px 0px 0px transparent)'
+                                                                ],
+                                                        }}
+                                                        transition={isHighlighted ? {
+                                                            opacity: { duration: 1.5, ease: "easeInOut" },
+                                                            filter: { duration: 1.5, ease: "easeInOut" },
+                                                        } : {
+                                                            opacity: { duration: animDuration, repeat: Infinity, ease: "easeInOut", delay: animDelay },
+                                                            filter: { duration: animDuration, repeat: Infinity, ease: "easeInOut", delay: animDelay },
+                                                        }}
+                                                    >
+                                                        {item.text}
+                                                    </motion.text>
+                                            );
+                                        })} 
+                                    </svg>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* 2. Yellow Glow Layer - Separate from silver, FULL OPACITY */}
+                        <div className="absolute inset-0 w-full h-full pointer-events-none z-1">
+                            {wordCloudLayers.map((layer, layerIndex) => (
+                                <div
+                                    key={`yellow-${layerIndex}`}
+                                    className="absolute inset-0 overflow-hidden flex items-center justify-center"
+                                    style={{ filter: layer.blur }}
+                                >
+                                    <svg 
+                                        viewBox="0 0 1000 1000" 
+                                        preserveAspectRatio="xMidYMid slice" 
+                                        className="w-full h-full"
+                                        style={{ overflow: 'visible' }}
+                                    >
+                                        {layer.items.map((item: any, itemIndex: number) => {
+                                            const isHighlighted = highlightedIndices.some(h => h.l === layerIndex && h.i === itemIndex);
+                                            
+                                            return (
+                                                <motion.text
+                                                    key={`${layerIndex}-${itemIndex}-yellow`}
                                                     x={item.x}
                                                     y={item.y}
-                                                    fill="rgba(0,0,0,0.5)" // Boosted base opacity to 0.5
-                                                    
-                                                    // Animation: Breathing Opacity + Gold Glow Override
-                                                    animate={{
-                                                        fill: isHighlighted ? '#EAB308' : 'rgba(0,0,0,0.5)',
-                                                        opacity: isHighlighted ? 1 : 0.5,  // Simple value for smooth fade-out
-                                                        filter: isHighlighted ? 'drop-shadow(0px 0px 8px rgba(234, 179, 8, 0.8))' : 'drop-shadow(0px 0px 0px transparent)',
-                                                    }}
-                                                    transition={{
-                                                        fill: { duration: 0.5 },
-                                                        filter: { duration: 0.5 },
-                                                        opacity: { duration: 0.5, ease: "easeOut" } // Always smooth 0.5s transition
-                                                    }}
-
                                                     fontFamily="monospace"
                                                     fontWeight="bold"
                                                     fontSize={item.fontSize}
@@ -171,13 +223,17 @@ const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
                                                     dominantBaseline="middle"
                                                     transform={`rotate(${item.rotation}, ${item.x}, ${item.y})`}
                                                     className="select-none pointer-events-none"
+                                                    fill="#FBBF24"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: isHighlighted ? 0.8 : 0 }}
+                                                    transition={{ duration: 1.5, ease: "easeInOut" }}
                                                 >
                                                     {item.text}
                                                 </motion.text>
                                             );
-                                        })} 
+                                        })}
                                     </svg>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
 

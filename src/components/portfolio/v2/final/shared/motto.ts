@@ -1,5 +1,5 @@
 export const getMottoString = (length: number) => {
-  const motto = "PASSIONATE TO MAKE THE REMARKABLE THING ";
+  const motto = "PASSIONATE TO MAKE THE REMARKABLE THING";
   return motto.repeat(Math.ceil(length / motto.length)).slice(0, length);
 };
 
