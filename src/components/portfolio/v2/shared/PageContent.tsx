@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import GoldHeading from '../../shared/GoldHeading';
+import GoldHeading from './GoldHeading';
 import { PageId } from './useComplexTransition';
 
 const MOTTO_TEXT = "PASSIONATE TO MAKE THE REMARKABLE THING";

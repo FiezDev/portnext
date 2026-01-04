@@ -181,7 +181,7 @@ function getCandidatesAround(anchor: Rect, newLabelDims: {width: number, height:
 }
 
 
-export const generateRadialPackedWords = (count: number = 50): PlacedWord[] => {
+export const generateRadialPackedWords = (count: number = 50, sortingType: number = 1): PlacedWord[] => {
   // 1. Initialize
   const pickedWords = [...RELATED_WORDS].sort(() => 0.5 - Math.random()).slice(0, count);
   const placed: PlacedWord[] = [];

@@ -3,8 +3,8 @@
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { PageId } from './portfolio/v2/final/shared/useComplexTransition';
-import Final_Depth from './portfolio/v2/final/variants/Final_Depth';
+import { PortfolioCanvas } from './portfolio/v2/PortfolioCanvas';
+import { PageId } from './portfolio/v2/shared/useComplexTransition';
 
 const PAGE_ITEMS: PageId[] = ['About', 'Skill', 'Projects', 'Contact'];
 
@@ -30,7 +30,7 @@ const PortfolioV2Content = () => {
         className="w-full h-screen relative z-10"
         style={{ maxWidth: 'var(--max-content-width, 1366px)' }}
       >
-        <Final_Depth currentPage={currentPage} />
+        <PortfolioCanvas currentPage={currentPage} />
       </div>
 
       {/* Fixed Bottom Navigation Menu - Stays centered relative to viewport */}
