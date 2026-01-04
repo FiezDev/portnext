@@ -25,7 +25,7 @@ type RootLayoutProps = {
 const RootLayout = ({ children }: RootLayoutProps) => {
   const isNotProduction = process.env.NODE_ENV !== 'production';
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {isNotProduction && (
           <Script

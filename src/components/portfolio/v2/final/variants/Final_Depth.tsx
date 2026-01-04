@@ -11,6 +11,8 @@ interface Iter5_DepthProps {
   currentPage: PageId;
 }
 
+
+
 const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
 
   const depthVariants = {
@@ -101,14 +103,14 @@ const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
   }, [wordCloudLayers]);
 
   return (
-    <GoldenContainer className="bg-white perspective-[1000px] overflow-hidden">
+    <GoldenContainer className="bg-transparent perspective-[1000px] overflow-hidden">
 
         {/* 3D Scene Container */}
         <div className="w-full h-full relative flex items-center justify-center perspective-[2000px] overflow-hidden">
              <AnimatePresence mode="wait">
                 <motion.div
                     key={currentPage}
-                    className="w-full h-full bg-white flex items-center justify-center relative transform-style-3d"
+                    className="w-full h-full bg-transparent flex items-center justify-center relative transform-style-3d"
                     variants={depthVariants}
                     initial="initial"
                     animate="animate"
@@ -117,7 +119,7 @@ const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
                 >
 
                                         {/* Unified Card Content */}
-                    <div className="relative w-full h-full bg-white overflow-hidden">
+                    <div className="relative w-full h-full bg-transparent overflow-hidden">
                         
                         {/* 1. Global Background Text Layers (Scattered Word Cloud) */}
                         <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -164,6 +166,7 @@ const Iter5_Depth = ({ currentPage }: Iter5_DepthProps) => {
                                             
                                             return (
                                                 <motion.text
+                                                        key={`${layerIndex}-${itemIndex}`}
                                                         {...textProps}
                                                         fill="rgba(80,85,95,0.7)"
                                                         initial={{ opacity: 0.3 }}

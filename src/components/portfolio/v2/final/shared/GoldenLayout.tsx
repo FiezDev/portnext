@@ -13,7 +13,7 @@ export const GoldenContainer = ({ children, className }: GoldenRatioProps) => {
   return (
     <div className={cn("w-full h-screen flex items-center justify-center", className)}>
       <div 
-        className="relative w-full h-full bg-white overflow-hidden"
+        className="relative w-full h-full bg-transparent overflow-hidden"
         style={{ maxWidth: 'var(--max-content-width, 1366px)' }}
       >
         {children}
