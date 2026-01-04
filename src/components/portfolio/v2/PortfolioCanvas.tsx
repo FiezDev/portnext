@@ -50,87 +50,120 @@ export const PortfolioCanvas = ({ currentPage }: PortfolioCanvasProps) => {
                         
                         {/* 1. Global Background Text Cloud */}
                         <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                             {layers.map((layer, layerIndex) => (
+
+                            {layers.map((layer, layerIndex) => (
                                 <motion.div
-                                    key={layerIndex}
-                                    className="absolute inset-0 overflow-hidden flex items-center justify-center"
+                                    key={`base-layer-${layerIndex}`}
+                                    className="absolute inset-0 overflow-hidden flex items-center justify-center transition-all duration-1000 ease-in-out"
                                     initial={{ translateZ: layer.z - 50, opacity: 0 }}
                                     animate={{ translateZ: layer.z - 50, opacity: 0.2 }} // Base opacity for container
                                     transition={{ 
                                         duration: 1.5,
                                         delay: layerIndex * 0.2
                                     }}
-                                    style={{ 
+                                    style={{
                                         filter: layer.blur,
-                                        zIndex: 0
+                                        zIndex: layerIndex, 
                                     }}
                                 >
                                     <svg 
                                         viewBox="0 0 1000 1000" 
                                         preserveAspectRatio="xMidYMid slice" 
-                                        className="w-full h-full opacity-100"
+                                        className="w-full h-full"
                                         style={{ overflow: 'visible' }}
                                     >
                                         {layer.items.map((item, itemIndex) => {
-                                            // Animation Logic
-                                            // If highlighted: Glow with color
-                                            // If not highlighted: Silver breathe if glowFlag is true
-                                            
-                                            const isHighlighted = item.isHighlighted;
-                                            const shouldGlow = item.shouldGlow;
-                                            
-                                            // Random timing for silver breathing (derived from index to be deterministic per render)
-                                            const animDelay = ((layerIndex * 17 + itemIndex * 31) % 100) / 100 * 2;
-                                            const animDuration = 2.5 + ((layerIndex + itemIndex) % 2) * 0.5;
+                                            // Animation props for non-highlighted state
+                                            const animDuration = 3 + Math.random() * 2;
+                                            const animDelay = Math.random() * 2;
 
                                             return (
                                                 <motion.text
-                                                        key={`${layerIndex}-${itemIndex}`}
-                                                        x={item.x}
-                                                        y={item.y}
-                                                        fontFamily="monospace"
-                                                        fontWeight="bold"
-                                                        fontSize={item.fontSize}
-                                                        textAnchor="middle"
-                                                        dominantBaseline="middle"
-                                                        transform={`rotate(${item.rotation}, ${item.x}, ${item.y})`}
-                                                        className="select-none pointer-events-none"
-                                                        
-                                                        // Fill color: Highlight color OR Gray
-                                                        fill={isHighlighted ? item.highlightColor : "rgba(80,85,95,0.7)"}
-                                                        
-                                                        initial={{ opacity: 0.3 }}
-                                                        
-                                                        animate={{ 
-                                                            opacity: isHighlighted 
-                                                                ? 1 // Highlight opacity
-                                                                : shouldGlow 
-                                                                    ? [0.3, 0.75, 0.3] // Breathing
-                                                                    : 0.3, // Static
-                                                            
-                                                            filter: isHighlighted 
-                                                                ? 'drop-shadow(0px 0px 8px rgba(251, 191, 36, 0.8))' // Gold glow
-                                                                : shouldGlow
-                                                                    ? [
-                                                                        'drop-shadow(0px 0px 0px transparent)',
-                                                                        'drop-shadow(0px 0px 8px rgba(192, 208, 224, 0.9))', // Silver glow
-                                                                        'drop-shadow(0px 0px 0px transparent)'
-                                                                    ]
-                                                                    : 'none'
-                                                        }}
-                                                        
-                                                        transition={isHighlighted ? {
-                                                            opacity: { duration: 1.5, ease: "easeInOut" },
-                                                            filter: { duration: 1.5, ease: "easeInOut" },
-                                                        } : {
-                                                            opacity: { duration: animDuration, repeat: Infinity, ease: "easeInOut", delay: animDelay },
-                                                            filter: { duration: animDuration, repeat: Infinity, ease: "easeInOut", delay: animDelay },
-                                                        }}
-                                                    >
-                                                        {item.text}
-                                                    </motion.text>
+                                                    key={`${layerIndex}-${itemIndex}`}
+                                                    x={item.x}
+                                                    y={item.y}
+                                                    fontFamily="monospace"
+                                                    fontWeight="bold"
+                                                    fontSize={item.fontSize}
+                                                    textAnchor="middle"
+                                                    dominantBaseline="middle"
+                                                    transform={`rotate(${item.rotation}, ${item.x}, ${item.y})`}
+                                                    className="select-none pointer-events-none"
+                                                    fill="rgba(80,85,95,0.7)"
+                                                    initial={{ opacity: 0.3 }}
+                                                    animate={{ 
+                                                        opacity: item.isHighlighted ? 0 : [0.3, 0.75, 0.3],
+                                                        filter: item.isHighlighted 
+                                                            ? 'none' 
+                                                            : [
+                                                                'drop-shadow(0px 0px 0px transparent)',
+                                                                'drop-shadow(0px 0px 8px rgba(192, 208, 224, 0.9))',
+                                                                'drop-shadow(0px 0px 0px transparent)'
+                                                            ],
+                                                    }}
+                                                    transition={item.isHighlighted ? {
+                                                        opacity: { duration: 1.5, ease: "easeInOut" },
+                                                        filter: { duration: 1.5, ease: "easeInOut" },
+                                                    } : {
+                                                        opacity: { duration: animDuration, repeat: Infinity, ease: "easeInOut", delay: animDelay },
+                                                        filter: { duration: animDuration, repeat: Infinity, ease: "easeInOut", delay: animDelay },
+                                                    }}
+                                                >
+                                                    {item.text}
+                                                </motion.text>
                                             );
-                                        })} 
+                                        })}
+                                    </svg>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* 2. Glow Layer - Yellow Highlight */}
+                        {/* Fades IN when highlighted, otherwise invisible */}
+                        <div className="absolute inset-0 w-full h-full pointer-events-none z-1">
+                            {layers.map((layer, layerIndex) => (
+                                <motion.div
+                                    key={`glow-layer-${layerIndex}`}
+                                    className="absolute inset-0 overflow-hidden flex items-center justify-center"
+                                    initial={{ translateZ: layer.z - 50, opacity: 0 }}
+                                    animate={{ translateZ: layer.z - 50, opacity: 1 }} // Full opacity for Glow container
+                                    transition={{ 
+                                        duration: 1.5,
+                                        delay: layerIndex * 0.2
+                                    }}
+                                    style={{ 
+                                        filter: layer.blur,
+                                        zIndex: layerIndex,
+                                    }}
+                                >
+                                    <svg 
+                                        viewBox="0 0 1000 1000" 
+                                        preserveAspectRatio="xMidYMid slice" 
+                                        className="w-full h-full"
+                                        style={{ overflow: 'visible' }}
+                                    >
+                                        {layer.items.map((item, itemIndex) => (
+                                            <motion.text
+                                                key={`${layerIndex}-${itemIndex}-glow`}
+                                                x={item.x}
+                                                y={item.y}
+                                                fontFamily="monospace"
+                                                fontWeight="bold"
+                                                fontSize={item.fontSize}
+                                                textAnchor="middle"
+                                                dominantBaseline="middle"
+                                                transform={`rotate(${item.rotation}, ${item.x}, ${item.y})`}
+                                                className="select-none pointer-events-none"
+                                                fill="#FBBF24"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ 
+                                                    opacity: item.isHighlighted ? 0.8 : 0,
+                                                }}
+                                                transition={{ duration: 1.5, ease: "easeInOut" }}
+                                            >
+                                                {item.text}
+                                            </motion.text>
+                                        ))}
                                     </svg>
                                 </motion.div>
                             ))}
