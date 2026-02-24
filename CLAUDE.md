@@ -6,22 +6,22 @@
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Framework** | Next.js 15 (App Router, Static Export) |
-| **Language** | TypeScript 5.9 |
-| **UI Library** | React 19 |
-| **Styling** | Tailwind CSS 3.4 + tailwindcss-animate |
-| **State Management** | Zustand 5, TanStack Query 5 |
-| **Forms** | React Hook Form 7 + Zod validation |
-| **Icons** | FontAwesome 6, Lucide React |
-| **UI Components** | Radix UI (Toast, Slot) |
-| **Carousel** | Embla Carousel |
-| **Backend** | Firebase (Firestore, Storage) |
-| **Testing** | Jest 29 + React Testing Library |
-| **Storybook** | Storybook 8.6 |
-| **Linting** | ESLint 9 (flat config) |
-| **Package Manager** | **Bun** (required) |
+| Category             | Technology                             |
+| -------------------- | -------------------------------------- |
+| **Framework**        | Next.js 15 (App Router, Static Export) |
+| **Language**         | TypeScript 5.9                         |
+| **UI Library**       | React 19                               |
+| **Styling**          | Tailwind CSS 3.4 + tailwindcss-animate |
+| **State Management** | Zustand 5, TanStack Query 5            |
+| **Forms**            | React Hook Form 7 + Zod validation     |
+| **Icons**            | FontAwesome 6, Lucide React            |
+| **UI Components**    | Radix UI (Toast, Slot)                 |
+| **Carousel**         | Embla Carousel                         |
+| **Backend**          | Firebase (Firestore, Storage)          |
+| **Testing**          | Jest 29 + React Testing Library        |
+| **Storybook**        | Storybook 8.6                          |
+| **Linting**          | ESLint 9 (flat config)                 |
+| **Package Manager**  | **Bun** (required)                     |
 
 ## Project Structure
 
@@ -80,11 +80,13 @@ bun build-storybook  # Build static Storybook
 ## Critical Rules
 
 ### Package Manager
+
 - **ONLY use Bun** - npm, yarn, and pnpm are blocked
 - Run `bun install` for dependencies
 - Lock file: `bun.lockb` (binary)
 
 ### Code Style
+
 - Follow **SOLID principles**
 - Apply **DRY** (Don't Repeat Yourself)
 - Keep it **KISS** (Keep It Simple, Stupid)
@@ -92,30 +94,35 @@ bun build-storybook  # Build static Storybook
 - Use absolute imports with `@/` prefix
 
 ### Component Guidelines
+
 - Functional components only (no class components)
 - Use custom hooks for reusable logic
 - Prefer composition over inheritance
 - Keep components small and focused (SRP)
 
 ### State Management
+
 - **Zustand** for global client state
 - **TanStack Query** for server state/caching
 - **React Hook Form** for form state
 - Avoid prop drilling - use context or stores
 
 ### Styling
+
 - **Tailwind CSS** for all styling
 - Use `cn()` utility from `@/lib/utils` for class merging
 - Custom colors defined in `tailwind.config.ts`
 - Dark mode support via `next-themes` (currently disabled)
 
 ### File Naming
+
 - Components: `PascalCase.tsx`
 - Hooks: `useCamelCase.ts`
 - Types: `camelCase.ts`
 - Constants: `camelCase.ts`
 
 ### Testing
+
 - Place tests in `__tests__` folders or with `.test.ts(x)` suffix
 - Use React Testing Library patterns
 - Test behavior, not implementation
