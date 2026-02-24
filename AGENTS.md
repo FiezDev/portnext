@@ -9,14 +9,12 @@ This document provides specific instructions for AI coding agents working on the
 ## 🚫 Restrictions
 
 ### Package Manager
-
 ```
 ❌ NEVER use: npm, yarn, pnpm
 ✅ ALWAYS use: bun
 ```
 
 ### Do NOT
-
 - Create class components
 - Use `any` type (use `unknown` if truly needed)
 - Install packages without checking if similar functionality exists
@@ -25,26 +23,20 @@ This document provides specific instructions for AI coding agents working on the
 - Add new dependencies to major version updates without confirmation
 
 ### Do NOT Auto-Update to Major Versions
-
 These packages should stay on current major versions unless explicitly requested:
-
-- `next` - stay on v16.x (v17 would be major)
+- `next` - stay on v15.x (v16 is major)
 - `react` / `react-dom` - stay on v19.x
-- `tailwindcss` - stay on v4.x (CSS-first config, no JS config)
-- `zod` - stay on v4.x (v5 would be major)
+- `tailwindcss` - stay on v3.x (v4 has breaking changes)
+- `zod` - stay on v3.x (v4 is major rewrite)
 - `firebase` - stay on v11.x (v12 is major)
 - `storybook` - stay on v8.x (v10 is major)
 - `jest` - stay on v29.x (v30 is major)
-- `tailwind-merge` - stay on v3.x
-- `sonner` - stay on v2.x
-- `@hookform/resolvers` - stay on v5.x
 
 ---
 
 ## ✅ Coding Standards
 
 ### TypeScript
-
 ```typescript
 // ✅ Good: Explicit types, strict null checks
 interface Props {
@@ -58,7 +50,6 @@ const Component = (props) => { ... }
 ```
 
 ### Imports
-
 ```typescript
 // ✅ Use absolute imports
 import { Button } from '@/components/ui/button';
@@ -69,7 +60,6 @@ import { Button } from '../../../components/ui/button';
 ```
 
 ### Component Structure
-
 ```typescript
 // ✅ Preferred structure
 import { type FC, type ReactNode } from 'react';
@@ -90,7 +80,6 @@ export default Component;
 ```
 
 ### Styling with Tailwind
-
 ```typescript
 // ✅ Use cn() for conditional classes
 import { cn } from '@/lib/utils';
@@ -109,45 +98,41 @@ import { cn } from '@/lib/utils';
 
 ## 📁 File Placement
 
-| Type               | Location                     | Naming            |
-| ------------------ | ---------------------------- | ----------------- |
-| Page components    | `src/app/[route]/page.tsx`   | `page.tsx`        |
-| Layouts            | `src/app/[route]/layout.tsx` | `layout.tsx`      |
-| Global components  | `src/components/global/`     | `PascalCase.tsx`  |
-| Feature components | `src/components/[feature]/`  | `PascalCase.tsx`  |
-| UI primitives      | `src/components/ui/`         | `lowercase.tsx`   |
-| Custom hooks       | `src/hooks/`                 | `useCamelCase.ts` |
-| Type definitions   | `src/types/`                 | `camelCase.ts`    |
-| API services       | `src/services/`              | `camelCase.ts`    |
-| Zustand stores     | `src/lib/store/`             | `camelCase.ts`    |
-| Zod schemas        | `src/lib/validations/`       | `camelCase.ts`    |
-| Constants          | `src/constants/`             | `camelCase.ts`    |
+| Type | Location | Naming |
+|------|----------|--------|
+| Page components | `src/app/[route]/page.tsx` | `page.tsx` |
+| Layouts | `src/app/[route]/layout.tsx` | `layout.tsx` |
+| Global components | `src/components/global/` | `PascalCase.tsx` |
+| Feature components | `src/components/[feature]/` | `PascalCase.tsx` |
+| UI primitives | `src/components/ui/` | `lowercase.tsx` |
+| Custom hooks | `src/hooks/` | `useCamelCase.ts` |
+| Type definitions | `src/types/` | `camelCase.ts` |
+| API services | `src/services/` | `camelCase.ts` |
+| Zustand stores | `src/lib/store/` | `camelCase.ts` |
+| Zod schemas | `src/lib/validations/` | `camelCase.ts` |
+| Constants | `src/constants/` | `camelCase.ts` |
 
 ---
 
 ## 🔧 Common Tasks
 
 ### Adding a New Component
-
 1. Create file in appropriate directory
 2. Export as default
 3. Add types inline or in `src/types/`
 4. Add Storybook story if it's a UI component
 
 ### Adding a New Page
-
 1. Create folder in `src/app/`
 2. Add `page.tsx` with default export
 3. Add `layout.tsx` if page needs specific layout
 
 ### Adding a Service
-
 1. Create file in `src/services/`
 2. Use axios instance from `baseApi.ts`
 3. Add types for request/response
 
 ### Adding State
-
 - **Local UI state**: `useState`
 - **Form state**: React Hook Form
 - **Global client state**: Zustand store in `src/lib/store/`
@@ -177,7 +162,7 @@ describe('Component', () => {
     const user = userEvent.setup();
     const onClick = jest.fn();
     render(<Component onClick={onClick} />);
-
+    
     await user.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
@@ -201,7 +186,7 @@ describe('Component', () => {
 type(scope): description
 
 feat(portfolio): add project filtering
-fix(contact): resolve form validation bug
+fix(contact): resolve form validation bug  
 docs(readme): update installation steps
 style(ui): improve button hover states
 refactor(hooks): simplify useWindowSize
