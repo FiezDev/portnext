@@ -18,7 +18,7 @@ export interface WordGalaxyProps {
 
 const WordGalaxy = ({
   visible,
-  radius = 6,
+  radius = 3,
   count = 50,
   highlightedIndices,
   baseColor = '#A1A1AA',

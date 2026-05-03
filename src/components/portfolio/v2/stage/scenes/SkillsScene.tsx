@@ -69,7 +69,7 @@ const SkillsScene = forwardRef<Group, { visible: boolean }>(({ visible }, ref) =
   return (
     <group ref={ref} visible={visible}>
       <group ref={innerRef}>
-        {coreicon.map((s, i) => (
+        {visible && coreicon.map((s, i) => (
           <IconBillboard
             key={s.id}
             position={positions[i]}
