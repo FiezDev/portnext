@@ -1,10 +1,14 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PortfolioCanvas } from './portfolio/v2/PortfolioCanvas';
 import { PageId, PAGE_ORDER, getAdjacentPage } from './portfolio/v2/shared/useComplexTransition';
+import { useStageEnabled } from '@/hooks/useStageEnabled';
+
+const Stage = dynamic(() => import('./portfolio/v2/stage/Stage'), { ssr: false });
 
 const PAGE_ITEMS: PageId[] = PAGE_ORDER;
 
@@ -40,6 +44,8 @@ const PortfolioV2Content = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentPage, handlePageChange]);
 
+  const stageEnabled = useStageEnabled();
+
   return (
     <div className="relative w-full min-h-screen bg-white overflow-hidden font-sans flex justify-center">
       
@@ -61,6 +67,10 @@ const PortfolioV2Content = () => {
       >
         <PortfolioCanvas currentPage={currentPage} previousPage={previousPageRef.current} />
       </div>
+
+      {stageEnabled && (
+        <Stage currentPage={currentPage} previousPage={previousPageRef.current} />
+      )}
 
       {/* Fixed Bottom Navigation Menu - Always Docked Bottom Bar */}
       <div className="fixed bottom-0 left-0 w-full z-[100] flex items-center justify-center gap-1 p-2 bg-[#1A1A1A] backdrop-blur-md border-t border-white/10 shadow-2xl">
