@@ -86,6 +86,13 @@ const PortfolioV2Content = () => {
             </button>
             ))}
       </div>
+      {/* "View Classic" link to V1 portfolio */}
+      <a
+        href="/portfolio/v1"
+        className="fixed bottom-2 right-3 z-[110] text-[10px] uppercase tracking-[0.2em] text-stone-400 hover:text-yellow-500 transition-colors"
+      >
+        view classic ↗
+      </a>
     </div>
   );
 };
