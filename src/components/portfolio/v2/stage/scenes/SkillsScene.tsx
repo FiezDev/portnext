@@ -3,6 +3,7 @@
 import { forwardRef, useMemo, useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import type { Group } from 'three';
+import throttle from 'lodash.throttle';
 import IconBillboard from '../primitives/IconBillboard';
 import { coreicon } from '@/constants/mapdata';
 
@@ -30,20 +31,21 @@ const SkillsScene = forwardRef<Group, { visible: boolean }>(({ visible }, ref) =
 
   useEffect(() => {
     const onDown = (e: PointerEvent) => { dragging.current = true; lastX.current = e.clientX; };
-    const onMove = (e: PointerEvent) => {
+    const onMove = throttle((e: PointerEvent) => {
       if (!dragging.current || !innerRef.current) return;
       const dx = e.clientX - lastX.current;
       lastX.current = e.clientX;
       velocity.current = dx * 0.005;
       innerRef.current.rotation.y += velocity.current;
       invalidate();
-    };
+    }, 16);
     const onUp = () => { dragging.current = false; };
 
     window.addEventListener('pointerdown', onDown);
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     return () => {
+      onMove.cancel();
       window.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
