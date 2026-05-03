@@ -2,7 +2,7 @@
 
 import { Canvas } from '@react-three/fiber';
 import { Suspense } from 'react';
-import type { PageId } from '../shared/useComplexTransition';
+import type { PageId } from '../shared/pages';
 import SceneController from './SceneController';
 
 interface StageProps {

@@ -1,4 +1,4 @@
-import { PAGE_ORDER } from '../../shared/useComplexTransition';
+import { PAGE_ORDER } from '../../shared/pages';
 
 describe('Scene registry', () => {
   it('has one scene per page in PAGE_ORDER', () => {

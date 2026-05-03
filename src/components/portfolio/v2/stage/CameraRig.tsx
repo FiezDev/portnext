@@ -3,15 +3,8 @@
 import { useThree, useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
-import type { PageId } from '../shared/useComplexTransition';
-
-const CAMERA_PRESETS: Record<PageId, { pos: [number, number, number]; look: [number, number, number] }> = {
-  Main:     { pos: [0, 0, 6],       look: [0, 0, 0] },
-  About:    { pos: [-2, 0.3, 5],    look: [0, 0, 0] },
-  Skill:    { pos: [0, 0, 4.5],     look: [0, 0, 0] },
-  Projects: { pos: [0, 0.5, 5.5],   look: [0, 0, 0] },
-  Contact:  { pos: [0, 0, 6],       look: [0, 0, 0] },
-};
+import { CAMERA_PRESETS } from '../gsap/timelines';
+import type { PageId } from '../shared/pages';
 
 interface CameraRigProps {
   currentPage: PageId;

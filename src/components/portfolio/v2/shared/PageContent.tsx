@@ -1,4 +1,4 @@
-import { PageId } from './useComplexTransition';
+import { PageId } from './pages';
 import MainSection from '../sections/MainSection';
 import AboutSection from '../sections/AboutSection';
 import SkillsSection from '../sections/SkillsSection';

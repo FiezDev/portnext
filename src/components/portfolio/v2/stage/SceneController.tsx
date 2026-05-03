@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import type { Group } from 'three';
-import type { PageId } from '../shared/useComplexTransition';
+import type { PageId } from '../shared/pages';
 import MainScene from './scenes/MainScene';
 import AboutScene from './scenes/AboutScene';
 import SkillsScene from './scenes/SkillsScene';

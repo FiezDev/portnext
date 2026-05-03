@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import type { Camera, Vector3 } from 'three';
-import type { PageId } from '../shared/useComplexTransition';
+import type { PageId } from '../shared/pages';
 
 export interface CameraTarget {
   pos: [number, number, number];

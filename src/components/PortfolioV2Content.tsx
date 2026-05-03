@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PortfolioCanvas } from './portfolio/v2/PortfolioCanvas';
-import { PageId, PAGE_ORDER, getAdjacentPage } from './portfolio/v2/shared/useComplexTransition';
+import { PageId, PAGE_ORDER, getAdjacentPage } from './portfolio/v2/shared/pages';
 import { useStageEnabled } from '@/hooks/useStageEnabled';
 
 const Stage = dynamic(() => import('./portfolio/v2/stage/Stage'), { ssr: false });

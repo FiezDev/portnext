@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import type { Camera } from 'three';
-import type { PageId } from '../shared/useComplexTransition';
+import type { PageId } from '../shared/pages';
 import { buildTransitionTimeline, SceneAnimator } from './timelines';
 
 interface UsePageTimelineArgs {

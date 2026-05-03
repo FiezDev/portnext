@@ -1,27 +1,18 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useCloudText } from './hooks/useCloudText';
 import { GoldenContainer } from './shared/GoldenLayout';
 import { PageContent } from './shared/PageContent';
-import { PageId, useComplexTransition } from './shared/useComplexTransition';
+import type { PageId } from './shared/pages';
 
 interface PortfolioCanvasProps {
   currentPage: PageId;
   previousPage?: PageId;
 }
 
-export const PortfolioCanvas = ({ currentPage, previousPage }: PortfolioCanvasProps) => {
-  const prevPageRef = useRef<PageId>(currentPage);
-  const fromPage = previousPage || prevPageRef.current;
-
-  // Update ref
-  useEffect(() => {
-    prevPageRef.current = currentPage;
-  }, [currentPage]);
-
-  const { variants: pageVariants, transition: pageTransition } = useComplexTransition(fromPage, currentPage);
+export const PortfolioCanvas = ({ currentPage }: PortfolioCanvasProps) => {
 
   // Only show background elements on Main page
   const showBackground = currentPage === 'Main';
@@ -47,11 +38,10 @@ export const PortfolioCanvas = ({ currentPage, previousPage }: PortfolioCanvasPr
           <motion.div
             key={currentPage}
             className="w-full h-full bg-transparent flex items-center justify-center relative"
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={pageTransition}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
             <div className="relative w-full h-full bg-transparent overflow-hidden">
 
