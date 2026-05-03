@@ -1,12 +1,17 @@
-import type { Group } from 'three';
+'use client';
+
 import { forwardRef } from 'react';
+import type { Group } from 'three';
+import PortraitCard3D from '../primitives/PortraitCard3D';
+import { ImgixImage } from '@/constants/storage';
 
 const AboutScene = forwardRef<Group, { visible: boolean }>(({ visible }, ref) => (
   <group ref={ref} visible={visible}>
-    <mesh position={[0, 0, 0]}>
-      <boxGeometry args={[0.3, 0.3, 0.3]} />
-      <meshBasicMaterial color="#3B82F6" />
-    </mesh>
+    <PortraitCard3D
+      baseUrl={ImgixImage.profilepic_faceMe as unknown as string}
+      hoverUrl={ImgixImage.profilepic_faceMeEff as unknown as string}
+      position={[1.2, 0, 0]}
+    />
   </group>
 ));
 AboutScene.displayName = 'AboutScene';
