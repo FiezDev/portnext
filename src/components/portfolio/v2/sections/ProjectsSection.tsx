@@ -8,14 +8,18 @@ import { ChevronLeft, ChevronRight, Briefcase, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useProjectsState, ProjectKind } from '../stage/projectsState';
 import { useScrollyEntrance } from '../gsap/useScrollyEntrance';
+import { useStageEnabled } from '@/hooks/useStageEnabled';
+import ProjectCard from './ProjectCard';
 
 const ProjectsSection = () => {
   const ref = useRef<HTMLDivElement>(null);
   useScrollyEntrance(ref);
+  const stageOn = useStageEnabled();
   const { kind, index, setKind, setIndex, next, prev } = useProjectsState();
   const projects = kind === 'work'
     ? [...WorkProjects].sort((a, b) => b.projectID - a.projectID)
     : SideProjects;
+  const currentProject = projects[index];
 
   return (
     <div ref={ref} className="flex flex-col justify-center h-full p-6 md:p-12 bg-transparent pointer-events-none">
@@ -32,6 +36,13 @@ const ProjectsSection = () => {
           </Button>
         ))}
       </div>
+      {!stageOn && currentProject && (
+        <div data-stagger className="pointer-events-auto mb-4" style={{ perspective: 1000 }}>
+          <div style={{ transform: 'rotateY(0deg)' }}>
+            <ProjectCard project={currentProject} index={0} isActive />
+          </div>
+        </div>
+      )}
       <div data-stagger className="flex items-center justify-between mt-auto pointer-events-auto">
         <Button onClick={() => prev(projects.length)} variant="ghost" size="icon" className="rounded-full">
           <ChevronLeft className="w-5 h-5" />

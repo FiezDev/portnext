@@ -6,6 +6,7 @@ import { ImgixImage } from '@/constants/storage';
 import { MapPin, Download, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useScrollyEntrance } from '../gsap/useScrollyEntrance';
+import { useStageEnabled } from '@/hooks/useStageEnabled';
 
 const MOTTO_TEXT = 'PASSIONATE TO MAKE THE REMARKABLE THING';
 const FAVORITES = ['Blue', 'Cat', 'Basketball', 'Motorcycle', 'Mobile MOBA'];
@@ -14,6 +15,7 @@ const LOCATION = 'Bangkok, Thailand';
 const AboutSection = () => {
   const ref = useRef<HTMLDivElement>(null);
   useScrollyEntrance(ref);
+  const stageOn = useStageEnabled();
 
   const handleDownloadCV = () => window.open(ImgixImage.cv_pdf2 as unknown as string, '_blank');
 
@@ -22,6 +24,15 @@ const AboutSection = () => {
       <div data-stagger>
         <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl mb-6 md:mb-8">About Me</GoldHeading>
       </div>
+      {!stageOn && (
+        <div data-stagger className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden flex-shrink-0 mb-4">
+          <img
+            src={ImgixImage.profilepic_faceMe as unknown as string}
+            alt="Portrait"
+            className="object-cover w-full h-full"
+          />
+        </div>
+      )}
       <div className="flex-1 max-w-2xl space-y-4 md:space-y-5">
         <div data-stagger>
           <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Ittipol Vongapai</h3>
