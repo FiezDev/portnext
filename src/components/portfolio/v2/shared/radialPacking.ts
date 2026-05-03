@@ -277,3 +277,33 @@ export const generateRadialPackedWords = (count: number = 50, sortingType: numbe
 
   return placed;
 };
+
+export interface FlatPoint { x: number; y: number }
+
+/**
+ * Project 2D radial-packed points onto the FRONT hemisphere of a sphere of `radius`.
+ * Input coords are assumed to be roughly bounded in [-bound, bound]; we normalize by
+ * inferring the bound from the max magnitude.
+ */
+export function toSphere(items: FlatPoint[], radius: number): [number, number, number][] {
+  if (items.length === 0) return [];
+  const maxMag = Math.max(...items.map(p => Math.hypot(p.x, p.y))) || 1;
+
+  return items.map(({ x, y }) => {
+    // Normalize to unit disk
+    const u = x / maxMag;
+    const v = y / maxMag;
+
+    // Spherical projection: phi = polar angle from +Z, mapped from disk magnitude (0..1 → 0..PI/2)
+    const r2d = Math.hypot(u, v);          // 0..1
+    const phi = (r2d * Math.PI) / 2;       // 0..PI/2 → front hemisphere only
+    const theta = Math.atan2(v, u);        // azimuth
+
+    const sinPhi = Math.sin(phi);
+    return [
+      radius * sinPhi * Math.cos(theta),
+      radius * sinPhi * Math.sin(theta),
+      radius * Math.cos(phi),              // always >= 0 (front hemisphere)
+    ];
+  });
+}
