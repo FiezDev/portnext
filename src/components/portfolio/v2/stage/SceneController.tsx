@@ -22,11 +22,14 @@ const SceneController = ({ currentPage, previousPage }: SceneControllerProps) =>
   const projectsRef = useRef<Group>(null);
   const contactRef = useRef<Group>(null);
 
+  const reducedMotion = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   return (
     <>
       <ambientLight intensity={0.6} />
       <directionalLight position={[2, 5, 5]} intensity={0.8} />
-      <CameraRig currentPage={currentPage} previousPage={previousPage} />
+      <CameraRig currentPage={currentPage} previousPage={previousPage} reducedMotion={reducedMotion} />
       <MainScene ref={mainRef} visible={currentPage === 'Main'} />
       <AboutScene ref={aboutRef} visible={currentPage === 'About'} />
       <SkillsScene ref={skillsRef} visible={currentPage === 'Skill'} />
