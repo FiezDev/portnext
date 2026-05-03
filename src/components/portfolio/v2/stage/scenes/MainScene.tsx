@@ -1,12 +1,10 @@
-import type { Group } from 'three';
 import { forwardRef } from 'react';
+import type { Group } from 'three';
+import WordGalaxy from '../primitives/WordGalaxy';
 
 const MainScene = forwardRef<Group, { visible: boolean }>(({ visible }, ref) => (
   <group ref={ref} visible={visible}>
-    <mesh position={[0, 0, 0]}>
-      <boxGeometry args={[0.3, 0.3, 0.3]} />
-      <meshBasicMaterial color="#FBBF24" />
-    </mesh>
+    <WordGalaxy visible={visible} />
   </group>
 ));
 MainScene.displayName = 'MainScene';

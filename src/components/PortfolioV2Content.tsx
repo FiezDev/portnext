@@ -65,7 +65,11 @@ const PortfolioV2Content = () => {
         className="w-full h-screen relative z-10"
         style={{ maxWidth: 'var(--max-content-width, 1366px)' }}
       >
-        <PortfolioCanvas currentPage={currentPage} previousPage={previousPageRef.current} />
+        <PortfolioCanvas
+          currentPage={currentPage}
+          previousPage={previousPageRef.current}
+          domCloudOnly={!stageEnabled}
+        />
       </div>
 
       {stageEnabled && (

@@ -10,9 +10,10 @@ import type { PageId } from './shared/pages';
 interface PortfolioCanvasProps {
   currentPage: PageId;
   previousPage?: PageId;
+  domCloudOnly?: boolean; // false when Stage is mounted; true on fallback
 }
 
-export const PortfolioCanvas = ({ currentPage }: PortfolioCanvasProps) => {
+export const PortfolioCanvas = ({ currentPage, previousPage, domCloudOnly = true }: PortfolioCanvasProps) => {
 
   // Only show background elements on Main page
   const showBackground = currentPage === 'Main';
@@ -46,7 +47,7 @@ export const PortfolioCanvas = ({ currentPage }: PortfolioCanvasProps) => {
             <div className="relative w-full h-full bg-transparent overflow-hidden">
 
               {/* Text Cloud Background - Only on Main */}
-              {showBackground && memoizedLayers.map((layer, layerIndex) => (
+              {domCloudOnly && showBackground && memoizedLayers.map((layer, layerIndex) => (
                 <motion.div
                   key={`layer-${layerIndex}`}
                   className="absolute inset-0 overflow-hidden flex items-center justify-center pointer-events-none z-0"
@@ -94,7 +95,7 @@ export const PortfolioCanvas = ({ currentPage }: PortfolioCanvasProps) => {
               ))}
 
               {/* Portrait Visual - Only on Main */}
-              {showBackground && (
+              {domCloudOnly && showBackground && (
                 <div className="absolute top-0 h-full pointer-events-none left-0 w-full min-[1366px]:left-auto min-[1366px]:right-0 min-[1366px]:w-[38.2%] z-0 hidden md:block">
                   <div className="relative w-full h-full flex items-center justify-center">
                     <motion.div
