@@ -17,6 +17,7 @@ import Recaptcha from '@/components/global/Recapcha';
 import Notification from '@/components/global/Notification';
 import { useCreateContact } from '@/services/contact';
 import { cn } from '@/lib/utils';
+import { useContactState } from '../stage/contactState';
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -57,6 +58,7 @@ const ContactSection = () => {
   const [recaptchaKey, setRecaptchaKey] = useState(0);
 
   const mutateCreateContact = useCreateContact();
+  const triggerBurst = useContactState(s => s.triggerBurst);
 
   const {
     register,
@@ -132,6 +134,7 @@ const ContactSection = () => {
     try {
       await mutateCreateContact.mutateAsync(formData);
       await sendToFormSubmit(value);
+      triggerBurst();
       setNotification({
         message: 'Your message has been sent successfully.',
         type: 'success',
