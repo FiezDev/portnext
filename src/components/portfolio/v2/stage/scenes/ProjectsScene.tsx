@@ -1,7 +1,9 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 import type { Group } from 'three';
+import { useThree } from '@react-three/fiber';
+import gsap from 'gsap';
 import type { WorkProjectObj, SideProjectObj } from '@/types/object';
 import ProjectCard3D from '../primitives/ProjectCard3D';
 import { WorkProjects, SideProjects } from '@/mocks/projectMock';
@@ -53,6 +55,19 @@ function normalizeProject(p: WorkProjectObj | SideProjectObj): NormalizedProject
 const ProjectsScene = forwardRef<Group, { visible: boolean }>(({ visible }, ref) => {
   const kind  = useProjectsState((s) => s.kind);
   const index = useProjectsState((s) => s.index);
+  const innerRef = useRef<Group>(null);
+  const invalidate = useThree((s) => s.invalidate);
+
+  useEffect(() => {
+    if (!innerRef.current) return;
+    const g = innerRef.current;
+    const tl = gsap.timeline({ onUpdate: invalidate });
+    tl.fromTo(g.position, { y: 0 }, { y: 0.4, duration: 0.18, ease: 'power2.in' }, 0);
+    tl.fromTo(g.scale, { x: 1, y: 1, z: 1 }, { x: 0.8, y: 0.8, z: 0.8, duration: 0.18, ease: 'power2.in' }, 0);
+    tl.to(g.position, { y: 0, duration: 0.3, ease: 'power2.out' }, 0.18);
+    tl.to(g.scale, { x: 1, y: 1, z: 1, duration: 0.3, ease: 'back.out(2)' }, 0.18);
+    return () => { tl.kill(); };
+  }, [kind, invalidate]);
 
   const all: (WorkProjectObj | SideProjectObj)[] =
     kind === 'work'
@@ -61,26 +76,28 @@ const ProjectsScene = forwardRef<Group, { visible: boolean }>(({ visible }, ref)
 
   return (
     <group ref={ref} visible={visible}>
-      {SLOTS.map((slot) => {
-        const idx = (index + slot.offset + all.length) % all.length;
-        const p = all[idx];
-        if (!p) return null;
+      <group ref={innerRef}>
+        {SLOTS.map((slot) => {
+          const idx = (index + slot.offset + all.length) % all.length;
+          const p = all[idx];
+          if (!p) return null;
 
-        const { imageUrl, title, description, techStack } = normalizeProject(p);
+          const { imageUrl, title, description, techStack } = normalizeProject(p);
 
-        return (
-          <ProjectCard3D
-            key={`${kind}-${idx}`}
-            position={slot.position}
-            rotationY={slot.rotationY}
-            scale={slot.scale}
-            imageUrl={imageUrl}
-            title={title}
-            description={description}
-            techStack={techStack}
-          />
-        );
-      })}
+          return (
+            <ProjectCard3D
+              key={`${kind}-${idx}`}
+              position={slot.position}
+              rotationY={slot.rotationY}
+              scale={slot.scale}
+              imageUrl={imageUrl}
+              title={title}
+              description={description}
+              techStack={techStack}
+            />
+          );
+        })}
+      </group>
     </group>
   );
 });
