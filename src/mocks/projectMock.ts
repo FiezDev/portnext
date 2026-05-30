@@ -154,6 +154,26 @@ export const WorkProjects: WorkProjectObj[] = [
     projectFullName: '',
     projectID: 6,
     createDate: 1697999736000,
+    caseStudy: {
+      problem:
+        'LotteryPlus is a lottery service web app and back-office. The team needed a modern, maintainable front end that could ship features fast under Agile delivery while staying consistent across a rapidly growing feature set.',
+      role: 'Front-end developer — planned and structured the component architecture, owned feature implementation from UX/UI specs, and drove code quality through reviews.',
+      approach: [
+        'Planned and implemented a modern React + Next.js stack, integrating Zod, shadcn/ui, Tailwind CSS, React Query and React Hook Form.',
+        'Designed a reusable, well-structured component architecture to keep the growing app consistent and maintainable.',
+        'Worked in Agile cycles — grooming, planning and retrospectives — translating UX/UI requirements into shipped features.',
+        'Refined code to company standards and ran code reviews to raise overall codebase quality.',
+      ],
+      highlights: [
+        'Modern React/Next.js architecture with type-safe forms (Zod + React Hook Form).',
+        'Reusable component system built on shadcn/ui and Tailwind CSS.',
+        'Server state managed with React Query; client state with Zustand.',
+        'Both the customer-facing web app and the internal back-office.',
+      ],
+      outcome:
+        'Delivered a consistent, maintainable front end that shipped features on a regular cadence. {{FILL IN: add concrete metrics — e.g. number of features shipped, performance gains, users served}}',
+      timeline: '{{FILL IN: e.g. 2024 – 2025}}',
+    },
   },
 ];
 

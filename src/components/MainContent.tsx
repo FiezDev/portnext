@@ -20,12 +20,6 @@ const menuItems = [
     label: 'Blog',
     imagePosition: 'center 35%',
   },
-  {
-    href: '/admin/dashboard',
-    image: ImgixImage.main_admin,
-    label: 'Admin',
-    imagePosition: 'center 40%',
-  },
 ];
 
 const MainContent = () => {
