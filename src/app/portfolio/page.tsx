@@ -1,7 +1,8 @@
-import PortfolioContent from '@/components/PortfolioContent';
+// Force TS check
+import PortfolioV2Content from '@/components/PortfolioV2Content';
 
 const Portfolio = () => {
-  return <PortfolioContent />;
+  return <PortfolioV2Content />;
 };
 
 export default Portfolio;

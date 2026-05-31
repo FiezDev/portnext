@@ -8,6 +8,17 @@ export type SideProjectObj = {
   apilink?: string;
 };
 
+export type CaseStudy = {
+  problem: string; // the context / challenge
+  role: string; // what the developer specifically owned
+  approach: string[]; // key technical decisions / architecture choices
+  highlights?: string[]; // notable things built (falls back to projectDesc)
+  outcome: string; // impact — may contain {{FILL IN}} placeholders to complete later
+  timeline?: string; // e.g. "2024 – 2025"
+  liveUrl?: string;
+  repoUrl?: string;
+};
+
 export type WorkProjectObj = {
   projectName: string;
   projectFullName?: string;
@@ -37,6 +48,7 @@ export type WorkProjectObj = {
   };
   activeFlag: boolean;
   status: string;
+  caseStudy?: CaseStudy;
 };
 
 export type contact = {

@@ -4,24 +4,24 @@
 
 **Portnext** is a personal portfolio website built with modern web technologies. This is Ittipol's portfolio showcasing development work and personal profile.
 
-## Tech Stack..
+## Tech Stack
 
-| Category             | Technology                                        |
-| -------------------- | ------------------------------------------------- |
-| **Framework**        | Next.js 16 (App Router, Static Export)            |
-| **Language**         | TypeScript 5.9                                    |
-| **UI Library**       | React 19                                          |
-| **Styling**          | Tailwind CSS 4.1 (CSS-first) + tw-animate-css     |
-| **State Management** | Zustand 5, TanStack Query 5                       |
-| **Forms**            | React Hook Form 7 + Zod 3 + @hookform/resolvers 5 |
-| **Icons**            | FontAwesome 6, Lucide React                       |
-| **UI Components**    | Radix UI (Toast, Slot)                            |
-| **Carousel**         | Embla Carousel                                    |
-| **Backend**          | Firebase 11 (Firestore, Storage)                  |
-| **Testing**          | Jest 29 + React Testing Library                   |
-| **Storybook**        | Storybook 8.6                                     |
-| **Linting**          | ESLint 9 (flat config)                            |
-| **Package Manager**  | **Bun** (required)                                |
+| Category             | Technology                             |
+| -------------------- | -------------------------------------- |
+| **Framework**        | Next.js 15 (App Router, Static Export) |
+| **Language**         | TypeScript 5.9                         |
+| **UI Library**       | React 19                               |
+| **Styling**          | Tailwind CSS 3.4 + tailwindcss-animate |
+| **State Management** | Zustand 5, TanStack Query 5            |
+| **Forms**            | React Hook Form 7 + Zod validation     |
+| **Icons**            | FontAwesome 6, Lucide React            |
+| **UI Components**    | Radix UI (Toast, Slot)                 |
+| **Carousel**         | Embla Carousel                         |
+| **Backend**          | Firebase (Firestore, Storage)          |
+| **Testing**          | Jest 29 + React Testing Library        |
+| **Storybook**        | Storybook 8.6                          |
+| **Linting**          | ESLint 9 (flat config)                 |
+| **Package Manager**  | **Bun** (required)                     |
 
 ## Project Structure
 

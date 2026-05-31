@@ -28,16 +28,13 @@ This document provides specific instructions for AI coding agents working on the
 
 These packages should stay on current major versions unless explicitly requested:
 
-- `next` - stay on v16.x (v17 would be major)
+- `next` - stay on v15.x (v16 is major)
 - `react` / `react-dom` - stay on v19.x
-- `tailwindcss` - stay on v4.x (CSS-first config, no JS config)
-- `zod` - stay on v4.x (v5 would be major)
+- `tailwindcss` - stay on v3.x (v4 has breaking changes)
+- `zod` - stay on v3.x (v4 is major rewrite)
 - `firebase` - stay on v11.x (v12 is major)
 - `storybook` - stay on v8.x (v10 is major)
 - `jest` - stay on v29.x (v30 is major)
-- `tailwind-merge` - stay on v3.x
-- `sonner` - stay on v2.x
-- `@hookform/resolvers` - stay on v5.x
 
 ---
 
