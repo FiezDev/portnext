@@ -12,6 +12,13 @@ const Recaptcha: React.FC<RecaptchaProps> = ({ siteKey, onVerify }) => {
   const widgetId = useRef<number | null>(null);
 
   useEffect(() => {
+    if (!siteKey) {
+      console.warn(
+        'reCAPTCHA: NEXT_PUBLIC_RECAPTCHA_SITE_KEY is not set — skipping widget render.'
+      );
+      return;
+    }
+
     if (!window.grecaptcha) {
       console.error('reCAPTCHA not loaded');
       return;
