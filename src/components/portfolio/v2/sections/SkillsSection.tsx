@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import GoldHeading from '../shared/GoldHeading';
 import { coreicon } from '@/constants/mapdata';
-import Image from 'next/image';
 import { useState } from 'react';
 
 const containerVariants = {
@@ -48,57 +47,71 @@ const SkillsSection = () => {
         className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-4 md:gap-6"
         variants={containerVariants}
       >
-        {coreicon.map((skill, index) => (
-          <motion.a
-            key={skill.id}
-            href={skill.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            variants={itemVariants}
-            custom={index}
-            onMouseEnter={() => setHoveredId(skill.id)}
-            onMouseLeave={() => setHoveredId(null)}
-            whileHover={{
-              scale: 1.15,
-              rotate: 5,
-              zIndex: 10,
-            }}
-            whileTap={{ scale: 0.95 }}
-            className="relative group flex flex-col items-center justify-center p-3 md:p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-gray-100 hover:border-yellow-300 hover:bg-yellow-50/50 transition-all duration-300 cursor-pointer"
-          >
-            {/* Glow effect on hover */}
-            <motion.div
-              className="absolute inset-0 rounded-xl bg-gradient-to-br from-yellow-200/20 to-amber-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              initial={false}
-            />
+        {coreicon.map((skill, index) => {
+          const SkillIcon = skill.Icon;
+          const isHovered = hoveredId === skill.id;
 
-            {/* Icon */}
-            <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
-              <Image
-                src={skill.icon}
-                alt={skill.tooltipText}
-                width={skill.width}
-                height={skill.height}
-                className="object-contain transition-all duration-300"
-              />
-            </div>
-
-            {/* Tooltip */}
-            <motion.span
-              initial={{ opacity: 0, y: 5 }}
-              animate={{
-                opacity: hoveredId === skill.id ? 1 : 0,
-                y: hoveredId === skill.id ? 0 : 5,
+          return (
+            <motion.a
+              key={skill.id}
+              href={skill.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              variants={itemVariants}
+              custom={index}
+              onMouseEnter={() => setHoveredId(skill.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              whileHover={{
+                scale: 1.15,
+                rotate: 5,
+                zIndex: 10,
               }}
-              transition={{ duration: 0.2 }}
-              className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-20 pointer-events-none"
+              whileTap={{ scale: 0.95 }}
+              className="relative group flex flex-col items-center justify-center p-3 md:p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-gray-100 hover:border-yellow-300 hover:bg-yellow-50/50 transition-all duration-300 cursor-pointer"
             >
-              {skill.tooltipText}
-              {/* Tooltip arrow */}
-              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900" />
-            </motion.span>
-          </motion.a>
-        ))}
+              {/* Glow effect on hover */}
+              <motion.div
+                className="absolute inset-0 rounded-xl bg-gradient-to-br from-yellow-200/20 to-amber-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                initial={false}
+              />
+
+              {/* Icon — always brand color */}
+              <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
+                {skill.img ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={skill.img}
+                    alt={skill.name}
+                    className="w-8 h-8 object-contain transition-all duration-300"
+                  />
+                ) : (
+                  SkillIcon && (
+                    <SkillIcon
+                      size={32}
+                      className="transition-colors duration-300"
+                      style={{ color: skill.color }}
+                    />
+                  )
+                )}
+              </div>
+
+              {/* Tooltip */}
+              <motion.span
+                initial={{ opacity: 0, y: 5 }}
+                animate={{
+                  opacity: isHovered ? 1 : 0,
+                  y: isHovered ? 0 : 5,
+                }}
+                transition={{ duration: 0.2 }}
+                className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-20 pointer-events-none"
+              >
+                {skill.name}
+                {/* Tooltip arrow */}
+                <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900" />
+              </motion.span>
+            </motion.a>
+          );
+        })}
       </motion.div>
 
       {/* Subtitle */}
