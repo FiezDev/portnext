@@ -10,16 +10,16 @@ const Skills = () => {
     >
       <Heading className="pb-8" text={'Core Skills'} />
       <article className="flex flex-wrap w-full">
-        {coreicon.map(({ id, url, icon, width, height, css, tooltipText }) => {
+        {coreicon.map(({ id, url, Icon, img, color, css, name }) => {
           return (
             <StackIcon
               key={id}
               url={url}
-              icon={icon}
-              width={width}
-              height={height}
+              Icon={Icon}
+              img={img}
+              color={color}
               className={css}
-              tooltipText={tooltipText}
+              name={name}
             />
           );
         })}
