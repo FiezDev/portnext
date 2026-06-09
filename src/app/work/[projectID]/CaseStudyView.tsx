@@ -13,11 +13,9 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn, resolveImageSrc } from '@/lib/utils';
 import GoldHeading from '@/components/portfolio/v2/shared/GoldHeading';
 import type { WorkProjectObj } from '@/types/object';
-
-const IMGIX_BASE = process.env.NEXT_PUBLIC_IMGIX_URL || '';
 
 const FILL_IN_RE = /(\{\{[^}]*\}\})/g;
 
@@ -74,9 +72,7 @@ const Section = ({
 );
 
 const CaseStudyView = ({ project }: { project: WorkProjectObj }) => {
-  const images = (project.projectPic?.picurl?.pic || []).map(
-    (p) => `${IMGIX_BASE}${p}`
-  );
+  const images = (project.projectPic?.picurl?.pic || []).map(resolveImageSrc);
   const [index, setIndex] = useState(0);
   const hasImages = images.length > 0;
   const cs = project.caseStudy;

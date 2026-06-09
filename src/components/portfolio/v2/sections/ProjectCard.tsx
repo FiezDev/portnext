@@ -5,11 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Github, Globe, Link2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WorkProjectObj, SideProjectObj } from '@/types/object';
-import { cn } from '@/lib/utils';
+import { cn, resolveImageSrc } from '@/lib/utils';
 import { useState } from 'react';
 import Image from 'next/image';
-
-const IMGIX_BASE = process.env.NEXT_PUBLIC_IMGIX_URL || '';
 
 interface ProjectCardProps {
   project: WorkProjectObj | SideProjectObj;
@@ -45,12 +43,11 @@ const ProjectCard = ({ project, isActive }: ProjectCardProps) => {
     desc.replace(/^- /, '')
   );
 
-  // Get project images for work projects with Imgix URL
-  const projectImages = isWorkProject
-    ? ((project as WorkProjectObj).projectPic?.picurl?.pic || []).map(
-        (path) => `${IMGIX_BASE}${path}`
-      )
-    : [];
+  const projectImages = (
+    isWorkProject
+      ? (project as WorkProjectObj).projectPic?.picurl?.pic || []
+      : (project as SideProjectObj).pic || []
+  ).map(resolveImageSrc);
 
   const hasImages = projectImages.length > 0;
 

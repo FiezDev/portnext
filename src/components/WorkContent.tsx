@@ -5,11 +5,9 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn, resolveImageSrc } from '@/lib/utils';
 import { WorkProjects } from '@/mocks/projectMock';
 import GoldHeading from '@/components/portfolio/v2/shared/GoldHeading';
-
-const IMGIX_BASE = process.env.NEXT_PUBLIC_IMGIX_URL || '';
 
 const getStatusVariant = (status?: string) => {
   switch (status) {
@@ -77,7 +75,7 @@ const WorkContent = () => {
         >
           {projects.map((project) => {
             const firstImage = project.projectPic?.picurl?.pic?.[0];
-            const imageSrc = firstImage ? `${IMGIX_BASE}${firstImage}` : '';
+            const imageSrc = firstImage ? resolveImageSrc(firstImage) : '';
             const shownStack = project.stack.slice(0, 5);
             const extra = project.stack.length - shownStack.length;
 

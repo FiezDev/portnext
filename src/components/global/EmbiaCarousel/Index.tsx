@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn, resolveImageSrc } from '@/lib/utils';
 import { EmblaCarouselType, EmblaOptionsType } from 'embla-carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
@@ -64,7 +64,7 @@ const EmblaCarousel = ({ items, options }: EmblaCarouselProp) => {
             >
               <Image
                 className="rounded-3xl object-contain shadow-inner"
-                src={`${process.env.NEXT_PUBLIC_IMGIX_URL}${item}`}
+                src={resolveImageSrc(item)}
                 fill
                 alt={`Slide ${index + 1}`}
                 priority={index === 0}

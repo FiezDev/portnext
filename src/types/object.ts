@@ -2,6 +2,7 @@ export type SideProjectObj = {
   projectName: string;
   projectDesc: string[];
   projectIntro?: string;
+  pic?: string[];
   stack: string[];
   ghlink: string;
   weblink: string;

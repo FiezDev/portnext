@@ -2,6 +2,74 @@ import { SideProjectObj, WorkProjectObj } from '@/src/types/object';
 
 export const WorkProjects: WorkProjectObj[] = [
   {
+    projectName: 'RiceGuard Platform',
+    projectFullName: 'RiceGuard — Agritech IoT + AI Crop Monitoring',
+    projectIntro: 'Agritech IoT + AI platform for smart rice-crop monitoring',
+    projectType: 'Work',
+    projectID: 8,
+    activeFlag: true,
+    status: 'Ongoing',
+    createDate: 1770681600000,
+    updateDate: 1780876800000,
+    stack: [
+      'TypeScript',
+      'Bun',
+      'GraphQL',
+      'Rust',
+      'C++',
+      'React Native',
+      'MQTT',
+      'Python',
+      'TimescaleDB',
+      'ESP32',
+    ],
+    projectPic: {
+      picurl: {
+        width: 400,
+        height: 300,
+        pic: [
+          '/screenshot/riceguard-admin.png',
+          '/screenshot/riceguard-analytics-drawer.png',
+          '/screenshot/riceguard-mobile-pest.png',
+          '/screenshot/riceguard-mobile.png',
+        ],
+      },
+    },
+    projectDesc: [
+      '- Built an end-to-end smart rice-crop monitoring platform: pest & disease detection, sensor telemetry, drought alerts, and edge AI.',
+      '- Engineered the full pipeline — ESP32 firmware (DHT22 → MQTT) → Bun/Elysia GraphQL API → Rust async MQTT bridge → TimescaleDB → React Native farmer app.',
+      '- Delivered operations dashboards (admin, analytics, AI-Ops model monitoring & anomaly detection) plus a Jetson Nano edge-AI tier with OTA updates.',
+    ],
+  },
+  {
+    projectName: 'NT TagID System',
+    projectFullName: 'NT Tag ID — National Tag-ID Platform',
+    projectIntro: 'National tag-ID platform for NT (National Telecom Thailand)',
+    projectType: 'Work',
+    projectID: 7,
+    activeFlag: true,
+    status: 'Ongoing',
+    createDate: 1754179200000,
+    updateDate: 1769731200000,
+    stack: ['Rust', 'Svelte', 'Vue', 'JavaScript', 'Django', 'PostgreSQL'],
+    projectPic: {
+      picurl: {
+        width: 400,
+        height: 300,
+        pic: [
+          '/screenshot/nttagid-analytics.png',
+          '/screenshot/nttagid-users.png',
+          '/screenshot/nttagid-home.png',
+        ],
+      },
+    },
+    projectDesc: [
+      '- Contributed across a national tag-ID system spanning web, mobile, and API tiers.',
+      '- Built and iterated the frontend (Vue / Svelte) and integrated the high-performance Rust API with Svelte mobile clients.',
+      '- Added a Django-based ETL analytics pipeline to extract, transform, and load TagID platform data for real-time insights.',
+    ],
+  },
+  {
     projectName: 'Health Insurance WebApp',
     activeFlag: true,
     status: 'Finish',
@@ -178,6 +246,37 @@ export const WorkProjects: WorkProjectObj[] = [
 ];
 
 export const SideProjects: SideProjectObj[] = [
+  {
+    projectName: 'Vehicle Label System',
+    projectIntro:
+      'Human-in-the-loop labeling tool for vehicle image classification (CCTV).',
+    stack: ['JavaScript', 'PHP', 'MySQL', 'AWS S3', 'REST API', 'HTML', 'CSS'],
+    projectDesc: [
+      'A web tool for human labeling of CCTV vehicle images (type, color, make, model) to build training data for the STAR Search Engine recognition models.',
+      'Browse with pagination + status/type/AI/search filters, a label workspace with save/flag actions, and AI suggestions pulled from a manifest on S3. Exports labels to CSV and stats to JSON/CSV for ML training.',
+    ],
+    pic: ['/screenshot/vehicle-verifier.png'],
+    ghlink: '',
+    weblink: '',
+  },
+  {
+    projectName: 'Image Crawler & Labelling',
+    projectIntro: 'Crawler + Roboflow labelling pipeline for AI dataset building.',
+    stack: [
+      'Python',
+      'Google Custom Search API',
+      'AWS S3',
+      'MySQL',
+      'Roboflow',
+      'JavaScript',
+    ],
+    projectDesc: [
+      'A pipeline that collects images from the Google Custom Search API, queues and stores them via MySQL + AWS S3, then runs human verification and labelling through Roboflow to produce training datasets for AI models.',
+      'Built as the MVP image-dataset system (download → verify → upload → label) feeding the recognition model training workflow.',
+    ],
+    ghlink: '',
+    weblink: '',
+  },
   {
     projectName: 'PortFolio FrontEnd',
     projectIntro: 'A web application showcasing my work and projects.',

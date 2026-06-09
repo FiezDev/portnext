@@ -1,4 +1,5 @@
-import { cn } from '@/src/lib/utils';
+import Image from 'next/image';
+import { cn, resolveImageSrc } from '@/src/lib/utils';
 import { SideProjectObj } from '@/src/types/object';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
@@ -13,8 +14,11 @@ const SideProject = ({
   ghlink,
   weblink,
   apilink,
+  pic,
   className,
 }: SideProjectObj & { className?: string }) => {
+  const previewImage = pic?.[0] ? resolveImageSrc(pic[0]) : '';
+
   return (
     <div
       id="mainside"
@@ -24,6 +28,17 @@ const SideProject = ({
       )}
     >
       <div className="p-5 pb-0 lg:pb-5 w-full lg:w-2/5 z-10">
+        {previewImage && (
+          <div className="relative mb-5 aspect-[8/5] overflow-hidden rounded-2xl bg-white/10">
+            <Image
+              src={previewImage}
+              alt={`${projectName} preview`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 400px"
+            />
+          </div>
+        )}
         <div className="text-normal text-3xl font-[700] antialiased tracking-wide uppercase pb-4">
           Project
         </div>
