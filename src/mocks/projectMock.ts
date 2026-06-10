@@ -319,9 +319,14 @@ export const SideProjects: SideProjectObj[] = [
     stack: ['Next.js', 'React', 'TypeScript', 'PHP', 'AWS S3', 'MySQL'],
     projectDesc: [
       'A quality-control review tool for the STAR Search Engine: supervisors check each vehicle image with the human label and the AI prediction side-by-side (type, color, make), then approve, reject, or correct via keyboard shortcuts.',
-      'Server-side S3 image proxy, agreement detection, low-resolution auto-warnings, per-labeler accuracy scores, and shareable filtered URLs.',
+      'A reference-image panel pulls known make/model photos by year, so a reviewer can visually compare the CCTV capture against the real vehicle before deciding.',
+      'AI in the tool: a recognition model classifies vehicle type, colour and make with a confidence score, and human-vs-AI disagreement is flagged automatically. (Server-side S3 image proxy, low-resolution auto-warnings, per-labeler accuracy scores, shareable filtered URLs.)',
     ],
-    pic: ['/screenshot/vehicle-verifier.png'],
+    pic: [
+      '/screenshot/vehicle-verifier.png',
+      '/screenshot/vehicle-verifier-ref-ford.png',
+      '/screenshot/vehicle-verifier-ref-isuzu.png',
+    ],
     ghlink: '',
     weblink: '',
   },
