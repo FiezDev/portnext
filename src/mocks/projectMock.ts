@@ -33,6 +33,7 @@ export const WorkProjects: WorkProjectObj[] = [
         width: 400,
         height: 300,
         pic: [
+          '/screenshot/riceguard-aws-infra.png',
           '/screenshot/riceguard-aiops.png',
           '/screenshot/riceguard-overview.png',
           '/screenshot/riceguard-admin-dashboard.png',
