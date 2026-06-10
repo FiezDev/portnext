@@ -301,6 +301,7 @@ export const SideProjects: SideProjectObj[] = [
       'A pipeline that collects images from the Google Custom Search API, queues and stores them via MySQL + AWS S3, then runs human verification and labelling through Roboflow to produce training datasets for AI models.',
       'Built as the MVP image-dataset system (download → verify → upload → label) feeding the recognition model training workflow.',
     ],
+    pic: ['/screenshot/crawler-labelling.png'],
     ghlink: '',
     weblink: '',
   },
