@@ -267,6 +267,7 @@ export const SideProjects: SideProjectObj[] = [
       'A workflow-automation platform for AI content pipelines: a visual node-graph builder chains reusable steps — LLM drafting, fact-check, translate, image & video generation, and auto-publishing to Facebook/TikTok — with typed input/output ports, versioning, and human-approval gates.',
       'Each step is executed in the background by Hermes AI agents over host bridges — the agents run the LLM, browser-automation and media-generation work and stream results back into the run, with warm-session publishing to social platforms.',
       'Ships ready-made pipelines (TikTok Affiliate, YouTube→FB, AI Inspire short/long/router), a library of pluggable processors, and a run console with live status, re-run and per-step history.',
+      'Runs in production behind the QOne AI News page on Facebook (facebook.com/qoneainews), auto-publishing AI-generated news posts.',
     ],
     pic: [
       '/screenshot/atease-builder.png',
@@ -276,7 +277,7 @@ export const SideProjects: SideProjectObj[] = [
       '/screenshot/atease-runs.png',
     ],
     ghlink: '',
-    weblink: '',
+    weblink: 'www.facebook.com/qoneainews',
   },
   {
     projectName: 'ORG-TOOLS',

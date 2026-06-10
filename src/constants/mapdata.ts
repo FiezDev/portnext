@@ -1,5 +1,6 @@
 import {
   faCodepen,
+  faFacebook,
   faGithub,
   faLine,
   faLinkedin,
@@ -126,6 +127,12 @@ export const infoUse = [
     icon: faGlobe,
     text: 'fiez.dev/portfolio',
     url: 'https://www.fiez.dev/portfolio',
+  },
+  {
+    id: 6,
+    icon: faFacebook,
+    text: 'QOne AI News',
+    url: 'https://www.facebook.com/qoneainews',
   },
 ];
 
