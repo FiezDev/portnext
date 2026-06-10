@@ -249,13 +249,38 @@ export const WorkProjects: WorkProjectObj[] = [
 
 export const SideProjects: SideProjectObj[] = [
   {
-    projectName: 'Vehicle Label System',
+    projectName: 'ORG-TOOLS',
     projectIntro:
-      'Human-in-the-loop labeling tool for vehicle image classification (CCTV).',
-    stack: ['JavaScript', 'PHP', 'MySQL', 'AWS S3', 'REST API', 'HTML', 'CSS'],
+      'Internal engineering platform — turns Jira projects into versioned ISO documentation.',
+    stack: [
+      'TypeScript',
+      'Bun',
+      'React',
+      'Vite',
+      'PostgreSQL',
+      'Jira API',
+      'AWS S3',
+    ],
     projectDesc: [
-      'A web tool for human labeling of CCTV vehicle images (type, color, make, model) to build training data for the STAR Search Engine recognition models.',
-      'Browse with pagination + status/type/AI/search filters, a label workspace with save/flag actions, and AI suggestions pulled from a manifest on S3. Exports labels to CSV and stats to JSON/CSV for ML training.',
+      'A team platform that assembles versioned ISO documentation from Jira: architecture diagrams, app screenshots and exportable ISO documents (Word) with full version history.',
+      'Also handles Jira task creation, a flexible Excel/CSV issue exporter with custom column mapping, a shared-memory knowledge graph, and zero-knowledge credential vaults (the server stores only ciphertext).',
+    ],
+    pic: [
+      '/screenshot/orgtools-iso-library.png',
+      '/screenshot/orgtools-export.png',
+      '/screenshot/orgtools-jira-tasks.png',
+    ],
+    ghlink: '',
+    weblink: '',
+  },
+  {
+    projectName: 'Vehicle Verifier',
+    projectIntro:
+      'Supervisor QC tool for verifying vehicle classifications — Human label vs AI prediction.',
+    stack: ['Next.js', 'React', 'TypeScript', 'PHP', 'AWS S3', 'MySQL'],
+    projectDesc: [
+      'A quality-control review tool for the STAR Search Engine: supervisors check each vehicle image with the human label and the AI prediction side-by-side (type, color, make), then approve, reject, or correct via keyboard shortcuts.',
+      'Server-side S3 image proxy, agreement detection, low-resolution auto-warnings, per-labeler accuracy scores, and shareable filtered URLs.',
     ],
     pic: ['/screenshot/vehicle-verifier.png'],
     ghlink: '',
