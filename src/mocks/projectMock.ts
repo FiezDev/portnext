@@ -268,6 +268,7 @@ export const SideProjects: SideProjectObj[] = [
     ],
     pic: [
       '/screenshot/atease-builder.png',
+      '/screenshot/atease-gate.png',
       '/screenshot/atease-library.png',
       '/screenshot/atease-workflows.png',
       '/screenshot/atease-runs.png',
