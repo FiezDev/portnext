@@ -289,7 +289,7 @@ export const SideProjects: SideProjectObj[] = [
   {
     projectName: 'Image Crawler & Labelling',
     projectIntro:
-      'Unified web console to crawl, approve, extract, and label images into AI training datasets.',
+      'Unified web console to crawl, dedupe, approve, extract, and label images into AI training datasets.',
     stack: [
       'Python',
       'FastAPI',
@@ -297,15 +297,18 @@ export const SideProjects: SideProjectObj[] = [
       'AWS S3',
       'MySQL',
       'Redis',
+      'PyTorch',
       'Roboflow',
       'GroundingDINO',
     ],
     projectDesc: [
-      'A unified React + FastAPI console for building AI training datasets end-to-end: crawl images and videos from Google Custom Search, SerpAPI, and yt-dlp into AWS S3, then review and approve thousands of assets in a fast, keyboard-driven grid before exporting the approved set to Roboflow.',
-      'Adds GroundingDINO + YOLO tattoo-frame extraction from approved videos, MySQL-tracked background jobs with live WebSocket progress, and Redis-backed image-similarity search to surface near-duplicates during review.',
+      'A unified React + FastAPI console for building AI training datasets end-to-end. It crawls images and videos from multiple providers — Google Custom Search, SerpAPI, Bing, and yt-dlp — deduplicates by MD5 hash, and streams everything into AWS S3 with MySQL-tracked metadata. Reviewers then approve or reject thousands of assets per session in a fast, keyboard-driven grid across image and video categories (tattoo, car, cloth).',
+      'A built-in image-similarity engine embeds every asset into a vector index (Redis-cached) so reviewers can surface near-duplicates on demand — each result ranked with a colour-coded percentage match score — catching redundant frames before they bloat the dataset.',
+      'Approved videos run through GroundingDINO + YOLO tattoo-frame extraction at configurable FPS and confidence; long-running crawls and vector indexing execute as background jobs with live WebSocket progress; and the curated, approved set exports straight to Roboflow for labelling and model training.',
     ],
     pic: [
       '/screenshot/crawler-labelling.png',
+      '/screenshot/crawler-labelling-similarity.png',
       '/screenshot/crawler-labelling-videos.png',
       '/screenshot/crawler-labelling-image-downloader.png',
       '/screenshot/crawler-labelling-video-downloader.png',
