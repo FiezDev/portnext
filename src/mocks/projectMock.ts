@@ -249,6 +249,33 @@ export const WorkProjects: WorkProjectObj[] = [
 
 export const SideProjects: SideProjectObj[] = [
   {
+    projectName: 'AtEasePlatform',
+    projectIntro:
+      'AI content-automation platform — a visual workflow builder that turns one idea into multi-platform posts.',
+    stack: [
+      'TypeScript',
+      'React',
+      'Bun',
+      'Node.js',
+      'Vite',
+      'LLMs',
+      'Playwright',
+      'PostgreSQL',
+    ],
+    projectDesc: [
+      'A workflow-automation platform for AI content pipelines: a visual node-graph builder chains reusable steps — LLM drafting, fact-check, translate, image & video generation, and auto-publishing to Facebook/TikTok — with typed input/output ports, versioning, and human-approval gates.',
+      'Ships ready-made pipelines (TikTok Affiliate, YouTube→FB, AI Inspire short/long/router), a library of pluggable processors, and a run console with live status, re-run and per-step history.',
+    ],
+    pic: [
+      '/screenshot/atease-builder.png',
+      '/screenshot/atease-library.png',
+      '/screenshot/atease-workflows.png',
+      '/screenshot/atease-runs.png',
+    ],
+    ghlink: '',
+    weblink: '',
+  },
+  {
     projectName: 'ORG-TOOLS',
     projectIntro:
       'Internal engineering platform — turns Jira projects into versioned ISO documentation.',
