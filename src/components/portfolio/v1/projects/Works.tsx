@@ -3,7 +3,9 @@ import WorkProject from '@/components/global/WorkProject';
 import { WorkProjects } from '@/mocks/projectMock';
 
 const Works = () => {
-  const sortedData = [...WorkProjects].sort((a, b) => b.projectID - a.projectID);
+  const sortedData = [...WorkProjects]
+    .filter((p) => p.activeFlag !== false)
+    .sort((a, b) => b.projectID - a.projectID);
 
   return (
     <section

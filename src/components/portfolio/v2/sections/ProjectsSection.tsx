@@ -36,9 +36,9 @@ const ProjectsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Sort work projects by projectID descending
-  const sortedWorkProjects = [...WorkProjects].sort(
-    (a, b) => b.projectID - a.projectID
-  );
+  const sortedWorkProjects = [...WorkProjects]
+    .filter((p) => p.activeFlag !== false)
+    .sort((a, b) => b.projectID - a.projectID);
 
   const projects = projectType === 'work' ? sortedWorkProjects : SideProjects;
   const currentProject = projects[currentIndex];

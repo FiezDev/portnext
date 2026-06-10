@@ -4,7 +4,8 @@ export const WorkProjects: WorkProjectObj[] = [
   {
     projectName: 'RiceGuard Platform',
     projectFullName: 'RiceGuard — Agritech IoT + AI Crop Monitoring',
-    projectIntro: 'Agritech IoT + AI platform for smart rice-crop monitoring',
+    projectIntro:
+      'Agritech IoT platform — ops dashboards, GraphQL API & the full AWS production infrastructure',
     projectType: 'Work',
     projectID: 8,
     activeFlag: true,
@@ -13,15 +14,19 @@ export const WorkProjects: WorkProjectObj[] = [
     updateDate: 1780876800000,
     stack: [
       'TypeScript',
-      'Bun',
+      'Next.js',
+      'React',
+      'Apollo',
       'GraphQL',
-      'Rust',
-      'C++',
-      'React Native',
-      'MQTT',
-      'Python',
+      'Bun',
+      'Node.js',
+      'PostgreSQL',
       'TimescaleDB',
-      'ESP32',
+      'RabbitMQ',
+      'MQTT',
+      'AWS',
+      'Docker',
+      'GitHub Actions',
     ],
     projectPic: {
       picurl: {
@@ -33,14 +38,13 @@ export const WorkProjects: WorkProjectObj[] = [
           '/screenshot/riceguard-admin-dashboard.png',
           '/screenshot/riceguard-sensors.png',
           '/screenshot/riceguard-yield.png',
-          '/screenshot/riceguard-mobile-pest.png',
         ],
       },
     },
     projectDesc: [
-      '- Built an end-to-end smart rice-crop monitoring platform: pest & disease detection, sensor telemetry, drought alerts, and edge AI.',
-      '- Engineered the full pipeline — ESP32 firmware (DHT22 → MQTT) → Bun/Elysia GraphQL API → Rust async MQTT bridge → TimescaleDB → React Native farmer app.',
-      '- Delivered operations dashboards (admin, analytics, AI-Ops model monitoring & anomaly detection) plus a Jetson Nano edge-AI tier with OTA updates.',
+      '- Built the operations side of an agritech IoT platform — the admin console (device management, farmer oversight, alert triage), the AI-Ops console (model monitoring, anomaly detection, system health), the analytics dashboards, and the GraphQL backend API.',
+      '- Designed and provisioned the entire AWS production infrastructure: a VPC with public/private subnets across two AZs, ALB + NLB, a RabbitMQ broker for MQTTS/AMQP telemetry, EC2-hosted API, PostgreSQL/TimescaleDB, S3 backups and Secrets Manager — as idempotent infrastructure-as-code with GitHub Actions CI/CD. Flow: field telemetry → MQTTS/NLB → RabbitMQ → API → TimescaleDB.',
+      '- AI in the product: pest & disease detection, soil-NPK and IoT-anomaly models, weather and yield (XGBoost) prediction, AI-Ops model monitoring, and pgvector semantic search over the knowledge base.',
     ],
   },
   {
@@ -49,7 +53,8 @@ export const WorkProjects: WorkProjectObj[] = [
     projectIntro: 'National tag-ID platform for NT (National Telecom Thailand)',
     projectType: 'Work',
     projectID: 7,
-    activeFlag: true,
+    // Hidden from render (activeFlag false) — data kept intentionally.
+    activeFlag: false,
     status: 'Ongoing',
     createDate: 1754179200000,
     updateDate: 1769731200000,
@@ -69,6 +74,7 @@ export const WorkProjects: WorkProjectObj[] = [
       '- Contributed across a national tag-ID system spanning web, mobile, and API tiers.',
       '- Built and iterated the frontend (Vue / Svelte) and integrated the high-performance Rust API with Svelte mobile clients.',
       '- Added a Django-based ETL analytics pipeline to extract, transform, and load TagID platform data for real-time insights.',
+      '- AI in the system: face and vehicle recognition for identity tagging and verification.',
     ],
   },
   {
@@ -295,6 +301,7 @@ export const SideProjects: SideProjectObj[] = [
     projectDesc: [
       'A team platform that assembles versioned ISO documentation from Jira: architecture diagrams, app screenshots and exportable ISO documents (Word) with full version history.',
       'Also handles Jira task creation, a flexible Excel/CSV issue exporter with custom column mapping, a shared-memory knowledge graph, and zero-knowledge credential vaults (the server stores only ciphertext).',
+      'AI: an LLM drafts the ISO documents from Jira issues, knowledge-graph chunks are embedded for semantic (pgvector) search, and an LLM assistant is wired in for Q&A over the workspace.',
     ],
     pic: [
       '/screenshot/orgtools-iso-library.png',

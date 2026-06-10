@@ -38,7 +38,9 @@ const itemVariants = {
 };
 
 const WorkContent = () => {
-  const projects = [...WorkProjects].sort((a, b) => b.projectID - a.projectID);
+  const projects = [...WorkProjects]
+    .filter((p) => p.activeFlag !== false)
+    .sort((a, b) => b.projectID - a.projectID);
 
   return (
     <main className="min-h-screen w-full seembg text-white">
