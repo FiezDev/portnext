@@ -93,7 +93,7 @@ const ProjectsSection = () => {
 
   return (
     <motion.div
-      className="flex flex-col min-h-full p-5 md:p-8 lg:p-10 bg-transparent"
+      className="flex flex-col justify-center min-h-full p-5 md:p-8 lg:p-10 bg-transparent"
       variants={containerVariants}
       initial="initial"
       animate="animate"
@@ -101,7 +101,7 @@ const ProjectsSection = () => {
       {/* Header row: title (left) + Work/Side toggle (right) */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between gap-4 mb-4"
+        className="flex items-center justify-between gap-4 mb-5 md:mb-6"
       >
         <GoldHeading as="h2" className="text-3xl md:text-5xl">
           Projects
@@ -127,7 +127,7 @@ const ProjectsSection = () => {
       </motion.div>
 
       {/* Thumbnail navigator — full width, above the card */}
-      <motion.div variants={itemVariants} className="mb-4 w-full">
+      <motion.div variants={itemVariants} className="mb-5 md:mb-6 w-full">
         <div className="flex items-center gap-2 w-full">
           <Button
             onClick={handlePrev}
