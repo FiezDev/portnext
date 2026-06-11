@@ -38,12 +38,12 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const getStatusVariant = (status?: string) => {
     switch (status) {
       case 'Finish':
-        return 'bg-green-500/15 text-green-300 border-green-400/30';
+        return 'bg-green-100 text-green-800 border-green-300';
       case 'Ongoing':
       case 'In Progress':
-        return 'bg-yellow-500/15 text-yellow-300 border-yellow-400/30';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       default:
-        return 'bg-white/10 text-gray-300 border-white/20';
+        return 'bg-slate-100 text-slate-700 border-slate-300';
     }
   };
 
@@ -67,7 +67,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 md:p-5 rounded-2xl bg-white/[0.14] backdrop-blur-md border border-yellow-500/25 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
+      className="flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 md:p-5 rounded-2xl bg-slate-50/95 backdrop-blur-md border border-yellow-500/40 shadow-2xl ring-1 ring-black/5"
     >
       {/* Image */}
       {hasImages && (
@@ -134,11 +134,11 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       <div className={cn('flex flex-col gap-3 min-w-0', hasImages ? 'lg:w-[52%]' : 'w-full')}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="text-lg md:text-xl font-bold text-gray-50">
+            <h3 className="text-lg md:text-xl font-bold text-slate-900">
               {project.projectName}
             </h3>
             {project.projectIntro && (
-              <p className="text-sm text-gray-400 mt-1">{project.projectIntro}</p>
+              <p className="text-sm text-slate-500 mt-1">{project.projectIntro}</p>
             )}
           </div>
           {isWorkProject && (project as WorkProjectObj).status && (
@@ -160,7 +160,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             <Badge
               key={tech}
               variant="secondary"
-              className="text-xs bg-white/5 text-gray-200 border border-white/10 hover:bg-yellow-500/15 hover:text-yellow-200 transition-colors"
+              className="text-xs bg-slate-100 text-slate-700 border border-slate-200 hover:bg-yellow-100 hover:text-yellow-800 transition-colors"
             >
               {tech}
             </Badge>
@@ -168,7 +168,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         </div>
 
         {/* Description */}
-        <ul className="space-y-2 text-sm text-gray-300">
+        <ul className="space-y-2 text-[15px] leading-relaxed text-slate-700">
           {descriptions.map((desc, i) => (
             <li key={i} className="flex items-start gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
@@ -186,7 +186,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
               <Button
                 size="sm"
                 variant="outline"
-                className="gap-1 text-xs bg-white/5 border-white/15 text-gray-200 hover:bg-yellow-500/20 hover:text-yellow-100 hover:border-yellow-400/40"
+                className="gap-1 text-xs bg-white border-slate-300 text-slate-700 hover:bg-yellow-50 hover:text-yellow-800 hover:border-yellow-400"
                 onClick={() =>
                   window.open(`https://${projectWithLinks.ghlink}`, '_blank')
                 }
@@ -198,7 +198,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
               <Button
                 size="sm"
                 variant="outline"
-                className="gap-1 text-xs bg-white/5 border-white/15 text-gray-200 hover:bg-yellow-500/20 hover:text-yellow-100 hover:border-yellow-400/40"
+                className="gap-1 text-xs bg-white border-slate-300 text-slate-700 hover:bg-yellow-50 hover:text-yellow-800 hover:border-yellow-400"
                 onClick={() =>
                   window.open(
                     projectWithLinks.weblink?.startsWith('http')
@@ -215,7 +215,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
               <Button
                 size="sm"
                 variant="outline"
-                className="gap-1 text-xs bg-white/5 border-white/15 text-gray-200 hover:bg-yellow-500/20 hover:text-yellow-100 hover:border-yellow-400/40"
+                className="gap-1 text-xs bg-white border-slate-300 text-slate-700 hover:bg-yellow-50 hover:text-yellow-800 hover:border-yellow-400"
                 onClick={() =>
                   window.open(`https://${projectWithLinks.apilink}`, '_blank')
                 }
