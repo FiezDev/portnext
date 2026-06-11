@@ -93,7 +93,7 @@ const ProjectsSection = () => {
 
   return (
     <motion.div
-      className="flex flex-col h-full p-5 md:p-8 lg:p-10 bg-transparent overflow-hidden"
+      className="flex flex-col min-h-full p-5 md:p-8 lg:p-10 bg-transparent"
       variants={containerVariants}
       initial="initial"
       animate="animate"
@@ -197,7 +197,7 @@ const ProjectsSection = () => {
       </motion.div>
 
       {/* Card — full width */}
-      <motion.div variants={itemVariants} className="flex-1 min-h-0 w-full">
+      <motion.div variants={itemVariants} className="w-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${projectType}-${currentIndex}`}

@@ -71,8 +71,8 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
     >
       {/* Image */}
       {hasImages && (
-        <div className="lg:w-[48%] lg:flex-shrink-0 flex">
-          <div className="group relative w-full h-56 sm:h-72 lg:h-full lg:min-h-[340px] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+        <div className="lg:w-[46%] lg:flex-shrink-0 lg:flex lg:items-center">
+          <div className="group relative w-full aspect-[16/10] lg:aspect-auto lg:h-[300px] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
             <button
               type="button"
               onClick={() => setZoomOpen(true)}
