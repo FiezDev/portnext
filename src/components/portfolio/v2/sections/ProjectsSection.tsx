@@ -87,8 +87,8 @@ const ProjectsSection = () => {
     cn(
       'gap-2 font-semibold px-4 sm:px-5 py-2 transition-all',
       active
-        ? 'bg-yellow-500 hover:bg-yellow-500 text-[#1B262C] shadow-md shadow-yellow-500/20'
-        : 'bg-white/5 border border-white/15 text-gray-300 hover:bg-white/10 hover:text-yellow-200'
+        ? 'bg-yellow-500 hover:bg-yellow-500 text-white shadow-md shadow-yellow-500/20'
+        : 'bg-white/70 border border-gray-200 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-300'
     );
 
   return (
@@ -134,7 +134,7 @@ const ProjectsSection = () => {
             variant="ghost"
             size="icon"
             aria-label="Previous project"
-            className="shrink-0 rounded-full text-gray-300 hover:bg-yellow-500/15 hover:text-yellow-300"
+            className="shrink-0 rounded-full text-gray-600 hover:bg-yellow-100 hover:text-yellow-700"
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
@@ -156,7 +156,7 @@ const ProjectsSection = () => {
                       'group relative shrink-0 w-24 h-16 sm:w-28 sm:h-[72px] rounded-lg overflow-hidden border transition-all',
                       active
                         ? 'ring-2 ring-yellow-400 border-yellow-400 opacity-100 scale-[1.03]'
-                        : 'border-white/10 opacity-55 hover:opacity-100'
+                        : 'border-gray-200 opacity-60 hover:opacity-100'
                     )}
                   >
                     {img ? (
@@ -168,7 +168,7 @@ const ProjectsSection = () => {
                         sizes="112px"
                       />
                     ) : (
-                      <span className="flex h-full items-center justify-center px-1 text-center text-[10px] leading-tight text-gray-300 bg-white/5">
+                      <span className="flex h-full items-center justify-center px-1 text-center text-[10px] leading-tight text-gray-600 bg-gray-100">
                         {p.projectName}
                       </span>
                     )}
@@ -186,12 +186,12 @@ const ProjectsSection = () => {
             variant="ghost"
             size="icon"
             aria-label="Next project"
-            className="shrink-0 rounded-full text-gray-300 hover:bg-yellow-500/15 hover:text-yellow-300"
+            className="shrink-0 rounded-full text-gray-600 hover:bg-yellow-100 hover:text-yellow-700"
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
-        <p className="mt-2 text-xs text-gray-400">
+        <p className="mt-2 text-xs text-gray-500">
           {currentIndex + 1} / {projects.length} · {currentProject?.projectName}
         </p>
       </motion.div>
