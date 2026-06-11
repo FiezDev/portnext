@@ -67,7 +67,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 md:p-5 rounded-2xl bg-[#1B262C]/70 backdrop-blur-md border border-yellow-500/15 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)] ring-1 ring-white/5"
+      className="flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 md:p-5 rounded-2xl bg-white/[0.14] backdrop-blur-md border border-yellow-500/25 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
     >
       {/* Image */}
       {hasImages && (

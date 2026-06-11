@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import GoldHeading from '../shared/GoldHeading';
 import ProjectCard from './ProjectCard';
@@ -15,9 +15,7 @@ type ProjectType = 'work' | 'side';
 
 const firstImage = (p: WorkProjectObj | SideProjectObj): string | null => {
   const pics =
-    'projectPic' in p
-      ? p.projectPic?.picurl?.pic
-      : (p as SideProjectObj).pic;
+    'projectPic' in p ? p.projectPic?.picurl?.pic : (p as SideProjectObj).pic;
   return pics && pics[0] ? resolveImageSrc(pics[0]) : null;
 };
 
@@ -41,6 +39,7 @@ const itemVariants = {
 const ProjectsSection = () => {
   const [projectType, setProjectType] = useState<ProjectType>('work');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const stripRef = useRef<HTMLDivElement>(null);
 
   const sortedWorkProjects = [...WorkProjects]
     .filter((p) => p.activeFlag !== false)
@@ -63,9 +62,30 @@ const ProjectsSection = () => {
     [projects.length]
   );
 
+  // Keep the active thumb visible: centered on mobile, left-aligned on desktop.
+  useEffect(() => {
+    const strip = stripRef.current;
+    if (!strip) return;
+    const active = strip.querySelector<HTMLElement>('[data-active="true"]');
+    if (!active) return;
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    if (isMobile) {
+      strip.scrollTo({
+        left: active.offsetLeft - (strip.clientWidth - active.clientWidth) / 2,
+        behavior: 'smooth',
+      });
+    } else {
+      const left = active.offsetLeft;
+      const right = left + active.clientWidth;
+      if (left < strip.scrollLeft || right > strip.scrollLeft + strip.clientWidth) {
+        strip.scrollTo({ left: Math.max(0, left - 8), behavior: 'smooth' });
+      }
+    }
+  }, [currentIndex, projectType, projects.length]);
+
   const toggleBtn = (active: boolean) =>
     cn(
-      'gap-2 font-semibold px-5 py-2 transition-all',
+      'gap-2 font-semibold px-4 sm:px-5 py-2 transition-all',
       active
         ? 'bg-yellow-500 hover:bg-yellow-500 text-[#1B262C] shadow-md shadow-yellow-500/20'
         : 'bg-white/5 border border-white/15 text-gray-300 hover:bg-white/10 hover:text-yellow-200'
@@ -78,48 +98,37 @@ const ProjectsSection = () => {
       initial="initial"
       animate="animate"
     >
-      <motion.div variants={itemVariants}>
-        <GoldHeading as="h2" className="text-3xl md:text-5xl mb-4">
+      {/* Header row: title (left) + Work/Side toggle (right) */}
+      <motion.div
+        variants={itemVariants}
+        className="flex items-center justify-between gap-4 mb-4"
+      >
+        <GoldHeading as="h2" className="text-3xl md:text-5xl">
           Projects
         </GoldHeading>
-      </motion.div>
-
-      {/* Work / Side toggle */}
-      <motion.div variants={itemVariants} className="flex gap-3 mb-4">
-        <Button
-          onClick={() => handleTypeChange('work')}
-          size="sm"
-          className={toggleBtn(projectType === 'work')}
-        >
-          <Briefcase className="w-4 h-4" /> Work
-        </Button>
-        <Button
-          onClick={() => handleTypeChange('side')}
-          size="sm"
-          className={toggleBtn(projectType === 'side')}
-        >
-          <Code2 className="w-4 h-4" /> Side
-        </Button>
-      </motion.div>
-
-      {/* Card */}
-      <motion.div variants={itemVariants} className="flex-1 min-h-0">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${projectType}-${currentIndex}`}
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.28 }}
+        <div className="flex gap-2 sm:gap-3 shrink-0">
+          <Button
+            onClick={() => handleTypeChange('work')}
+            size="sm"
+            className={toggleBtn(projectType === 'work')}
           >
-            <ProjectCard project={currentProject} index={0} isActive />
-          </motion.div>
-        </AnimatePresence>
+            <Briefcase className="w-4 h-4" />
+            <span>Work</span>
+          </Button>
+          <Button
+            onClick={() => handleTypeChange('side')}
+            size="sm"
+            className={toggleBtn(projectType === 'side')}
+          >
+            <Code2 className="w-4 h-4" />
+            <span>Side</span>
+          </Button>
+        </div>
       </motion.div>
 
-      {/* Thumbnail navigator */}
-      <motion.div variants={itemVariants} className="mt-4">
-        <div className="flex items-center gap-2">
+      {/* Thumbnail navigator — full width, above the card */}
+      <motion.div variants={itemVariants} className="mb-4 w-full">
+        <div className="flex items-center gap-2 w-full">
           <Button
             onClick={handlePrev}
             variant="ghost"
@@ -130,22 +139,23 @@ const ProjectsSection = () => {
             <ChevronLeft className="w-5 h-5" />
           </Button>
 
-          <div className="flex-1 overflow-x-auto">
-            <div className="flex gap-2 pb-1 snap-x">
+          <div ref={stripRef} className="flex-1 overflow-x-auto">
+            <div className="flex gap-2 pb-1">
               {projects.map((p, index) => {
                 const img = firstImage(p);
                 const active = index === currentIndex;
                 return (
                   <button
                     key={`${p.projectName}-${index}`}
+                    data-active={active}
                     onClick={() => setCurrentIndex(index)}
                     title={p.projectName}
                     aria-label={p.projectName}
                     aria-current={active}
                     className={cn(
-                      'group relative shrink-0 snap-start w-24 h-16 sm:w-28 sm:h-[72px] rounded-lg overflow-hidden border transition-all',
+                      'group relative shrink-0 w-24 h-16 sm:w-28 sm:h-[72px] rounded-lg overflow-hidden border transition-all',
                       active
-                        ? 'ring-2 ring-yellow-400 border-yellow-400 opacity-100'
+                        ? 'ring-2 ring-yellow-400 border-yellow-400 opacity-100 scale-[1.03]'
                         : 'border-white/10 opacity-55 hover:opacity-100'
                     )}
                   >
@@ -181,10 +191,24 @@ const ProjectsSection = () => {
             <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
-
-        <p className="mt-2 text-center text-xs text-gray-500">
+        <p className="mt-2 text-xs text-gray-400">
           {currentIndex + 1} / {projects.length} · {currentProject?.projectName}
         </p>
+      </motion.div>
+
+      {/* Card — full width */}
+      <motion.div variants={itemVariants} className="flex-1 min-h-0 w-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${projectType}-${currentIndex}`}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.28 }}
+          >
+            <ProjectCard project={currentProject} index={0} isActive />
+          </motion.div>
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   );
