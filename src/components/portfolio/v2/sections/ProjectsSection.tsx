@@ -93,7 +93,7 @@ const ProjectsSection = () => {
 
   return (
     <motion.div
-      className="flex flex-col justify-center min-h-full p-5 md:p-8 lg:p-10 bg-transparent"
+      className="flex flex-col justify-center min-h-full p-5 md:p-8 lg:p-10 pb-24 md:pb-24 lg:pb-28 bg-transparent"
       variants={containerVariants}
       initial="initial"
       animate="animate"
