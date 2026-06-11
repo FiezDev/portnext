@@ -2,12 +2,20 @@
 
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { Github, Globe, Link2, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Github,
+  Globe,
+  Link2,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WorkProjectObj, SideProjectObj } from '@/types/object';
 import { cn, resolveImageSrc } from '@/lib/utils';
 import { useState } from 'react';
 import Image from 'next/image';
+import Lightbox from '../shared/Lightbox';
 
 interface ProjectCardProps {
   project: WorkProjectObj | SideProjectObj;
@@ -21,27 +29,25 @@ type ProjectWithLinks = WorkProjectObj & {
   apilink?: string;
 };
 
-const ProjectCard = ({ project, isActive }: ProjectCardProps) => {
+const ProjectCard = ({ project }: ProjectCardProps) => {
   const isWorkProject = 'projectPic' in project;
   const projectWithLinks = project as ProjectWithLinks;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [zoomOpen, setZoomOpen] = useState(false);
 
-  // Get status badge variant
   const getStatusVariant = (status?: string) => {
     switch (status) {
       case 'Finish':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green-500/15 text-green-300 border-green-400/30';
+      case 'Ongoing':
       case 'In Progress':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-yellow-500/15 text-yellow-300 border-yellow-400/30';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-white/10 text-gray-300 border-white/20';
     }
   };
 
-  // Parse description bullets
-  const descriptions = project.projectDesc.map((desc) =>
-    desc.replace(/^- /, '')
-  );
+  const descriptions = project.projectDesc.map((desc) => desc.replace(/^- /, ''));
 
   const projectImages = (
     isWorkProject
@@ -51,68 +57,69 @@ const ProjectCard = ({ project, isActive }: ProjectCardProps) => {
 
   const hasImages = projectImages.length > 0;
 
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? projectImages.length - 1 : prev - 1
-    );
-  };
-
-  const handleNextImage = () => {
-    setCurrentImageIndex((prev) =>
-      prev === projectImages.length - 1 ? 0 : prev + 1
-    );
-  };
+  const prevImg = () =>
+    setCurrentImageIndex((p) => (p === 0 ? projectImages.length - 1 : p - 1));
+  const nextImg = () =>
+    setCurrentImageIndex((p) => (p === projectImages.length - 1 ? 0 : p + 1));
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: isActive ? 1 : 0.5, x: isActive ? 0 : 20 }}
-      exit={{ opacity: 0, x: -50 }}
-      transition={{ duration: 0.4 }}
-      className={cn(
-        'flex flex-col md:flex-row gap-4 md:gap-6 p-4 md:p-6 rounded-2xl bg-white/70 backdrop-blur-sm border border-gray-100 transition-all duration-300',
-        isActive ? 'shadow-lg scale-100' : 'shadow-sm scale-95'
-      )}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 md:p-5 rounded-2xl bg-[#1B262C]/70 backdrop-blur-md border border-yellow-500/15 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)] ring-1 ring-white/5"
     >
-      {/* Left Column - Image Carousel */}
+      {/* Image */}
       {hasImages && (
-        <div className="md:w-[45%] flex-shrink-0">
-          <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden bg-gray-100">
+        <div className="lg:w-[48%] lg:flex-shrink-0 flex">
+          <div className="group relative w-full h-56 sm:h-72 lg:h-full lg:min-h-[340px] rounded-xl overflow-hidden bg-black/40 border border-white/10">
+            <button
+              type="button"
+              onClick={() => setZoomOpen(true)}
+              className="absolute inset-0 z-[1] cursor-zoom-in"
+              aria-label="Zoom screenshot"
+            />
             <Image
               src={projectImages[currentImageIndex]}
               alt={`${project.projectName} screenshot ${currentImageIndex + 1}`}
               fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 400px"
+              className="object-contain p-1"
+              sizes="(max-width: 768px) 100vw, 45vw"
             />
 
-            {/* Image Navigation - Only show if multiple images */}
+            {/* Zoom hint */}
+            <div className="pointer-events-none absolute top-2 right-2 z-[2] flex items-center gap-1 rounded-md bg-black/55 px-2 py-1 text-[11px] text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Maximize2 className="w-3 h-3" /> Zoom
+            </div>
+
+            {/* In-card image nav (multiple screenshots) */}
             {projectImages.length > 1 && (
               <>
                 <button
-                  onClick={handlePrevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors"
+                  onClick={prevImg}
+                  aria-label="Previous screenshot"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-[2] w-8 h-8 rounded-full bg-black/55 hover:bg-yellow-500/80 text-white flex items-center justify-center transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={handleNextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors"
+                  onClick={nextImg}
+                  aria-label="Next screenshot"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-[2] w-8 h-8 rounded-full bg-black/55 hover:bg-yellow-500/80 text-white flex items-center justify-center transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
-
-                {/* Image Dots */}
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[2] flex gap-1.5">
                   {projectImages.map((_, idx) => (
                     <button
                       key={idx}
                       onClick={() => setCurrentImageIndex(idx)}
+                      aria-label={`Screenshot ${idx + 1}`}
                       className={cn(
-                        'w-2 h-2 rounded-full transition-all',
+                        'h-2 rounded-full transition-all',
                         idx === currentImageIndex
                           ? 'bg-yellow-400 w-4'
-                          : 'bg-white/70 hover:bg-white'
+                          : 'bg-white/50 hover:bg-white w-2'
                       )}
                     />
                   ))}
@@ -123,16 +130,15 @@ const ProjectCard = ({ project, isActive }: ProjectCardProps) => {
         </div>
       )}
 
-      {/* Right Column - Project Info */}
-      <div className={`flex flex-col gap-3 ${hasImages ? 'md:w-[55%]' : 'w-full'}`}>
-        {/* Project Name and Status */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="text-lg md:text-xl font-bold text-gray-900">
+      {/* Info */}
+      <div className={cn('flex flex-col gap-3 min-w-0', hasImages ? 'lg:w-[52%]' : 'w-full')}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="text-lg md:text-xl font-bold text-gray-50">
               {project.projectName}
             </h3>
             {project.projectIntro && (
-              <p className="text-sm text-gray-500 mt-1">{project.projectIntro}</p>
+              <p className="text-sm text-gray-400 mt-1">{project.projectIntro}</p>
             )}
           </div>
           {isWorkProject && (project as WorkProjectObj).status && (
@@ -148,13 +154,13 @@ const ProjectCard = ({ project, isActive }: ProjectCardProps) => {
           )}
         </div>
 
-        {/* Tech Stack */}
-        <div className="flex flex-wrap gap-2">
+        {/* Tech stack */}
+        <div className="flex flex-wrap gap-1.5">
           {project.stack.map((tech) => (
             <Badge
               key={tech}
               variant="secondary"
-              className="text-xs bg-gray-100 text-gray-700 hover:bg-yellow-100 hover:text-yellow-800 transition-colors"
+              className="text-xs bg-white/5 text-gray-200 border border-white/10 hover:bg-yellow-500/15 hover:text-yellow-200 transition-colors"
             >
               {tech}
             </Badge>
@@ -162,63 +168,75 @@ const ProjectCard = ({ project, isActive }: ProjectCardProps) => {
         </div>
 
         {/* Description */}
-        <ul className="space-y-2 text-sm text-gray-600">
+        <ul className="space-y-2 text-sm text-gray-300">
           {descriptions.map((desc, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 flex-shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
               <span>{desc}</span>
             </li>
           ))}
         </ul>
 
         {/* Links */}
-        <div className="flex flex-wrap gap-2 pt-2 mt-auto">
-          {projectWithLinks.ghlink && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1 text-xs"
-              onClick={() =>
-                window.open(`https://${projectWithLinks.ghlink}`, '_blank')
-              }
-            >
-              <Github className="w-3 h-3" />
-              GitHub
-            </Button>
-          )}
-          {projectWithLinks.weblink && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1 text-xs"
-              onClick={() =>
-                window.open(
-                  projectWithLinks.weblink?.startsWith('http')
-                    ? projectWithLinks.weblink
-                    : `https://${projectWithLinks.weblink}`,
-                  '_blank'
-                )
-              }
-            >
-              <Globe className="w-3 h-3" />
-              Website
-            </Button>
-          )}
-          {projectWithLinks.apilink && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1 text-xs"
-              onClick={() =>
-                window.open(`https://${projectWithLinks.apilink}`, '_blank')
-              }
-            >
-              <Link2 className="w-3 h-3" />
-              API
-            </Button>
-          )}
-        </div>
+        {(projectWithLinks.ghlink ||
+          projectWithLinks.weblink ||
+          projectWithLinks.apilink) && (
+          <div className="flex flex-wrap gap-2 pt-1 mt-auto">
+            {projectWithLinks.ghlink && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1 text-xs bg-white/5 border-white/15 text-gray-200 hover:bg-yellow-500/20 hover:text-yellow-100 hover:border-yellow-400/40"
+                onClick={() =>
+                  window.open(`https://${projectWithLinks.ghlink}`, '_blank')
+                }
+              >
+                <Github className="w-3 h-3" /> GitHub
+              </Button>
+            )}
+            {projectWithLinks.weblink && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1 text-xs bg-white/5 border-white/15 text-gray-200 hover:bg-yellow-500/20 hover:text-yellow-100 hover:border-yellow-400/40"
+                onClick={() =>
+                  window.open(
+                    projectWithLinks.weblink?.startsWith('http')
+                      ? projectWithLinks.weblink
+                      : `https://${projectWithLinks.weblink}`,
+                    '_blank'
+                  )
+                }
+              >
+                <Globe className="w-3 h-3" /> Website
+              </Button>
+            )}
+            {projectWithLinks.apilink && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1 text-xs bg-white/5 border-white/15 text-gray-200 hover:bg-yellow-500/20 hover:text-yellow-100 hover:border-yellow-400/40"
+                onClick={() =>
+                  window.open(`https://${projectWithLinks.apilink}`, '_blank')
+                }
+              >
+                <Link2 className="w-3 h-3" /> API
+              </Button>
+            )}
+          </div>
+        )}
       </div>
+
+      {hasImages && (
+        <Lightbox
+          images={projectImages}
+          index={currentImageIndex}
+          open={zoomOpen}
+          onClose={() => setZoomOpen(false)}
+          onIndexChange={setCurrentImageIndex}
+          alt={`${project.projectName} screenshot`}
+        />
+      )}
     </motion.div>
   );
 };

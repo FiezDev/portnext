@@ -2,32 +2,39 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useCallback } from 'react';
+import Image from 'next/image';
 import GoldHeading from '../shared/GoldHeading';
 import ProjectCard from './ProjectCard';
 import { WorkProjects, SideProjects } from '@/mocks/projectMock';
-import { cn } from '@/lib/utils';
+import { WorkProjectObj, SideProjectObj } from '@/types/object';
+import { cn, resolveImageSrc } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, Briefcase, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type ProjectType = 'work' | 'side';
 
+const firstImage = (p: WorkProjectObj | SideProjectObj): string | null => {
+  const pics =
+    'projectPic' in p
+      ? p.projectPic?.picurl?.pic
+      : (p as SideProjectObj).pic;
+  return pics && pics[0] ? resolveImageSrc(pics[0]) : null;
+};
+
 const containerVariants = {
   initial: { opacity: 0 },
   animate: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
   },
 };
 
 const itemVariants = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 16 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' as const },
+    transition: { duration: 0.45, ease: 'easeOut' as const },
   },
 };
 
@@ -35,7 +42,6 @@ const ProjectsSection = () => {
   const [projectType, setProjectType] = useState<ProjectType>('work');
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Sort work projects by projectID descending
   const sortedWorkProjects = [...WorkProjects]
     .filter((p) => p.activeFlag !== false)
     .sort((a, b) => b.projectID - a.projectID);
@@ -48,120 +54,136 @@ const ProjectsSection = () => {
     setCurrentIndex(0);
   };
 
-  const handlePrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
-  }, [projects.length]);
+  const handlePrev = useCallback(
+    () => setCurrentIndex((p) => (p === 0 ? projects.length - 1 : p - 1)),
+    [projects.length]
+  );
+  const handleNext = useCallback(
+    () => setCurrentIndex((p) => (p === projects.length - 1 ? 0 : p + 1)),
+    [projects.length]
+  );
 
-  const handleNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
-  }, [projects.length]);
+  const toggleBtn = (active: boolean) =>
+    cn(
+      'gap-2 font-semibold px-5 py-2 transition-all',
+      active
+        ? 'bg-yellow-500 hover:bg-yellow-500 text-[#1B262C] shadow-md shadow-yellow-500/20'
+        : 'bg-white/5 border border-white/15 text-gray-300 hover:bg-white/10 hover:text-yellow-200'
+    );
 
   return (
     <motion.div
-      className="flex flex-col justify-center h-full p-6 md:p-12 bg-transparent overflow-hidden"
+      className="flex flex-col h-full p-5 md:p-8 lg:p-10 bg-transparent overflow-hidden"
       variants={containerVariants}
       initial="initial"
       animate="animate"
     >
       <motion.div variants={itemVariants}>
-        <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl mb-6">
+        <GoldHeading as="h2" className="text-3xl md:text-5xl mb-4">
           Projects
         </GoldHeading>
       </motion.div>
 
-      {/* Toggle Tabs */}
-      <motion.div
-        variants={itemVariants}
-        className="flex gap-3 mb-6"
-      >
+      {/* Work / Side toggle */}
+      <motion.div variants={itemVariants} className="flex gap-3 mb-4">
         <Button
           onClick={() => handleTypeChange('work')}
-          variant={projectType === 'work' ? 'default' : 'outline'}
           size="sm"
-          className={cn(
-            'gap-2 transition-all font-semibold px-6 py-2',
-            projectType === 'work'
-              ? 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-md'
-              : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-yellow-400 hover:text-yellow-700'
-          )}
+          className={toggleBtn(projectType === 'work')}
         >
-          <Briefcase className="w-4 h-4" />
-          Work
+          <Briefcase className="w-4 h-4" /> Work
         </Button>
         <Button
           onClick={() => handleTypeChange('side')}
-          variant={projectType === 'side' ? 'default' : 'outline'}
           size="sm"
-          className={cn(
-            'gap-2 transition-all font-semibold px-6 py-2',
-            projectType === 'side'
-              ? 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-md'
-              : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-yellow-400 hover:text-yellow-700'
-          )}
+          className={toggleBtn(projectType === 'side')}
         >
-          <Code2 className="w-4 h-4" />
-          Side
+          <Code2 className="w-4 h-4" /> Side
         </Button>
       </motion.div>
 
-      {/* Carousel Container */}
-      <motion.div variants={itemVariants} className="relative">
+      {/* Card */}
+      <motion.div variants={itemVariants} className="flex-1 min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${projectType}-${currentIndex}`}
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.28 }}
           >
-            <ProjectCard
-              project={currentProject}
-              index={0}
-              isActive={true}
-            />
+            <ProjectCard project={currentProject} index={0} isActive />
           </motion.div>
         </AnimatePresence>
+      </motion.div>
 
-        {/* Navigation Arrows */}
-        <div className="flex items-center justify-between mt-4">
+      {/* Thumbnail navigator */}
+      <motion.div variants={itemVariants} className="mt-4">
+        <div className="flex items-center gap-2">
           <Button
             onClick={handlePrev}
             variant="ghost"
             size="icon"
-            className="rounded-full hover:bg-yellow-100 hover:text-yellow-700"
+            aria-label="Previous project"
+            className="shrink-0 rounded-full text-gray-300 hover:bg-yellow-500/15 hover:text-yellow-300"
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
 
-          {/* Dot Indicators */}
-          <div className="flex gap-2">
-            {projects.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={cn(
-                  'w-2 h-2 rounded-full transition-all duration-300',
-                  index === currentIndex
-                    ? 'bg-yellow-500 w-6'
-                    : 'bg-gray-300 hover:bg-gray-400'
-                )}
-              />
-            ))}
+          <div className="flex-1 overflow-x-auto">
+            <div className="flex gap-2 pb-1 snap-x">
+              {projects.map((p, index) => {
+                const img = firstImage(p);
+                const active = index === currentIndex;
+                return (
+                  <button
+                    key={`${p.projectName}-${index}`}
+                    onClick={() => setCurrentIndex(index)}
+                    title={p.projectName}
+                    aria-label={p.projectName}
+                    aria-current={active}
+                    className={cn(
+                      'group relative shrink-0 snap-start w-24 h-16 sm:w-28 sm:h-[72px] rounded-lg overflow-hidden border transition-all',
+                      active
+                        ? 'ring-2 ring-yellow-400 border-yellow-400 opacity-100'
+                        : 'border-white/10 opacity-55 hover:opacity-100'
+                    )}
+                  >
+                    {img ? (
+                      <Image
+                        src={img}
+                        alt={p.projectName}
+                        fill
+                        className="object-cover"
+                        sizes="112px"
+                      />
+                    ) : (
+                      <span className="flex h-full items-center justify-center px-1 text-center text-[10px] leading-tight text-gray-300 bg-white/5">
+                        {p.projectName}
+                      </span>
+                    )}
+                    <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-black/60 px-1 py-0.5 text-[9px] text-white/90">
+                      {p.projectName}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <Button
             onClick={handleNext}
             variant="ghost"
             size="icon"
-            className="rounded-full hover:bg-yellow-100 hover:text-yellow-700"
+            aria-label="Next project"
+            className="shrink-0 rounded-full text-gray-300 hover:bg-yellow-500/15 hover:text-yellow-300"
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 
-        {/* Project Counter */}
-        <p className="text-center text-sm text-gray-400 mt-2">
-          {currentIndex + 1} / {projects.length}
+        <p className="mt-2 text-center text-xs text-gray-500">
+          {currentIndex + 1} / {projects.length} · {currentProject?.projectName}
         </p>
       </motion.div>
     </motion.div>
