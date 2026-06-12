@@ -1,5 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { generateRadialPackedWords } from '../shared/radialPacking';
+import { RELATED_WORDS } from '../shared/motto';
+import { mulberry32, pickGameWords, scatterWords } from '../game/heroGameLogic';
 
 interface CloudTextItem {
   text: string;
@@ -10,6 +12,10 @@ interface CloudTextItem {
   isHighlighted: boolean;
   highlightColor: string;
   shouldGlow: boolean;
+  // Precomputed once at generation so re-renders (e.g. game timer ticks) don't
+  // reassign random timings and restart every word's animation.
+  animDuration: number;
+  animDelay: number;
 }
 
 interface CloudLayerData {
@@ -26,6 +32,12 @@ interface UseCloudTextProps {
   colorFlag: boolean;
   glowFlag: boolean;
   sortingType?: number;
+  /** Word count: decorative default 80; the game uses a sparse ~20. */
+  count?: number;
+  /** Seed for the game's deterministic sparse re-randomize. */
+  seed?: number;
+  /** Game mode: sparse + centered + clickable; disables the decorative flicker. */
+  gameActive?: boolean;
 }
 
 // Reduced layers for better performance
@@ -40,6 +52,9 @@ export const useCloudText = ({
   colorFlag,
   glowFlag,
   sortingType = 1,
+  count = 80,
+  seed = 1,
+  gameActive = false,
 }: UseCloudTextProps) => {
 
   const [layers, setLayers] = useState<CloudLayerData[]>([]);
@@ -53,8 +68,33 @@ export const useCloudText = ({
        return;
      }
 
-     // Reduced words for better performance (80 instead of 150)
-     const totalWords = 80;
+     // GAME MODE: one sparse, centered, deterministic layer (the game board).
+     if (gameActive) {
+       const rng = mulberry32(seed);
+       const words = pickGameWords(RELATED_WORDS, count, rng);
+       const scattered = scatterWords(words, rng, {
+         centerX: 500,
+         centerY: 500,
+         fontSize: 30,
+       });
+       const items = scattered.map(w => ({
+         text: w.text,
+         x: w.x,
+         y: w.y,
+         rotation: w.rotation,
+         fontSize: w.fontSize,
+         isHighlighted: false,
+         highlightColor: color,
+         shouldGlow: glowFlag,
+         animDuration: 3 + Math.random() * 2,
+         animDelay: Math.random() * 2,
+       }));
+       setLayers([{ scale: 1.0, blur: 'blur(0px)', opacity: 1.0, z: 0, items }]);
+       return;
+     }
+
+     // DECORATIVE MODE: original multi-layer radial cloud.
+     const totalWords = count;
      const allWords = generateRadialPackedWords(totalWords, sortingType);
      const wordsPerLayer = Math.ceil(totalWords / LAYERS_CONFIG.length);
 
@@ -69,18 +109,20 @@ export const useCloudText = ({
              fontSize: 36,
              isHighlighted: false,
              highlightColor: color,
-             shouldGlow: glowFlag
+             shouldGlow: glowFlag,
+             animDuration: 3 + Math.random() * 2,
+             animDelay: Math.random() * 2,
          }));
 
          return { ...config, items };
      });
 
      setLayers(generatedLayers);
-  }, [position.x, position.y, sortingType, colorFlag, color, glowFlag]);
+  }, [position.x, position.y, sortingType, colorFlag, color, glowFlag, count, seed, gameActive]);
 
-  // Highlight Loop - only when colorFlag is true
+  // Highlight Loop - only when colorFlag is true and NOT in game mode
   useEffect(() => {
-     if (!colorFlag || layers.length === 0) return;
+     if (!colorFlag || layers.length === 0 || gameActive) return;
 
      const interval = setInterval(() => {
          const candidates:Array<{l: number, i: number}> = [];
@@ -104,7 +146,7 @@ export const useCloudText = ({
       }, 5000);
 
      return () => clearInterval(interval);
-  }, [layers, colorFlag]);
+  }, [layers, colorFlag, gameActive]);
 
   // Merge State and Return - using ref for better performance
   const combinedLayers = useMemo(() => {

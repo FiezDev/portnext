@@ -7,7 +7,7 @@ every entry. (Interactive UI game — "tests" = unit tests for pure logic +
 Status legend: `[ ]` todo · `[~]` in-progress · `[x]` done
 
 ## T1 — Pure game logic + unit tests
-- **Status:** [~] in-progress
+- **Status:** [x] done
 - **Depends on:** —
 - **Acceptance:**
   - [ ] `heroGameLogic.ts` is React/DOM-free (pure functions only)
@@ -17,10 +17,10 @@ Status legend: `[ ]` todo · `[~]` in-progress · `[x]` done
   - [ ] `loadBest`/`saveBest` are SSR/localStorage-safe (no throw when absent)
   - [ ] `tsc --noEmit` clean; all unit tests green
 - **Tests:** `src/components/portfolio/v2/game/heroGameLogic.test.ts` — target-picker no-repeat, sparse-picker uniqueness+determinism, streak, formatTime, best load/save guards
-- **Notes:**
+- **Notes:** done @ b35829a (branch feat/hero-word-hunt). 24 tests green. Added jest.config.mjs (next/jest) + jest.setup.ts — no jest config existed before. Scatter uses centered jittered grid (cols=ceil(sqrt(n))) with cell-bounded jitter → guaranteed non-overlap.
 
 ## T2 — Cloud gameActive transform (reuse existing cloud)
-- **Status:** [ ] todo
+- **Status:** [~] in-progress
 - **Depends on:** —
 - **Acceptance:**
   - [ ] `useCloudText` parametrized: `count`, `seed`, `gameActive` (defaults keep current decorative behavior)
