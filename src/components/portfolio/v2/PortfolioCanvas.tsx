@@ -1,11 +1,14 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef, useMemo, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { useCloudText } from './hooks/useCloudText';
 import { GoldenContainer } from './shared/GoldenLayout';
 import { PageContent } from './shared/PageContent';
 import { PageId, useComplexTransition } from './shared/useComplexTransition';
+import { useHeroGame, GAME_DURATION_S } from './game/useHeroGame';
+import StartBracket from './game/StartBracket';
+import GameHUD from './game/GameHUD';
 
 interface PortfolioCanvasProps {
   currentPage: PageId;
@@ -14,10 +17,8 @@ interface PortfolioCanvasProps {
 }
 
 export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false }: PortfolioCanvasProps) => {
-  // TEMP (T2 dev): local toggle to observe the game-mode cloud transform.
-  // Removed in T3/T5 when the real START button + lifted gameActive wire in.
-  const [devGame, setDevGame] = useState(false);
-  const isGame = gameActive || devGame;
+  const game = useHeroGame();
+  const isGame = gameActive || game.phase !== 'idle';
   const prevPageRef = useRef<PageId>(currentPage);
   const fromPage = previousPage || prevPageRef.current;
 
@@ -40,7 +41,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
     sortingType: 1,
     count: isGame ? 20 : 80,
     gameActive: isGame,
-    seed: 1,
+    seed: game.seed,
   };
 
   const { layers } = useCloudText(cloudConfig);
@@ -67,7 +68,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
               {showBackground && memoizedLayers.map((layer, layerIndex) => (
                 <motion.div
                   key={`layer-${layerIndex}`}
-                  className="absolute inset-0 overflow-hidden flex items-center justify-center pointer-events-none"
+                  className="absolute inset-0 overflow-hidden flex items-center justify-center pointer-events-none select-none"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: isGame ? 1 : 0.2 }}
                   transition={{ duration: isGame ? 0.5 : 1, delay: layerIndex * 0.1 }}
@@ -79,7 +80,9 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
                     className="w-full h-full"
                     style={{ overflow: 'visible' }}
                   >
-                    {layer.items.map((item, itemIndex) => (
+                    {layer.items.map((item, itemIndex) => {
+                      const isHit = isGame && game.hitWords.includes(item.text);
+                      return (
                       <motion.text
                         key={`${layerIndex}-${itemIndex}`}
                         x={item.x}
@@ -91,21 +94,22 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
                         dominantBaseline="middle"
                         transform={`rotate(${item.rotation}, ${item.x}, ${item.y})`}
                         fill="rgba(80,85,95,0.7)"
-                        onClick={isGame ? () => console.log('[word-hunt] clicked', item.text) : undefined}
-                        style={isGame ? { pointerEvents: 'auto', cursor: 'pointer' } : undefined}
+                        onClick={isGame && !isHit ? () => game.registerHit(item.text) : undefined}
+                        style={isGame ? { pointerEvents: isHit ? 'none' : 'auto', cursor: 'pointer' } : undefined}
                         initial={{ opacity: 0.3 }}
                         animate={{
-                          opacity: isGame ? 0.85 : item.isHighlighted ? 0 : [0.3, 0.75, 0.3],
+                          opacity: isHit ? 0 : isGame ? 0.85 : item.isHighlighted ? 0 : [0.3, 0.75, 0.3],
                         }}
                         transition={
                           isGame
-                            ? { duration: 0.3 }
+                            ? { duration: isHit ? 0.25 : 0.3 }
                             : { opacity: { duration: item.animDuration, repeat: Infinity, ease: 'easeInOut', delay: item.animDelay } }
                         }
                       >
                         {item.text}
                       </motion.text>
-                    ))}
+                      );
+                    })}
                   </svg>
                 </motion.div>
               ))}
@@ -137,14 +141,24 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
                 <PageContent page={currentPage} />
               </div>
 
-              {/* TEMP (T2 dev): toggle game-mode cloud transform. REMOVE in T3/T5. */}
-              {showBackground && (
-                <button
-                  onClick={() => setDevGame(v => !v)}
-                  className="absolute top-2 left-2 z-[60] rounded bg-black/70 text-white text-[11px] px-2 py-1 pointer-events-auto"
-                >
-                  {isGame ? 'exit game (dev)' : 'game (dev)'}
-                </button>
+              {/* Word-Hunt game: START (idle) + HUD (playing/over), Main only */}
+              {showBackground && game.phase === 'idle' && (
+                <StartBracket onStart={game.start} />
+              )}
+              {showBackground && isGame && (
+                <GameHUD
+                  phase={game.phase}
+                  secondsLeft={game.secondsLeft}
+                  durationS={GAME_DURATION_S}
+                  score={game.score}
+                  streak={game.streak}
+                  bestStreak={game.bestStreak}
+                  best={game.best}
+                  target={game.target}
+                  runKey={game.seed}
+                  onQuit={game.quit}
+                  onPlayAgain={game.start}
+                />
               )}
 
             </div>
