@@ -8,7 +8,6 @@ import { PageContent } from './shared/PageContent';
 import { PageId, useComplexTransition } from './shared/useComplexTransition';
 import { useHeroGame, GAME_DURATION_S } from './game/useHeroGame';
 import { GAME_WORD_COUNT } from './game/heroGameLogic';
-import StartBracket from './game/StartBracket';
 import GameHUD from './game/GameHUD';
 import CloudWord from './game/CloudWord';
 
@@ -151,10 +150,8 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
                 <PageContent page={currentPage} />
               </div>
 
-              {/* Word-Hunt game: START (idle) + HUD (playing/over), Main only */}
-              {showBackground && game.phase === 'idle' && (
-                <StartBracket onStart={game.start} />
-              )}
+              {/* Word-Hunt game HUD (playing/over), Main only. START trigger removed for now;
+                  wire game.start() to a new control when ready. */}
               {showBackground && isGame && (
                 <GameHUD
                   phase={game.phase}
