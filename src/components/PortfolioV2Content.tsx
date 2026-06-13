@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PortfolioCanvas } from './portfolio/v2/PortfolioCanvas';
 import { PageId, PAGE_ORDER, getAdjacentPage } from './portfolio/v2/shared/useComplexTransition';
@@ -10,6 +10,7 @@ const PAGE_ITEMS: PageId[] = PAGE_ORDER;
 
 const PortfolioV2Content = () => {
   const [currentPage, setCurrentPage] = useState<PageId>('Main');
+  const [gameActive, setGameActive] = useState(false);
   const previousPageRef = useRef<PageId>('Main');
 
   // Handle page change with previous page tracking
@@ -20,9 +21,10 @@ const PortfolioV2Content = () => {
     }
   }, [currentPage]);
 
-  // Keyboard navigation
+  // Keyboard navigation (disabled while the game is running — focus mode)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (gameActive) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         const nextPage = getAdjacentPage(currentPage, 'next');
         if (nextPage && nextPage !== currentPage) {
@@ -38,7 +40,7 @@ const PortfolioV2Content = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, handlePageChange]);
+  }, [currentPage, handlePageChange, gameActive]);
 
   return (
     <div className="relative w-full min-h-screen bg-white overflow-hidden font-sans flex justify-center">
@@ -59,11 +61,20 @@ const PortfolioV2Content = () => {
         className="w-full h-screen relative z-10"
         style={{ maxWidth: 'var(--max-content-width, 1366px)' }}
       >
-        <PortfolioCanvas currentPage={currentPage} previousPage={previousPageRef.current} />
+        <PortfolioCanvas currentPage={currentPage} previousPage={previousPageRef.current} onGameActiveChange={setGameActive} />
       </div>
 
-      {/* Fixed Bottom Navigation Menu - Always Docked Bottom Bar */}
-      <div className="fixed bottom-0 left-0 w-full z-[100] flex items-center justify-center gap-1 p-2 bg-[#1A1A1A] backdrop-blur-md border-t border-white/10 shadow-2xl">
+      {/* Fixed Bottom Navigation Menu — hidden during the word-hunt game (focus mode) */}
+      <AnimatePresence>
+        {!gameActive && (
+          <motion.div
+            key="bottom-nav"
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="fixed bottom-0 left-0 w-full z-[100] flex items-center justify-center gap-1 p-2 bg-[#1A1A1A] backdrop-blur-md border-t border-white/10 shadow-2xl"
+          >
             {PAGE_ITEMS.map((page) => (
             <button
                 key={page}
@@ -85,7 +96,9 @@ const PortfolioV2Content = () => {
                 <span className="relative z-10">{page}</span>
             </button>
             ))}
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

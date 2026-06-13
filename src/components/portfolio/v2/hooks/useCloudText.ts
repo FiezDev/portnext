@@ -38,6 +38,8 @@ interface UseCloudTextProps {
   seed?: number;
   /** Game mode: sparse + centered + clickable; disables the decorative flicker. */
   gameActive?: boolean;
+  /** Portrait/narrow viewport: lay the game board out taller + larger for touch. */
+  portrait?: boolean;
 }
 
 // Reduced layers for better performance
@@ -55,6 +57,7 @@ export const useCloudText = ({
   count = 80,
   seed = 1,
   gameActive = false,
+  portrait = false,
 }: UseCloudTextProps) => {
 
   const [layers, setLayers] = useState<CloudLayerData[]>([]);
@@ -72,11 +75,12 @@ export const useCloudText = ({
      if (gameActive) {
        const rng = mulberry32(seed);
        const words = pickGameWords(RELATED_WORDS, count, rng);
-       const scattered = scatterWords(words, rng, {
-         centerX: 500,
-         centerY: 500,
-         fontSize: 30,
-       });
+       // Portrait viewBox is 560x1000 (taller, larger words for touch);
+       // landscape is the square 1000x1000.
+       const layout = portrait
+         ? { centerX: 280, centerY: 500, regionWidth: 500, regionHeight: 900, fontSize: 40 }
+         : { centerX: 500, centerY: 500, regionWidth: 880, regionHeight: 760, fontSize: 30 };
+       const scattered = scatterWords(words, rng, layout);
        const items = scattered.map(w => ({
          text: w.text,
          x: w.x,
@@ -118,7 +122,7 @@ export const useCloudText = ({
      });
 
      setLayers(generatedLayers);
-  }, [position.x, position.y, sortingType, colorFlag, color, glowFlag, count, seed, gameActive]);
+  }, [position.x, position.y, sortingType, colorFlag, color, glowFlag, count, seed, gameActive, portrait]);
 
   // Highlight Loop - only when colorFlag is true and NOT in game mode
   useEffect(() => {

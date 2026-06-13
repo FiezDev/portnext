@@ -85,7 +85,10 @@ export function scatterWords(
   const regionWidth = opts.regionWidth ?? 880;
   const regionHeight = opts.regionHeight ?? 760;
 
-  const cols = Math.ceil(Math.sqrt(n));
+  // Columns sized so the widest word fits a cell (works for any region aspect).
+  const widest = Math.max(...words.map((w) => wordWidth(w, fontSize)));
+  const gap = fontSize * 0.5;
+  const cols = Math.max(1, Math.min(n, Math.floor(regionWidth / (widest + gap))));
   const rows = Math.ceil(n / cols);
   const cellW = regionWidth / cols;
   const cellH = regionHeight / rows;
@@ -101,9 +104,16 @@ export function scatterWords(
   const margin = 4;
   return words.map((text, i) => {
     const cell = shuffledCells[i];
-    const rotation = ROTATIONS[Math.floor(rng() * ROTATIONS.length)];
-    const horizontal = rotation === 0 || rotation === 180;
     const raw = wordWidth(text, fontSize);
+    // Only rotate to vertical when the word's length fits the cell height —
+    // otherwise keep it horizontal so it can never overflow its cell.
+    const canVertical = raw + margin * 2 <= cellH;
+    const rotation: Rotation = canVertical
+      ? ROTATIONS[Math.floor(rng() * ROTATIONS.length)]
+      : rng() < 0.5
+        ? 0
+        : 180;
+    const horizontal = rotation === 0 || rotation === 180;
     const bw = horizontal ? raw : fontSize;
     const bh = horizontal ? fontSize : raw;
 

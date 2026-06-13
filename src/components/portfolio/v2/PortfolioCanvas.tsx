@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { useCloudText } from './hooks/useCloudText';
 import { GoldenContainer } from './shared/GoldenLayout';
 import { PageContent } from './shared/PageContent';
@@ -14,13 +14,24 @@ import CloudWord from './game/CloudWord';
 interface PortfolioCanvasProps {
   currentPage: PageId;
   previousPage?: PageId;
-  gameActive?: boolean;
+  onGameActiveChange?: (active: boolean) => void;
 }
 
-export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false }: PortfolioCanvasProps) => {
+export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange }: PortfolioCanvasProps) => {
   const game = useHeroGame();
   const reduced = useReducedMotion();
-  const isGame = gameActive || game.phase !== 'idle';
+  const isGame = game.phase !== 'idle';
+
+  // Portrait/narrow viewports get a taller board with larger, touch-friendly words.
+  const [portrait, setPortrait] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => setPortrait(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
   const prevPageRef = useRef<PageId>(currentPage);
   const fromPage = previousPage || prevPageRef.current;
 
@@ -28,6 +39,11 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
   useEffect(() => {
     prevPageRef.current = currentPage;
   }, [currentPage]);
+
+  // Report game-active state up so the shell can hide the bottom nav (focus mode).
+  useEffect(() => {
+    onGameActiveChange?.(isGame);
+  }, [isGame, onGameActiveChange]);
 
   const { variants: pageVariants, transition: pageTransition } = useComplexTransition(fromPage, currentPage);
 
@@ -44,6 +60,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
     count: isGame ? 20 : 80,
     gameActive: isGame,
     seed: game.seed,
+    portrait,
   };
 
   const { layers } = useCloudText(cloudConfig);
@@ -77,8 +94,8 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
                   style={{ filter: layer.blur, zIndex: isGame ? 30 : layerIndex }}
                 >
                   <svg
-                    viewBox="0 0 1000 1000"
-                    preserveAspectRatio="xMidYMid slice"
+                    viewBox={isGame && portrait ? '0 0 560 1000' : '0 0 1000 1000'}
+                    preserveAspectRatio={isGame ? 'xMidYMid meet' : 'xMidYMid slice'}
                     className="w-full h-full"
                     style={{ overflow: 'visible' }}
                   >
