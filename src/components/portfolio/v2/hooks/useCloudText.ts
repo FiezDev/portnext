@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { generateRadialPackedWords } from '../shared/radialPacking';
 import { RELATED_WORDS } from '../shared/motto';
-import { mulberry32, pickGameWords, scatterWords } from '../game/heroGameLogic';
+import { mulberry32, pickGameWords, scatterWords, gameRegion } from '../game/heroGameLogic';
 
 interface CloudTextItem {
   text: string;
@@ -38,8 +38,9 @@ interface UseCloudTextProps {
   seed?: number;
   /** Game mode: sparse + centered + clickable; disables the decorative flicker. */
   gameActive?: boolean;
-  /** Portrait/narrow viewport: lay the game board out taller + larger for touch. */
-  portrait?: boolean;
+  /** Game board pixel size (1:1 viewBox → fixed word size on every screen). */
+  gameViewW?: number;
+  gameViewH?: number;
 }
 
 // Reduced layers for better performance
@@ -57,7 +58,8 @@ export const useCloudText = ({
   count = 80,
   seed = 1,
   gameActive = false,
-  portrait = false,
+  gameViewW = 1000,
+  gameViewH = 1000,
 }: UseCloudTextProps) => {
 
   const [layers, setLayers] = useState<CloudLayerData[]>([]);
@@ -75,12 +77,8 @@ export const useCloudText = ({
      if (gameActive) {
        const rng = mulberry32(seed);
        const words = pickGameWords(RELATED_WORDS, count, rng);
-       // Portrait viewBox is 560x1000 (taller, larger words for touch);
-       // landscape is the square 1000x1000.
-       const layout = portrait
-         ? { centerX: 280, centerY: 500, regionWidth: 500, regionHeight: 900, fontSize: 40 }
-         : { centerX: 500, centerY: 500, regionWidth: 880, regionHeight: 760, fontSize: 30 };
-       const scattered = scatterWords(words, rng, layout);
+       // 1:1 pixel board: same word size on every screen (no scale-up).
+       const scattered = scatterWords(words, rng, gameRegion(gameViewW, gameViewH));
        const items = scattered.map(w => ({
          text: w.text,
          x: w.x,
@@ -122,7 +120,7 @@ export const useCloudText = ({
      });
 
      setLayers(generatedLayers);
-  }, [position.x, position.y, sortingType, colorFlag, color, glowFlag, count, seed, gameActive, portrait]);
+  }, [position.x, position.y, sortingType, colorFlag, color, glowFlag, count, seed, gameActive, gameViewW, gameViewH]);
 
   // Highlight Loop - only when colorFlag is true and NOT in game mode
   useEffect(() => {

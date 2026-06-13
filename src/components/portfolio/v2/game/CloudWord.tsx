@@ -2,6 +2,8 @@
 
 import { memo, useEffect, useRef, useState } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { letterFragments } from './letterGeometry';
 import type { Rotation } from './heroGameLogic';
 
@@ -29,12 +31,14 @@ interface CloudWordProps {
 
 const BASE_FILL = 'rgba(80,85,95,0.7)';
 const GOLD = '#FBBF24';
+const BRIGHT = '#FFE000'; // bright yellow the target shine grows to over ~5s
 const RED = '#EF4444';
 
 function CloudWordImpl({ item, isGame, isHit, isTarget, wrongNonce, reduced, onHit }: CloudWordProps) {
   const controls = useAnimationControls();
   const [shattering, setShattering] = useState(false);
   const prevHit = useRef(false);
+  const shardsRef = useRef<SVGGElement>(null);
   // Live mirror so the shake settle can see whether this word just became the
   // target (avoids clobbering a freshly-assigned glow back to grey).
   const isTargetRef = useRef(isTarget);
@@ -59,17 +63,18 @@ function CloudWordImpl({ item, isGame, isHit, isTarget, wrongNonce, reduced, onH
   useEffect(() => {
     if (!isGame || isHit) return;
     if (isTarget && !reduced) {
+      // Shine grows from the base colour to bright yellow over ~5s, then holds.
       controls.start(
         {
-          fill: GOLD,
+          fill: BRIGHT,
           x: 0, // cancel any leftover shake offset when this word becomes the target
-          filter: ['drop-shadow(0 0 1px #FBBF24)', 'drop-shadow(0 0 9px #FBBF24)'],
-          opacity: 0.98,
+          filter: ['drop-shadow(0 0 0px rgba(255,224,0,0))', 'drop-shadow(0 0 18px #FFE000)'],
+          opacity: 1,
         },
-        { filter: { duration: 2, ease: 'easeOut' }, fill: { duration: 0.3 }, opacity: { duration: 0.3 } }
+        { fill: { duration: 5, ease: 'linear' }, filter: { duration: 5, ease: 'easeIn' }, opacity: { duration: 0.4 } }
       );
     } else if (isTarget && reduced) {
-      controls.set({ fill: GOLD, x: 0, opacity: 0.95 });
+      controls.set({ fill: BRIGHT, x: 0, opacity: 0.97 });
     } else {
       controls.start(
         { fill: BASE_FILL, opacity: 0.85, filter: 'drop-shadow(0 0 0px rgba(251,191,36,0))', x: 0 },
@@ -98,6 +103,41 @@ function CloudWordImpl({ item, isGame, isHit, isTarget, wrongNonce, reduced, onH
       cancelled = true;
     };
   }, [isGame, wrongNonce, reduced, controls]);
+
+  // GSAP shatter — on a correct hit the letters pop, fling out, tumble + fall, fade.
+  useGSAP(
+    () => {
+      if (!isGame || !isHit || !shattering || reduced) return;
+      const shards = shardsRef.current?.querySelectorAll('text');
+      if (!shards || shards.length === 0) return;
+      const frags = letterFragments(item);
+      const tl = gsap.timeline();
+      shards.forEach((el, i) => {
+        const f = frags[i];
+        if (!f) return;
+        const at = i * 0.018;
+        tl.fromTo(
+          el,
+          { scale: 1, opacity: 1, x: 0, y: 0, rotation: 0 },
+          { scale: 1.5, duration: 0.1, ease: 'back.out(3)' },
+          at
+        ).to(
+          el,
+          {
+            x: f.tx * 2.4,
+            y: f.ty * 2.4 + 70,
+            rotation: f.spin * 2.6,
+            scale: 0.12,
+            opacity: 0,
+            duration: 0.72,
+            ease: 'power3.out',
+          },
+          at + 0.08
+        );
+      });
+    },
+    { scope: shardsRef, dependencies: [shattering, isHit] }
+  );
 
   // ---- Decorative (non-game): byte-identical to the original inline word ----
   if (!isGame) {
@@ -150,9 +190,9 @@ function CloudWordImpl({ item, isGame, isHit, isTarget, wrongNonce, reduced, onH
       );
     }
     return (
-      <g>
+      <g ref={shardsRef}>
         {letterFragments(item).map((f) => (
-          <motion.text
+          <text
             key={f.i}
             x={f.x}
             y={f.y}
@@ -161,14 +201,11 @@ function CloudWordImpl({ item, isGame, isHit, isTarget, wrongNonce, reduced, onH
             fontSize={item.fontSize}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill={GOLD}
+            fill={BRIGHT}
             style={{ transformBox: 'fill-box', transformOrigin: 'center', pointerEvents: 'none' }}
-            initial={{ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 }}
-            animate={{ x: f.tx, y: f.ty, rotate: f.spin, scale: 0.6, opacity: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut', delay: f.i * 0.02 }}
           >
             {f.char}
-          </motion.text>
+          </text>
         ))}
       </g>
     );
@@ -202,7 +239,7 @@ function CloudWordImpl({ item, isGame, isHit, isTarget, wrongNonce, reduced, onH
           pointerEvents: 'auto',
           cursor: 'pointer',
           outline: 'none',
-          ...(isTarget && reduced ? { filter: 'drop-shadow(0 0 6px #FBBF24)' } : null),
+          ...(isTarget && reduced ? { filter: 'drop-shadow(0 0 8px #FFE000)' } : null),
         }}
         initial={{ opacity: 0.85, fill: BASE_FILL }}
         animate={controls}

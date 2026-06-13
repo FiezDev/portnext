@@ -8,10 +8,10 @@ import {
   pickNextTarget,
   saveBest,
   loadBest,
+  GAME_WORD_COUNT,
 } from './heroGameLogic';
 
 export const GAME_DURATION_S = 15;
-export const GAME_WORD_COUNT = 20;
 
 export type GamePhase = 'idle' | 'playing' | 'over';
 

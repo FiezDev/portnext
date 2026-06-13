@@ -16,7 +16,7 @@ export default function StartBracket({ onStart }: { onStart: () => void }) {
       initial={{ opacity: 0, x: -24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
-      className="group absolute left-[5%] top-[72%] z-40 -translate-y-1/2 pointer-events-auto"
+      className="group absolute left-4 top-5 md:left-8 md:top-8 z-40 pointer-events-auto"
     >
       <span
         className="relative flex h-40 w-28 items-center justify-center rounded-l-3xl

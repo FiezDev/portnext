@@ -132,6 +132,25 @@ export function scatterWords(
   });
 }
 
+// ---- Game board config (same on every screen — mobile-first, no scale-up) ----
+/** One fixed word count for all screens (must fit the smallest/mobile board). */
+export const GAME_WORD_COUNT = 30;
+/** Fixed on-screen word size in px (1:1 pixel viewBox → no scaling per device). */
+export const GAME_FONT_SIZE = 28;
+const BOARD_MAX_W = 780;
+const BOARD_MAX_H = 860;
+
+/** Scatter region for a given board pixel size — fills mobile, capped+centered on desktop. */
+export function gameRegion(viewW: number, viewH: number): Required<ScatterOptions> {
+  return {
+    centerX: viewW / 2,
+    centerY: viewH / 2,
+    regionWidth: Math.min(viewW * 0.94, BOARD_MAX_W),
+    regionHeight: Math.min(viewH * 0.86, BOARD_MAX_H),
+    fontSize: GAME_FONT_SIZE,
+  };
+}
+
 /** Pick the next target, never repeating `prev` back-to-back (unless 1 word). */
 export function pickNextTarget(
   words: readonly string[],

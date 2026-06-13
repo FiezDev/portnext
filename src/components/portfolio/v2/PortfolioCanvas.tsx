@@ -7,6 +7,7 @@ import { GoldenContainer } from './shared/GoldenLayout';
 import { PageContent } from './shared/PageContent';
 import { PageId, useComplexTransition } from './shared/useComplexTransition';
 import { useHeroGame, GAME_DURATION_S } from './game/useHeroGame';
+import { GAME_WORD_COUNT } from './game/heroGameLogic';
 import StartBracket from './game/StartBracket';
 import GameHUD from './game/GameHUD';
 import CloudWord from './game/CloudWord';
@@ -18,20 +19,24 @@ interface PortfolioCanvasProps {
 }
 
 export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange }: PortfolioCanvasProps) => {
+  // Measure the board area so the game uses a 1:1 pixel viewBox → the same word
+  // size on every screen (mobile-first, no scale-up).
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [board, setBoard] = useState({ w: 1000, h: 800 });
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const update = () =>
+      setBoard({ w: Math.round(el.clientWidth) || 1000, h: Math.round(el.clientHeight) || 800 });
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const game = useHeroGame();
   const reduced = useReducedMotion();
   const isGame = game.phase !== 'idle';
-
-  // Portrait/narrow viewports get a taller board with larger, touch-friendly words.
-  const [portrait, setPortrait] = useState(false);
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(max-width: 767px)');
-    const update = () => setPortrait(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
   const prevPageRef = useRef<PageId>(currentPage);
   const fromPage = previousPage || prevPageRef.current;
 
@@ -57,10 +62,11 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
     colorFlag: showBackground,
     glowFlag: showBackground,
     sortingType: 1,
-    count: isGame ? 20 : 80,
+    count: isGame ? GAME_WORD_COUNT : 80,
     gameActive: isGame,
     seed: game.seed,
-    portrait,
+    gameViewW: board.w,
+    gameViewH: board.h,
   };
 
   const { layers } = useCloudText(cloudConfig);
@@ -81,7 +87,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
             exit="exit"
             transition={pageTransition}
           >
-            <div className="relative w-full h-full bg-transparent overflow-hidden">
+            <div ref={boardRef} className="relative w-full h-full bg-transparent overflow-hidden">
 
               {/* Text Cloud Background - Only on Main (becomes the game board in game mode) */}
               {showBackground && memoizedLayers.map((layer, layerIndex) => (
@@ -94,7 +100,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
                   style={{ filter: layer.blur, zIndex: isGame ? 30 : layerIndex }}
                 >
                   <svg
-                    viewBox={isGame && portrait ? '0 0 560 1000' : '0 0 1000 1000'}
+                    viewBox={isGame ? `0 0 ${board.w} ${board.h}` : '0 0 1000 1000'}
                     preserveAspectRatio={isGame ? 'xMidYMid meet' : 'xMidYMid slice'}
                     className="w-full h-full"
                     style={{ overflow: 'visible' }}
