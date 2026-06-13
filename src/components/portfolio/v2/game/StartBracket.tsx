@@ -1,14 +1,17 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { createPortal } from 'react-dom';
 
 /**
- * Left-bracket "START!" call-to-action at the hero's left-center.
- * The bracket is an open-right shape (top + bottom + left strokes, rounded
- * left corners) matching the requested ASCII silhouette.
+ * Left-bracket "START!" call-to-action. Rendered through a portal with `fixed`
+ * positioning so it sticks to the top-left of the VIEWPORT (not the centered
+ * max-width content column) and isn't offset by a transformed ancestor.
  */
 export default function StartBracket({ onStart }: { onStart: () => void }) {
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <motion.button
       type="button"
       onClick={onStart}
@@ -16,7 +19,7 @@ export default function StartBracket({ onStart }: { onStart: () => void }) {
       initial={{ opacity: 0, x: -24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
-      className="group absolute left-4 top-5 md:left-8 md:top-8 z-40 pointer-events-auto"
+      className="group fixed left-4 top-4 z-[90] pointer-events-auto md:left-5 md:top-5"
     >
       <span
         className="relative flex h-40 w-28 items-center justify-center rounded-l-3xl
@@ -41,6 +44,7 @@ export default function StartBracket({ onStart }: { onStart: () => void }) {
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         />
       </span>
-    </motion.button>
+    </motion.button>,
+    document.body
   );
 }

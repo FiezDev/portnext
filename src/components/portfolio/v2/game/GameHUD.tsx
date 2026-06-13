@@ -13,7 +13,7 @@ interface GameHUDProps {
   streak: number;
   bestStreak: number;
   best: number;
-  target: string;
+  targets: string[];
   /** Changes each game so the timer bar restarts its CSS animation. */
   runKey: number;
   onQuit: () => void;
@@ -28,7 +28,7 @@ export default function GameHUD({
   streak,
   bestStreak,
   best,
-  target,
+  targets,
   runKey,
   onQuit,
   onPlayAgain,
@@ -75,19 +75,19 @@ export default function GameHUD({
       {/* Target pill, bottom-center */}
       {phase === 'playing' && (
         <div className="absolute inset-x-0 bottom-8 flex justify-center px-4">
-          <motion.div
-            key={target}
-            initial={{ y: 8, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            className="rounded-full bg-[#1A1A1A] px-6 py-3 shadow-xl"
+          <div
+            className="flex max-w-[92vw] flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl bg-[#1A1A1A] px-5 py-2.5 shadow-xl"
             role="status"
             aria-live="polite"
-            aria-label={`Find ${target}`}
+            aria-label={`Find ${targets.join(', ')}`}
           >
-            <span className="mr-2 text-xs uppercase tracking-widest text-gray-400">Find</span>
-            <span className="text-lg font-extrabold tracking-wider text-yellow-400">{target}</span>
-          </motion.div>
+            <span className="text-[11px] uppercase tracking-widest text-gray-400">Find</span>
+            {targets.map((t) => (
+              <span key={t} className="text-sm font-extrabold tracking-wider text-yellow-300 md:text-base">
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 

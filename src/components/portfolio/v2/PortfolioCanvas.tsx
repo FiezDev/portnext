@@ -113,7 +113,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
                           item={item}
                           isGame={isGame}
                           isHit={hit}
-                          isTarget={isGame && game.phase === 'playing' && item.text === game.target && !hit}
+                          isTarget={isGame && game.phase === 'playing' && game.targets.includes(item.text) && !hit}
                           wrongNonce={isGame && game.lastWrong?.word === item.text ? game.lastWrong.nonce : 0}
                           reduced={!!reduced}
                           onHit={game.registerHit}
@@ -164,7 +164,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
                   streak={game.streak}
                   bestStreak={game.bestStreak}
                   best={game.best}
-                  target={game.target}
+                  targets={game.targets}
                   runKey={game.seed}
                   onQuit={game.quit}
                   onPlayAgain={game.start}

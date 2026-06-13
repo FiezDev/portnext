@@ -102,6 +102,7 @@ export function scatterWords(
   const shuffledCells = shuffle(cells, rng);
 
   const margin = 4;
+  const glyphH = fontSize * 1.25; // the rendered glyph box is taller than the font size
   return words.map((text, i) => {
     const cell = shuffledCells[i];
     const raw = wordWidth(text, fontSize);
@@ -114,8 +115,8 @@ export function scatterWords(
         ? 0
         : 180;
     const horizontal = rotation === 0 || rotation === 180;
-    const bw = horizontal ? raw : fontSize;
-    const bh = horizontal ? fontSize : raw;
+    const bw = horizontal ? raw : glyphH;
+    const bh = horizontal ? glyphH : raw;
 
     const ccx = originX + cell.c * cellW + cellW / 2;
     const ccy = originY + cell.r * cellH + cellH / 2;
@@ -132,23 +133,40 @@ export function scatterWords(
   });
 }
 
-// ---- Game board config (same on every screen — mobile-first, no scale-up) ----
-/** One fixed word count for all screens (must fit the smallest/mobile board). */
-export const GAME_WORD_COUNT = 30;
+// ---- Game board config (dense, screen-filling, same word size on every screen) ----
+/** One fixed word count for all screens — dense, like the hero cloud. */
+export const GAME_WORD_COUNT = 45;
 /** Fixed on-screen word size in px (1:1 pixel viewBox → no scaling per device). */
-export const GAME_FONT_SIZE = 28;
-const BOARD_MAX_W = 780;
-const BOARD_MAX_H = 860;
+export const GAME_FONT_SIZE = 24;
+/** How many target words glow + are findable at the same time. */
+export const GAME_TARGET_COUNT = 3;
+/** Cap game words to short ones so more columns fit (denser, still tappable). */
+export const GAME_MAX_LEN = 6;
 
-/** Scatter region for a given board pixel size — fills mobile, capped+centered on desktop. */
+/** Scatter region for a given board pixel size — fills the whole board (no cap). */
 export function gameRegion(viewW: number, viewH: number): Required<ScatterOptions> {
   return {
     centerX: viewW / 2,
     centerY: viewH / 2,
-    regionWidth: Math.min(viewW * 0.94, BOARD_MAX_W),
-    regionHeight: Math.min(viewH * 0.86, BOARD_MAX_H),
+    regionWidth: viewW * 0.96,
+    regionHeight: viewH * 0.9,
     fontSize: GAME_FONT_SIZE,
   };
+}
+
+/** Pick `n` distinct words from `words`, excluding `exclude`, deterministic per `rng`. */
+export function pickDistinct(
+  words: readonly string[],
+  exclude: readonly string[],
+  rng: () => number,
+  n: number
+): string[] {
+  const pool = words.filter((w) => !exclude.includes(w));
+  const out: string[] = [];
+  while (out.length < n && pool.length > 0) {
+    out.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
+  }
+  return out;
 }
 
 /** Pick the next target, never repeating `prev` back-to-back (unless 1 word). */

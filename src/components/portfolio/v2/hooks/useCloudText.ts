@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { generateRadialPackedWords } from '../shared/radialPacking';
 import { RELATED_WORDS } from '../shared/motto';
-import { mulberry32, pickGameWords, scatterWords, gameRegion } from '../game/heroGameLogic';
+import { mulberry32, pickGameWords, scatterWords, gameRegion, GAME_MAX_LEN } from '../game/heroGameLogic';
 
 interface CloudTextItem {
   text: string;
@@ -76,7 +76,7 @@ export const useCloudText = ({
      // GAME MODE: one sparse, centered, deterministic layer (the game board).
      if (gameActive) {
        const rng = mulberry32(seed);
-       const words = pickGameWords(RELATED_WORDS, count, rng);
+       const words = pickGameWords(RELATED_WORDS, count, rng, { maxLen: GAME_MAX_LEN });
        // 1:1 pixel board: same word size on every screen (no scale-up).
        const scattered = scatterWords(words, rng, gameRegion(gameViewW, gameViewH));
        const items = scattered.map(w => ({
