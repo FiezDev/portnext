@@ -61,7 +61,7 @@ Status legend: `[ ]` todo · `[~]` in-progress · `[x]` done
 - **Notes:** done @ 1cdebe8. New: letterGeometry.ts (+8 tests, verified rotation anchors), CloudWord.tsx (per-word state: decorative|live|hit; <g> rotate + inner <motion.text> CSS transforms). Designed via 3-way panel+judge (caught SVG-attr-vs-CSS-transform snap bug; adv=fs*0.7 not 25.2). Hardened by 5-lens adversarial review (29 agents, 19 refuted / 5 confirmed all fixed): race (wrong-shake clobbering target glow — guarded via isTargetRef + glow x:0; verified target gold even when just-shaken word becomes next target), reduced-motion decorative static, wrong-click opacity dip, keyboard (tabIndex/role/aria-label/Enter+focus scale), aria-live on target pill + end screen. 32 tests green.
 
 ## T5 — Hide nav + responsive QA + ship
-- **Status:** [~] in-progress (built + QA'd; awaiting deploy gate)
+- **Status:** [x] done
 - **Depends on:** T3
 - **Acceptance:**
   - [ ] `gameActive` lifted to `PortfolioV2Content`; bottom nav hidden during play, restored on exit

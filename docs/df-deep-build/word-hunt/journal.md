@@ -50,3 +50,8 @@
 - Responsive fix: 'slice' clipped the wide scatter on portrait phones → switched game to 'meet' + a portrait viewBox (560x1000). Made scatterWords aspect-aware (cols sized to widest word; rotate vertical only when cell height fits) so no overlap in any aspect. Kept count=20 so useHeroGame + cloud share the word set.
 - Verified real shell: mobile words 14px→32px (touch-friendly), 20/20 on-screen, 0 overlaps, target always on board, START 112x160 tappable, end screen fits 2 buttons; desktop unchanged. tsc + 32 tests + `next build` all green.
 - Branch feat/hero-word-hunt: T1 b35829a, T2 12cfc07, T3 26cd5de, T4 1cdebe8, T5 809d116. Not pushed — awaiting user deploy decision.
+
+## 2026-06-12 — SHIPPED — merged to main @ 3008e4e, live on fiez.dev/portfolio
+- User chose "Merge to main + deploy live". Fast-forward merged feat/hero-word-hunt (T1–T5 + docs) → main, pushed (3c01425..3008e4e). Vercel auto-deployed.
+- LIVE-VERIFIED on https://www.fiez.dev/portfolio: START present, nav hidden (focus mode), 5 targets scored, target glow gold, clean (no dev react-scan overlay in prod). Production build was green pre-push.
+- All 5 tasks done. Word-Hunt game complete. Review phase skipped per user (shipped directly).
