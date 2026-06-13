@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useMemo } from 'react';
 import { useCloudText } from './hooks/useCloudText';
 import { GoldenContainer } from './shared/GoldenLayout';
@@ -9,6 +9,7 @@ import { PageId, useComplexTransition } from './shared/useComplexTransition';
 import { useHeroGame, GAME_DURATION_S } from './game/useHeroGame';
 import StartBracket from './game/StartBracket';
 import GameHUD from './game/GameHUD';
+import CloudWord from './game/CloudWord';
 
 interface PortfolioCanvasProps {
   currentPage: PageId;
@@ -18,6 +19,7 @@ interface PortfolioCanvasProps {
 
 export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false }: PortfolioCanvasProps) => {
   const game = useHeroGame();
+  const reduced = useReducedMotion();
   const isGame = gameActive || game.phase !== 'idle';
   const prevPageRef = useRef<PageId>(currentPage);
   const fromPage = previousPage || prevPageRef.current;
@@ -81,33 +83,18 @@ export const PortfolioCanvas = ({ currentPage, previousPage, gameActive = false 
                     style={{ overflow: 'visible' }}
                   >
                     {layer.items.map((item, itemIndex) => {
-                      const isHit = isGame && game.hitWords.includes(item.text);
+                      const hit = isGame && game.hitWords.includes(item.text);
                       return (
-                      <motion.text
-                        key={`${layerIndex}-${itemIndex}`}
-                        x={item.x}
-                        y={item.y}
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                        fontSize={item.fontSize}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        transform={`rotate(${item.rotation}, ${item.x}, ${item.y})`}
-                        fill="rgba(80,85,95,0.7)"
-                        onClick={isGame && !isHit ? () => game.registerHit(item.text) : undefined}
-                        style={isGame ? { pointerEvents: isHit ? 'none' : 'auto', cursor: 'pointer' } : undefined}
-                        initial={{ opacity: 0.3 }}
-                        animate={{
-                          opacity: isHit ? 0 : isGame ? 0.85 : item.isHighlighted ? 0 : [0.3, 0.75, 0.3],
-                        }}
-                        transition={
-                          isGame
-                            ? { duration: isHit ? 0.25 : 0.3 }
-                            : { opacity: { duration: item.animDuration, repeat: Infinity, ease: 'easeInOut', delay: item.animDelay } }
-                        }
-                      >
-                        {item.text}
-                      </motion.text>
+                        <CloudWord
+                          key={`${layerIndex}-${itemIndex}`}
+                          item={item}
+                          isGame={isGame}
+                          isHit={hit}
+                          isTarget={isGame && game.phase === 'playing' && item.text === game.target && !hit}
+                          wrongNonce={isGame && game.lastWrong?.word === item.text ? game.lastWrong.nonce : 0}
+                          reduced={!!reduced}
+                          onHit={game.registerHit}
+                        />
                       );
                     })}
                   </svg>

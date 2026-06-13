@@ -81,6 +81,9 @@ export default function GameHUD({
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.2 }}
             className="rounded-full bg-[#1A1A1A] px-6 py-3 shadow-xl"
+            role="status"
+            aria-live="polite"
+            aria-label={`Find ${target}`}
           >
             <span className="mr-2 text-xs uppercase tracking-widest text-gray-400">Find</span>
             <span className="text-lg font-extrabold tracking-wider text-yellow-400">{target}</span>
@@ -102,6 +105,9 @@ export default function GameHUD({
               animate={{ scale: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 260, damping: 22 }}
               className="mx-4 w-full max-w-xs rounded-2xl border border-gray-200 bg-white px-8 py-7 text-center shadow-2xl"
+              role="status"
+              aria-live="polite"
+              aria-label={`Time! You found ${score} words. Best ${Math.max(best, score)}.`}
             >
               <div className="text-sm uppercase tracking-widest text-gray-400">Time!</div>
               <div className="mt-1 text-6xl font-extrabold text-yellow-600">{score}</div>
