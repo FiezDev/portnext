@@ -16,7 +16,7 @@ export const ImgixImage = {
   //resume
   resume_pdf: `${baseImgix}cv/ITTI_Resume.pdf`,
   cv_pdf0: `${baseImgix}cv/ittipol_cv_v0.pdf`,
-  cv_pdf2: `/cv/Ittipol_Vongapai_CV.pdf?v=20260615`,
+  cv_pdf2: `/cv/Ittipol_Vongapai_CV.pdf?v=20260617`,
   resumepdf: `${baseImgix}cv/resume.pdf`,
   resumecompdf: `${baseImgix}cv/resume_com.pdf`,
 
