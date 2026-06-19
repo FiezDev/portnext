@@ -98,16 +98,16 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                 <button
                   onClick={prevImg}
                   aria-label="Previous screenshot"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 z-[2] w-8 h-8 rounded-full bg-black/55 hover:bg-yellow-500/80 text-white flex items-center justify-center transition-colors"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-[2] w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-yellow-500 text-white flex items-center justify-center shadow-lg transition-colors"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.5} />
                 </button>
                 <button
                   onClick={nextImg}
                   aria-label="Next screenshot"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 z-[2] w-8 h-8 rounded-full bg-black/55 hover:bg-yellow-500/80 text-white flex items-center justify-center transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-[2] w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-yellow-500 text-white flex items-center justify-center shadow-lg transition-colors"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.5} />
                 </button>
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[2] flex gap-1.5">
                   {projectImages.map((_, idx) => (

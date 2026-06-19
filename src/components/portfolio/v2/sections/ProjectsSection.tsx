@@ -129,15 +129,13 @@ const ProjectsSection = () => {
       {/* Thumbnail navigator — full width, above the card */}
       <motion.div variants={itemVariants} className="mb-5 md:mb-6 w-full">
         <div className="flex items-center gap-2 w-full">
-          <Button
+          <button
             onClick={handlePrev}
-            variant="ghost"
-            size="icon"
             aria-label="Previous project"
-            className="shrink-0 rounded-full text-gray-600 hover:bg-yellow-100 hover:text-yellow-700"
+            className="shrink-0 flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-yellow-500 text-white shadow-lg shadow-yellow-500/30 hover:bg-yellow-600 active:scale-95 transition"
           >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
+            <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={2.5} />
+          </button>
 
           <div ref={stripRef} className="flex-1 overflow-x-auto">
             <div className="flex gap-2 pb-1">
@@ -181,15 +179,13 @@ const ProjectsSection = () => {
             </div>
           </div>
 
-          <Button
+          <button
             onClick={handleNext}
-            variant="ghost"
-            size="icon"
             aria-label="Next project"
-            className="shrink-0 rounded-full text-gray-600 hover:bg-yellow-100 hover:text-yellow-700"
+            className="shrink-0 flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-yellow-500 text-white shadow-lg shadow-yellow-500/30 hover:bg-yellow-600 active:scale-95 transition"
           >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
+            <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={2.5} />
+          </button>
         </div>
         <p className="mt-2 text-xs text-gray-500">
           {currentIndex + 1} / {projects.length} · {currentProject?.projectName}
