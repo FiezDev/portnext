@@ -34,10 +34,8 @@ const RootLayout = ({ children }: RootLayoutProps) => {
             async
           />
         )}
-        <Script
-          src="https://www.google.com/recaptcha/api.js"
-          strategy="beforeInteractive"
-        />
+        {/* reCAPTCHA now lazy-loads inside the Recaptcha component (Contact only) */}
+        <link rel="preconnect" href="https://fiez.imgix.net" crossOrigin="" />
       </head>
       <body className={titillium.className}>
         {/* <ThemeProvider

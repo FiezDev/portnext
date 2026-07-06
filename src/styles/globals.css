@@ -301,3 +301,13 @@ a:hover {
     justify-self: center;
   }
 }
+
+/* Projects selector rail: auto-rotate countdown ring (5s, pauses with rotation) */
+@keyframes railring {
+  from {
+    stroke-dashoffset: 40.84;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

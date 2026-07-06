@@ -3,24 +3,16 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import GoldHeading from '../shared/GoldHeading';
+import GoldHeading, { KICKER } from '../shared/GoldHeading';
 import ProjectCard from './ProjectCard';
 import { WorkProjects, SideProjects } from '@/mocks/projectMock';
 import { WorkProjectObj, SideProjectObj } from '@/types/object';
 import { cn, resolveImageSrc } from '@/lib/utils';
-import { Briefcase, Code2, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  bentoSpanClass,
-  bentoSpanForImage,
-  nextFeatured,
-  driftTarget,
-} from './bentoLayout';
+import { Briefcase, Code2 } from 'lucide-react';
+import { nextFeatured } from './bentoLayout';
 
 type ProjectType = 'work' | 'side';
 
-const DRIFT_RANGE = 20; // px — keeps the grid inside its padding while it wanders
-const DRIFT_INTERVAL_MS = 2000;
 const FEATURE_ROTATE_MS = 5000;
 
 const firstImage = (p: WorkProjectObj | SideProjectObj): string | null => {
@@ -29,12 +21,13 @@ const firstImage = (p: WorkProjectObj | SideProjectObj): string | null => {
   return pics && pics[0] ? resolveImageSrc(pics[0]) : null;
 };
 
+const introOf = (p: WorkProjectObj | SideProjectObj): string =>
+  p.projectIntro || p.projectDesc?.[0]?.replace(/^- /, '') || '';
+
 const ProjectsSection = () => {
   const [projectType, setProjectType] = useState<ProjectType>('work');
   const [featuredIndex, setFeaturedIndex] = useState(0);
-  const [cardHidden, setCardHidden] = useState(false);
   const [hoverPaused, setHoverPaused] = useState(false);
-  const [drift, setDrift] = useState({ x: 0, y: 0 });
   const reducedMotion = useReducedMotion();
 
   const sortedWorkProjects = [...WorkProjects]
@@ -44,160 +37,174 @@ const ProjectsSection = () => {
   const projects = projectType === 'work' ? sortedWorkProjects : SideProjects;
   const featuredProject = projects[featuredIndex];
 
-  // Grid drift: pick a new random direction every 2s, tween toward it.
-  useEffect(() => {
-    if (reducedMotion) return;
-    const id = setInterval(
-      () => setDrift(driftTarget(Math.random, DRIFT_RANGE)),
-      DRIFT_INTERVAL_MS
-    );
-    return () => clearInterval(id);
-  }, [reducedMotion]);
-
-  // Featured card auto-rotates every 5s. Any selection change (manual click,
-  // type switch, hide) restarts the countdown via the deps.
+  // Featured auto-rotates every 5s; hover anywhere in the showcase pauses it.
   useEffect(() => {
     if (hoverPaused || projects.length === 0) return;
-    const id = setTimeout(() => {
-      setFeaturedIndex((c) => nextFeatured(c, projects.length));
-      setCardHidden(false);
-    }, FEATURE_ROTATE_MS);
+    const id = setTimeout(
+      () => setFeaturedIndex((c) => nextFeatured(c, projects.length)),
+      FEATURE_ROTATE_MS
+    );
     return () => clearTimeout(id);
-  }, [featuredIndex, hoverPaused, cardHidden, projectType, projects.length]);
+  }, [featuredIndex, hoverPaused, projectType, projects.length]);
 
   const handleTypeChange = (type: ProjectType) => {
     setProjectType(type);
     setFeaturedIndex(0);
-    setCardHidden(false);
   };
 
-  const selectProject = (index: number) => {
-    setFeaturedIndex(index);
-    setCardHidden(false);
-  };
-
-  const toggleBtn = (active: boolean) =>
-    cn(
-      'gap-2 font-semibold px-4 sm:px-5 py-2 transition-all',
-      active
-        ? 'bg-yellow-500 hover:bg-yellow-500 text-white shadow-md shadow-yellow-500/20'
-        : 'bg-white/70 border border-gray-200 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-300'
-    );
+  const pad = (n: number) => String(n + 1).padStart(2, '0');
 
   return (
     <motion.div
-      className="flex flex-col justify-center min-h-full p-5 md:p-8 lg:p-10 pb-24 md:pb-24 lg:pb-28 bg-transparent"
+      className="flex flex-col lg:justify-center min-h-full lg:h-full gap-4 md:gap-5 p-5 md:p-8 lg:p-10 pb-24 lg:pb-24 bg-transparent"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Header row: title (left) + Work/Side toggle (right) */}
-      <div className="flex items-center justify-between gap-4 mb-5 md:mb-6">
-        <GoldHeading as="h2" className="text-3xl md:text-5xl">
-          Projects
-        </GoldHeading>
-        <div className="flex gap-2 sm:gap-3 shrink-0">
-          <Button
-            onClick={() => handleTypeChange('work')}
-            size="sm"
-            className={toggleBtn(projectType === 'work')}
-          >
-            <Briefcase className="w-4 h-4" />
-            <span>Work</span>
-          </Button>
-          <Button
-            onClick={() => handleTypeChange('side')}
-            size="sm"
-            className={toggleBtn(projectType === 'side')}
-          >
-            <Code2 className="w-4 h-4" />
-            <span>Side</span>
-          </Button>
+      {/* Header: kicker + title left, segmented toggle right */}
+      <div className="flex items-end justify-between gap-4 shrink-0">
+        <div>
+          <p className={cn(KICKER, 'mb-1.5')}>03 · Selected Work</p>
+          <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl">
+            Projects
+          </GoldHeading>
+        </div>
+        <div className="flex rounded-full border border-gray-200 bg-white/70 backdrop-blur-sm p-1 shrink-0">
+          {(
+            [
+              ['work', 'Work', Briefcase],
+              ['side', 'Side', Code2],
+            ] as const
+          ).map(([type, label, Icon]) => (
+            <button
+              key={type}
+              onClick={() => handleTypeChange(type)}
+              className={cn(
+                'flex items-center gap-1.5 rounded-full px-3.5 sm:px-5 py-1.5 text-sm font-semibold transition-all cursor-pointer',
+                projectType === type
+                  ? 'bg-yellow-500 text-white shadow-md shadow-yellow-500/25'
+                  : 'text-gray-600 hover:text-yellow-700'
+              )}
+            >
+              <Icon className="w-4 h-4" />
+              <span>{label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Bento grid — drifts slowly toward a new random point every 2s */}
-      <motion.div
-        animate={{ x: drift.x, y: drift.y }}
-        transition={{ duration: DRIFT_INTERVAL_MS / 1000, ease: 'linear' }}
-        className="grid grid-cols-2 md:grid-cols-4 grid-flow-dense auto-rows-[96px] md:auto-rows-[120px] gap-3"
+      {/* Showcase: featured panel (major) + selector rail (minor) */}
+      <div
+        className="flex flex-col lg:flex-row gap-4 lg:gap-6 flex-1 min-h-0 lg:max-h-[540px]"
+        onMouseEnter={() => setHoverPaused(true)}
+        onMouseLeave={() => setHoverPaused(false)}
       >
-        {projects.map((p, index) => {
-          const img = firstImage(p);
-          const featured = index === featuredIndex && !cardHidden;
-          // Tile shape follows the first screenshot's dimensions; side
-          // projects have no dims in the mock → cycle the static pattern.
-          const dims = 'projectPic' in p ? p.projectPic?.picurl : undefined;
-          const span =
-            bentoSpanForImage(dims?.width, dims?.height) ?? bentoSpanClass(index);
-          return (
-            <motion.button
-              key={`${projectType}-${p.projectName}-${index}`}
-              initial={{ opacity: 0, y: 16 }}
+        {/* Featured — in-flow, golden major column; card fills a fixed frame */}
+        <div className="lg:w-[61.8%] min-w-0 lg:min-h-0 flex flex-col gap-2">
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="font-mono text-xs text-gray-400">
+              {pad(featuredIndex)} / {pad(projects.length - 1)}
+            </span>
+            <span className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${projectType}-${featuredIndex}`}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.05, ease: 'easeOut' }}
-              onClick={() => selectProject(index)}
-              title={p.projectName}
-              aria-label={`Feature ${p.projectName}`}
-              aria-current={featured}
-              className={cn(
-                'group relative overflow-hidden rounded-2xl border text-left cursor-pointer bg-white/70 backdrop-blur-sm transition-[box-shadow,border-color] duration-200',
-                span,
-                featured
-                  ? 'ring-2 ring-yellow-400 border-yellow-400 shadow-lg shadow-yellow-500/20'
-                  : 'border-gray-200 hover:border-yellow-300 hover:shadow-lg'
-              )}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3 }}
+              className="lg:flex-1 lg:min-h-0 flex flex-col"
             >
-              {img ? (
-                <Image
-                  src={img}
-                  alt={p.projectName}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                />
-              ) : (
-                <span className="flex h-full items-center justify-center px-2 text-center text-sm font-medium text-gray-600 bg-gray-100">
-                  {p.projectName}
-                </span>
+              {featuredProject && (
+                <ProjectCard project={featuredProject} index={0} isActive />
               )}
-              <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/70 to-transparent px-2.5 pt-6 pb-1.5 text-xs font-medium text-white">
-                {p.projectName}
-              </span>
-            </motion.button>
-          );
-        })}
-      </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-      {/* Featured card — viewport-centered, rotates every 5s, hover pauses */}
-      <AnimatePresence mode="wait">
-        {featuredProject && !cardHidden && (
-          <motion.div
-            key={`${projectType}-${featuredIndex}`}
-            initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.98 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center px-4 pt-6 pb-24 pointer-events-none"
-          >
-            <div
-              className="pointer-events-auto relative w-[min(60vw,48rem)] max-h-[60vh] overflow-y-auto rounded-2xl shadow-2xl"
-              onMouseEnter={() => setHoverPaused(true)}
-              onMouseLeave={() => setHoverPaused(false)}
-            >
+        {/* Selector rail — horizontal strip above the card on mobile, vertical list on desktop */}
+        <div className="order-first lg:order-none lg:w-[38.2%] min-h-0 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto pb-1 lg:pb-0 lg:pr-1">
+          {projects.map((p, index) => {
+            const img = firstImage(p);
+            const active = index === featuredIndex;
+            return (
               <button
-                onClick={() => setCardHidden(true)}
-                aria-label="Hide featured project"
-                className="absolute top-2 right-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white hover:bg-yellow-500 cursor-pointer transition-colors"
+                key={`${projectType}-${p.projectName}-${index}`}
+                onClick={() => setFeaturedIndex(index)}
+                aria-current={active}
+                className={cn(
+                  'group flex items-center gap-3 rounded-xl border p-2 pr-3 text-left transition-all cursor-pointer shrink-0 w-60 lg:w-auto',
+                  active
+                    ? 'border-amber-400 ring-1 ring-amber-400 bg-amber-50/70 shadow-md shadow-amber-500/10'
+                    : 'border-gray-200 bg-white/70 hover:border-amber-300 hover:bg-white'
+                )}
               >
-                <X className="w-5 h-5" />
+                <span className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-100">
+                  {img ? (
+                    <Image
+                      src={img}
+                      alt=""
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="64px"
+                    />
+                  ) : (
+                    <span className="flex h-full items-center justify-center text-sm font-bold text-gray-400">
+                      {p.projectName.charAt(0)}
+                    </span>
+                  )}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span
+                    className={cn(
+                      'block truncate text-sm font-semibold',
+                      active ? 'text-amber-700' : 'text-gray-800'
+                    )}
+                  >
+                    {p.projectName}
+                  </span>
+                  <span className="block truncate text-xs text-gray-500">
+                    {introOf(p)}
+                  </span>
+                </span>
+                {/* Countdown ring — restarts in sync with the rotate timer */}
+                {active && !reducedMotion && (
+                  <svg
+                    key={`ring-${projectType}-${featuredIndex}-${hoverPaused}`}
+                    viewBox="0 0 16 16"
+                    className="h-4 w-4 shrink-0 -rotate-90"
+                    aria-hidden
+                  >
+                    <circle
+                      cx="8"
+                      cy="8"
+                      r="6.5"
+                      fill="none"
+                      strokeWidth="1.5"
+                      className="stroke-amber-200"
+                    />
+                    <circle
+                      cx="8"
+                      cy="8"
+                      r="6.5"
+                      fill="none"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeDasharray="40.84"
+                      className="stroke-amber-500"
+                      style={{
+                        animation: `railring ${FEATURE_ROTATE_MS}ms linear forwards`,
+                        animationPlayState: hoverPaused ? 'paused' : 'running',
+                      }}
+                    />
+                  </svg>
+                )}
               </button>
-              {/* ponytail: hover-pause misses the portal Lightbox; lift zoom state up if card swaps mid-zoom annoys */}
-              <ProjectCard project={featuredProject} index={0} isActive />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            );
+          })}
+        </div>
+      </div>
     </motion.div>
   );
 };

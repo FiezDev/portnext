@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import GoldHeading from '../shared/GoldHeading';
+import GoldHeading, { KICKER } from '../shared/GoldHeading';
 import { useGlitchText } from '@/hooks/useGlitchText';
 
 const JOB_TITLES = [
@@ -51,6 +51,7 @@ const MainSection = () => {
     >
       {/* PORTFOLIO Heading */}
       <motion.div variants={itemVariants}>
+        <p className={`${KICKER} mb-2`}>00 · Welcome</p>
         <GoldHeading
           as="h1"
           className="text-5xl md:text-7xl lg:text-8xl mb-4 leading-none"
@@ -59,6 +60,7 @@ const MainSection = () => {
           <br />
           FOLIO
         </GoldHeading>
+        <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent mb-5" />
       </motion.div>
 
       {/* GlitchText Job Title */}

@@ -1,126 +1,131 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import GoldHeading from '../shared/GoldHeading';
+import GoldHeading, { KICKER } from '../shared/GoldHeading';
 import { coreicon } from '@/constants/mapdata';
-import { useState } from 'react';
+
+// Editorial grouping — the icon data has no categories, so the section owns them.
+const GROUPS: { label: string; names: string[] }[] = [
+  { label: 'Languages', names: ['TypeScript', 'JavaScript', 'Python', 'HTML5', 'CSS3'] },
+  { label: 'Frontend', names: ['React', 'Next.js', 'Tailwind CSS', 'Zustand'] },
+  { label: 'Motion & 3D', names: ['Three.js', 'GSAP', 'Framer Motion'] },
+  { label: 'Backend & Cloud', names: ['Node.js', 'Firebase', 'Vercel', 'Google Cloud', 'AWS'] },
+];
+
+const byName = new Map(coreicon.map((s) => [s.name, s]));
 
 const containerVariants = {
   initial: { opacity: 0 },
   animate: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.3,
-    },
+    transition: { staggerChildren: 0.06, delayChildren: 0.25 },
   },
 };
 
 const itemVariants = {
-  initial: { opacity: 0, scale: 0.8, rotate: -10 },
+  initial: { opacity: 0, y: 18 },
   animate: {
     opacity: 1,
-    scale: 1,
-    rotate: 0,
-    transition: { duration: 0.4, ease: 'easeOut' as const },
+    y: 0,
+    transition: { duration: 0.45, ease: 'easeOut' as const },
   },
 };
 
-const SkillsSection = () => {
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
+// Chips ripple upward one after another while their group is hovered.
+const chipWave = {
+  wave: (i: number) => ({
+    y: [0, -5, 0],
+    transition: { duration: 0.35, delay: i * 0.035, ease: 'easeInOut' as const },
+  }),
+};
 
+const SkillsSection = () => {
   return (
     <motion.div
-      className="flex flex-col justify-center h-full p-6 md:p-12 bg-transparent overflow-y-auto"
+      className="flex flex-col lg:flex-row lg:items-center justify-start lg:justify-center min-h-full gap-8 lg:gap-14 p-6 md:p-10 lg:p-14 pb-24 lg:pb-24 bg-transparent"
       variants={containerVariants}
       initial="initial"
       animate="animate"
     >
-      <motion.div variants={itemVariants}>
-        <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl mb-6 md:mb-8">
-          Core Skills
+      {/* Left rail — golden minor column */}
+      <motion.div
+        variants={itemVariants}
+        className="lg:w-[38.2%] shrink-0 flex flex-col gap-4 lg:gap-5"
+      >
+        <p className={KICKER}>02 · Capabilities</p>
+        <GoldHeading
+          as="h2"
+          className="text-5xl md:text-6xl lg:text-7xl leading-[0.95]"
+        >
+          Core
+          <br />
+          Skills
         </GoldHeading>
+        <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent" />
+        <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-sm">
+          The tools I reach for daily — typed, tested, and shipped to
+          production.
+        </p>
+        <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
+          {coreicon.length} technologies · {GROUPS.length} domains
+        </p>
       </motion.div>
 
-      {/* Responsive Grid */}
-      <motion.div
-        className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-4 md:gap-6"
-        variants={containerVariants}
-      >
-        {coreicon.map((skill, index) => {
-          const SkillIcon = skill.Icon;
-          const isHovered = hoveredId === skill.id;
-
+      {/* Right — grouped chip grid, names always visible */}
+      <div className="lg:w-[61.8%] flex flex-col gap-6 lg:gap-8">
+        {GROUPS.map((group, gi) => {
+          const items = group.names
+            .map((n) => byName.get(n))
+            .filter((s): s is NonNullable<typeof s> => Boolean(s));
           return (
-            <motion.a
-              key={skill.id}
-              href={skill.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              variants={itemVariants}
-              custom={index}
-              onMouseEnter={() => setHoveredId(skill.id)}
-              onMouseLeave={() => setHoveredId(null)}
-              whileHover={{
-                scale: 1.15,
-                rotate: 5,
-                zIndex: 10,
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="relative group flex flex-col items-center justify-center p-3 md:p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-gray-100 hover:border-yellow-300 hover:bg-yellow-50/50 transition-all duration-300 cursor-pointer"
-            >
-              {/* Glow effect on hover */}
-              <motion.div
-                className="absolute inset-0 rounded-xl bg-gradient-to-br from-yellow-200/20 to-amber-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                initial={false}
-              />
-
-              {/* Icon — always brand color */}
-              <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
-                {skill.img ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={skill.img}
-                    alt={skill.name}
-                    className="w-8 h-8 object-contain transition-all duration-300"
-                  />
-                ) : (
-                  SkillIcon && (
-                    <SkillIcon
-                      size={32}
-                      className="transition-colors duration-300"
-                      style={{ color: skill.color }}
-                    />
-                  )
-                )}
+            <motion.div key={group.label} variants={itemVariants} whileHover="wave">
+              <div className="flex items-baseline gap-3 mb-3">
+                <span className="font-mono text-xs text-amber-500">
+                  0{gi + 1}
+                </span>
+                <h3 className="text-xs md:text-sm font-semibold uppercase tracking-[0.2em] text-gray-800">
+                  {group.label}
+                </h3>
+                <span className="text-xs text-gray-400">{items.length}</span>
+                <span className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
               </div>
-
-              {/* Tooltip */}
-              <motion.span
-                initial={{ opacity: 0, y: 5 }}
-                animate={{
-                  opacity: isHovered ? 1 : 0,
-                  y: isHovered ? 0 : 5,
-                }}
-                transition={{ duration: 0.2 }}
-                className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-20 pointer-events-none"
-              >
-                {skill.name}
-                {/* Tooltip arrow */}
-                <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900" />
-              </motion.span>
-            </motion.a>
+              <div className="flex flex-wrap gap-2 md:gap-2.5">
+                {items.map((skill, chipIndex) => {
+                  const SkillIcon = skill.Icon;
+                  return (
+                    <motion.a
+                      key={skill.name}
+                      custom={chipIndex}
+                      variants={chipWave}
+                      href={skill.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`${skill.name} — documentation`}
+                      className="group flex items-center gap-2.5 rounded-full border border-gray-200 bg-white/60 backdrop-blur-sm pl-3 pr-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:border-amber-400 hover:bg-amber-50/70 hover:text-gray-900 hover:shadow-md hover:shadow-amber-500/10"
+                    >
+                      <span className="flex h-5 w-5 items-center justify-center">
+                        {skill.img ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={skill.img}
+                            alt=""
+                            className="h-5 w-5 object-contain"
+                          />
+                        ) : (
+                          SkillIcon && (
+                            <SkillIcon size={18} style={{ color: skill.color }} />
+                          )
+                        )}
+                      </span>
+                      {skill.name}
+                    </motion.a>
+                  );
+                })}
+              </div>
+            </motion.div>
           );
         })}
-      </motion.div>
-
-      {/* Subtitle */}
-      <motion.p
-        variants={itemVariants}
-        className="mt-6 md:mt-8 text-sm text-gray-400 italic"
-      >
-        Click any icon to learn more about the technology
-      </motion.p>
+      </div>
     </motion.div>
   );
 };

@@ -1,7 +1,17 @@
 'use client';
 
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useRef, useMemo, useState } from 'react';
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+  MotionValue,
+  TargetAndTransition,
+  Transition,
+} from 'framer-motion';
+import { ReactNode, useEffect, useRef, useMemo, useState } from 'react';
 import { useCloudText } from './hooks/useCloudText';
 import { GoldenContainer } from './shared/GoldenLayout';
 import { PageContent } from './shared/PageContent';
@@ -16,6 +26,42 @@ interface PortfolioCanvasProps {
   previousPage?: PageId;
   onGameActiveChange?: (active: boolean) => void;
 }
+
+// Depth wrapper: deeper (more blurred) cloud layers drift more with the
+// mouse, giving the Main background a parallax feel.
+const ParallaxLayer = ({
+  mx,
+  my,
+  depth,
+  className,
+  style,
+  children,
+  animate,
+  transition,
+}: {
+  mx: MotionValue<number>;
+  my: MotionValue<number>;
+  depth: number;
+  className?: string;
+  style?: React.CSSProperties;
+  children: ReactNode;
+  animate?: TargetAndTransition;
+  transition?: Transition;
+}) => {
+  const x = useTransform(mx, (v) => v * depth);
+  const y = useTransform(my, (v) => v * depth);
+  return (
+    <motion.div
+      className={className}
+      style={{ ...style, x, y }}
+      initial={{ opacity: 0 }}
+      animate={animate}
+      transition={transition}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange }: PortfolioCanvasProps) => {
   // Measure the board area so the game uses a 1:1 pixel viewBox → the same word
@@ -38,6 +84,12 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
   const isGame = game.phase !== 'idle';
   const prevPageRef = useRef<PageId>(currentPage);
   const fromPage = previousPage || prevPageRef.current;
+
+  // Mouse parallax for the cloud layers (-1..1 from board center, springed).
+  const rawMx = useMotionValue(0);
+  const rawMy = useMotionValue(0);
+  const parallaxX = useSpring(rawMx, { stiffness: 50, damping: 18 });
+  const parallaxY = useSpring(rawMy, { stiffness: 50, damping: 18 });
 
   // Update ref
   useEffect(() => {
@@ -86,14 +138,29 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
             exit="exit"
             transition={pageTransition}
           >
-            <div ref={boardRef} className="relative w-full h-full bg-transparent overflow-hidden">
+            <div
+              ref={boardRef}
+              className="relative w-full h-full bg-transparent overflow-hidden"
+              onMouseMove={(e) => {
+                if (reduced || isGame || !showBackground) return;
+                const r = e.currentTarget.getBoundingClientRect();
+                rawMx.set(((e.clientX - r.left) / r.width) * 2 - 1);
+                rawMy.set(((e.clientY - r.top) / r.height) * 2 - 1);
+              }}
+              onMouseLeave={() => {
+                rawMx.set(0);
+                rawMy.set(0);
+              }}
+            >
 
               {/* Text Cloud Background - Only on Main (becomes the game board in game mode) */}
               {showBackground && memoizedLayers.map((layer, layerIndex) => (
-                <motion.div
+                <ParallaxLayer
                   key={`layer-${layerIndex}`}
+                  mx={parallaxX}
+                  my={parallaxY}
+                  depth={isGame || reduced ? 0 : 8 + layerIndex * 7}
                   className="absolute inset-0 overflow-hidden flex items-center justify-center pointer-events-none select-none"
-                  initial={{ opacity: 0 }}
                   animate={{ opacity: isGame ? 1 : 0.2 }}
                   transition={{ duration: isGame ? 0.5 : 1, delay: layerIndex * 0.1 }}
                   style={{ filter: layer.blur, zIndex: isGame ? 30 : layerIndex }}
@@ -120,7 +187,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
                       );
                     })}
                   </svg>
-                </motion.div>
+                </ParallaxLayer>
               ))}
 
               {/* Portrait Visual - Only on Main, hidden during the game */}
@@ -134,7 +201,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
                       transition={{ duration: 0.8, delay: 0.1 }}
                     >
                       <img
-                        src="/images/user-portrait.png"
+                        src="/images/user-portrait.webp"
                         alt="Portrait"
                         loading="eager"
                         className="object-contain object-left-bottom min-[1366px]:object-bottom drop-shadow-2xl h-[90%] w-full opacity-20 min-[1366px]:opacity-100"

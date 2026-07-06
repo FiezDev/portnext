@@ -1,10 +1,54 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from 'framer-motion';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { PortfolioCanvas } from './portfolio/v2/PortfolioCanvas';
+import GoldCursor from './portfolio/v2/shared/GoldCursor';
 import { PageId, PAGE_ORDER, getAdjacentPage } from './portfolio/v2/shared/useComplexTransition';
+
+// Nav button that leans toward the cursor (desktop micro-interaction).
+const MagneticButton = ({
+  onClick,
+  className,
+  children,
+}: {
+  onClick: () => void;
+  className?: string;
+  children: ReactNode;
+}) => {
+  const reduced = useReducedMotion();
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const x = useSpring(mx, { stiffness: 350, damping: 22, mass: 0.5 });
+  const y = useSpring(my, { stiffness: 350, damping: 22, mass: 0.5 });
+
+  return (
+    <motion.button
+      onClick={onClick}
+      className={className}
+      style={reduced ? undefined : { x, y }}
+      onMouseMove={(e) => {
+        if (reduced) return;
+        const r = e.currentTarget.getBoundingClientRect();
+        mx.set((e.clientX - (r.left + r.width / 2)) * 0.25);
+        my.set((e.clientY - (r.top + r.height / 2)) * 0.35);
+      }}
+      onMouseLeave={() => {
+        mx.set(0);
+        my.set(0);
+      }}
+    >
+      {children}
+    </motion.button>
+  );
+};
 
 const PAGE_ITEMS: PageId[] = PAGE_ORDER;
 
@@ -44,7 +88,10 @@ const PortfolioV2Content = () => {
 
   return (
     <div className="relative w-full min-h-screen bg-white overflow-hidden font-sans flex justify-center">
-      
+
+      {/* Gold cursor accent — desktop pointers only */}
+      <GoldCursor />
+
       {/* Global Background - Noise Style */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
           <div className="absolute inset-0 bg-gradient-to-br from-stone-50/50 to-amber-50/30" />
@@ -75,12 +122,12 @@ const PortfolioV2Content = () => {
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="fixed bottom-0 left-0 w-full z-[100] flex items-center justify-center gap-1 p-2 bg-[#1A1A1A] backdrop-blur-md border-t border-white/10 shadow-2xl"
           >
-            {PAGE_ITEMS.map((page) => (
-            <button
+            {PAGE_ITEMS.map((page, pageIndex) => (
+            <MagneticButton
                 key={page}
                 onClick={() => handlePageChange(page)}
                 className={cn(
-                  'relative px-5 py-2.5 rounded-full text-[11px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300',
+                  'relative px-4 md:px-5 py-2.5 rounded-full text-[11px] md:text-xs font-bold uppercase tracking-widest transition-colors duration-300 cursor-pointer',
                   currentPage === page
                     ? 'text-stone-900'
                     : 'text-gray-400 hover:text-white'
@@ -93,8 +140,18 @@ const PortfolioV2Content = () => {
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
                 )}
-                <span className="relative z-10">{page}</span>
-            </button>
+                <span className="relative z-10 flex items-baseline gap-1.5">
+                  <span
+                    className={cn(
+                      'font-mono text-[9px] font-medium',
+                      currentPage === page ? 'text-stone-700' : 'text-gray-500'
+                    )}
+                  >
+                    0{pageIndex}
+                  </span>
+                  {page}
+                </span>
+            </MagneticButton>
             ))}
           </motion.div>
         )}

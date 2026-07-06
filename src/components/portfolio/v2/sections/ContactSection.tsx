@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import GoldHeading from '../shared/GoldHeading';
+import GoldHeading, { KICKER } from '../shared/GoldHeading';
 import { codeUse, infoUse } from '@/constants/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
@@ -13,10 +13,13 @@ import {
   contactFormSchema,
 } from '@/lib/validations/contact';
 import { Button } from '@/components/ui/button';
+import { Check, Copy, MapPin } from 'lucide-react';
 import Recaptcha from '@/components/global/Recapcha';
 import Notification from '@/components/global/Notification';
 import { useCreateContact } from '@/services/contact';
 import { cn } from '@/lib/utils';
+
+const EMAILS = ['itti.task@gmail.com', 'fiez.dev@gmail.com'];
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -47,6 +50,14 @@ const formVariants = {
   },
 };
 
+const inputCls = (invalid?: boolean) =>
+  cn(
+    'w-full rounded-xl border bg-white/70 px-4 py-3 text-sm text-gray-800 transition-all outline-none placeholder:text-gray-400',
+    invalid
+      ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-100'
+      : 'border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100'
+  );
+
 const ContactSection = () => {
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
@@ -55,6 +66,17 @@ const ContactSection = () => {
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recaptchaKey, setRecaptchaKey] = useState(0);
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
+
+  const copyEmail = async (email: string) => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopiedEmail(email);
+      setTimeout(() => setCopiedEmail(null), 1600);
+    } catch {
+      // Clipboard unavailable (permissions/http) — mailto link still works.
+    }
+  };
 
   const mutateCreateContact = useCreateContact();
 
@@ -150,168 +172,192 @@ const ContactSection = () => {
 
   return (
     <motion.div
-      className="flex flex-col justify-center h-full p-6 md:p-12 bg-transparent overflow-y-auto"
+      className="flex flex-col justify-center min-h-full p-6 md:p-10 lg:p-14 pb-24 lg:pb-24 bg-transparent"
       variants={containerVariants}
       initial="initial"
       animate="animate"
     >
-      <motion.div variants={itemVariants}>
-        <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl mb-6 md:mb-8">
-          Let&apos;s Talk
-        </GoldHeading>
-      </motion.div>
-
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 w-full">
-        {/* Contact Info */}
+      <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 w-full">
+        {/* Left rail — invitation + direct channels */}
         <motion.div
           variants={itemVariants}
-          className="lg:w-1/3 space-y-6"
+          className="lg:w-[38.2%] flex flex-col gap-5 justify-center"
         >
-          {/* Emails */}
-          <div className="space-y-3">
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Email</p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                <FontAwesomeIcon icon={faEnvelope} className="text-yellow-600" />
+          <p className={KICKER}>04 · Contact</p>
+          <GoldHeading
+            as="h2"
+            className="text-5xl md:text-6xl lg:text-7xl leading-[0.95]"
+          >
+            Let&apos;s
+            <br />
+            Talk
+          </GoldHeading>
+          <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent" />
+          <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-sm">
+            Have a project, a role, or an idea worth building? My inbox is
+            open.
+          </p>
+
+          {/* Availability */}
+          <div className="flex items-center gap-2 self-start rounded-full border border-green-200 bg-green-50/80 px-3.5 py-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+            </span>
+            <span className="text-xs font-semibold text-green-700">
+              Open for opportunities
+            </span>
+          </div>
+          <p className="flex items-center gap-1.5 text-xs text-gray-400 -mt-3">
+            <MapPin className="h-3.5 w-3.5" />
+            Bangkok, Thailand · GMT+7
+          </p>
+
+          {/* Emails — primary channel, large targets + one-click copy */}
+          <div className="space-y-1.5">
+            {EMAILS.map((email) => (
+              <div key={email} className="flex items-center gap-1.5">
+                <a
+                  href={`mailto:${email}`}
+                  className="group flex min-w-0 items-center gap-3 text-base md:text-lg font-semibold text-gray-800 hover:text-amber-600 transition-colors"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600 transition-colors group-hover:bg-amber-500 group-hover:text-white">
+                    <FontAwesomeIcon icon={faEnvelope} className="text-sm" />
+                  </span>
+                  <span className="truncate underline-offset-4 group-hover:underline">
+                    {email}
+                  </span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => copyEmail(email)}
+                  aria-label={`Copy ${email}`}
+                  title="Copy email"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-amber-50 hover:text-amber-600 cursor-pointer"
+                >
+                  {copiedEmail === email ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </button>
+                {copiedEmail === email && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -4 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-xs font-medium text-green-600"
+                  >
+                    Copied
+                  </motion.span>
+                )}
               </div>
-              <a
-                href="mailto:itti.task@gmail.com"
-                className="text-sm text-gray-700 hover:text-yellow-600 transition-colors"
-              >
-                itti.task@gmail.com
-              </a>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                <FontAwesomeIcon icon={faEnvelope} className="text-yellow-600" />
-              </div>
-              <a
-                href="mailto:fiez.dev@gmail.com"
-                className="text-sm text-gray-700 hover:text-yellow-600 transition-colors"
-              >
-                fiez.dev@gmail.com
-              </a>
-            </div>
+            ))}
           </div>
 
-          {/* Social Links */}
-          <div className="space-y-3">
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Social</p>
-            <div className="flex flex-wrap gap-3">
+          {/* Social + connect */}
+          <div className="space-y-3 pt-1">
+            <div className="flex flex-wrap gap-2.5">
               {codeUse.map((link) => (
                 <a
                   key={link.id}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-gray-100 hover:bg-yellow-100 flex items-center justify-center transition-colors group"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white/70 text-gray-600 transition-all hover:border-amber-400 hover:bg-amber-50 hover:text-amber-600 hover:-translate-y-0.5"
                 >
-                  <FontAwesomeIcon
-                    icon={link.icon}
-                    className="text-gray-600 group-hover:text-yellow-600 transition-colors"
-                  />
+                  <FontAwesomeIcon icon={link.icon} />
+                </a>
+              ))}
+            </div>
+            <div className="space-y-2">
+              {infoUse.map((info) => (
+                <a
+                  key={info.id}
+                  href={info.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-sm text-gray-600 hover:text-amber-600 transition-colors"
+                >
+                  <FontAwesomeIcon icon={info.icon} className="w-4" />
+                  <span>{info.text}</span>
                 </a>
               ))}
             </div>
           </div>
-
-          {/* Other Info */}
-          <div className="space-y-3">
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Connect</p>
-            {infoUse.map((info) => (
-              <a
-                key={info.id}
-                href={info.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-sm text-gray-600 hover:text-yellow-600 transition-colors"
-              >
-                <FontAwesomeIcon icon={info.icon} className="w-4" />
-                <span>{info.text}</span>
-              </a>
-            ))}
-          </div>
         </motion.div>
 
-        {/* Contact Form */}
+        {/* Right — message form card */}
         <motion.form
           variants={formVariants}
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="lg:w-2/3 space-y-4"
+          className="lg:w-[61.8%] self-center w-full rounded-3xl border border-gray-200 bg-white/70 backdrop-blur-md shadow-xl ring-1 ring-black/[0.03] p-5 md:p-8 space-y-4"
         >
-          {/* Name Field */}
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm text-gray-500 font-medium mb-1"
-            >
-              Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('name')}
-              type="text"
-              id="name"
-              placeholder="Your name"
-              className={cn(
-                'w-full px-4 py-2.5 rounded-lg bg-white/50 border transition-all outline-none',
-                errors.name
-                  ? 'border-red-300 focus:border-red-500'
-                  : 'border-gray-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100'
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Name Field */}
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5"
+              >
+                Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...register('name')}
+                type="text"
+                id="name"
+                placeholder="Your name"
+                className={inputCls(!!errors.name)}
+              />
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.name.message}
+                </p>
               )}
-            />
-            {errors.name && (
-              <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
-            )}
-          </div>
+            </div>
 
-          {/* Email Field */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm text-gray-500 font-medium mb-1"
-            >
-              Email <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('email')}
-              type="email"
-              id="email"
-              placeholder="your@email.com"
-              className={cn(
-                'w-full px-4 py-2.5 rounded-lg bg-white/50 border transition-all outline-none',
-                errors.email
-                  ? 'border-red-300 focus:border-red-500'
-                  : 'border-gray-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100'
+            {/* Email Field */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5"
+              >
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...register('email')}
+                type="email"
+                id="email"
+                placeholder="your@email.com"
+                className={inputCls(!!errors.email)}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.email.message}
+                </p>
               )}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-            )}
+            </div>
           </div>
 
           {/* Message Field */}
           <div>
             <label
               htmlFor="message"
-              className="block text-sm text-gray-500 font-medium mb-1"
+              className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5"
             >
               Message <span className="text-red-500">*</span>
             </label>
             <textarea
               {...register('message')}
               id="message"
-              placeholder="Your message..."
-              rows={4}
-              className={cn(
-                'w-full px-4 py-2.5 rounded-lg bg-white/50 border transition-all outline-none resize-none',
-                errors.message
-                  ? 'border-red-300 focus:border-red-500'
-                  : 'border-gray-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100'
-              )}
+              placeholder="Tell me about it…"
+              rows={5}
+              className={cn(inputCls(!!errors.message), 'resize-none')}
             />
             {errors.message && (
-              <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.message.message}
+              </p>
             )}
           </div>
 
@@ -329,7 +375,7 @@ const ContactSection = () => {
             type="submit"
             disabled={!isValid || isSubmitting}
             className={cn(
-              'w-full bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2.5 rounded-lg transition-all',
+              'w-full rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 py-3 font-semibold text-white shadow-lg shadow-amber-500/25 transition-all hover:from-yellow-600 hover:to-amber-600 hover:shadow-amber-500/35',
               (!isValid || isSubmitting) && 'opacity-50 cursor-not-allowed'
             )}
           >

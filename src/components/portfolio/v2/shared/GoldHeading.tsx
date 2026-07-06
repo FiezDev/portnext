@@ -2,6 +2,10 @@ import { cn } from '@/lib/utils';
 import { motion, MotionProps } from 'framer-motion';
 import { ReactNode } from 'react';
 
+// Editorial kicker — shared across all v2 sections ("02 · Capabilities" …)
+export const KICKER =
+  'text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-500';
+
 interface GoldHeadingProps extends MotionProps {
   children: ReactNode;
   className?: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import {
   Github,
@@ -29,11 +29,20 @@ type ProjectWithLinks = WorkProjectObj & {
   apilink?: string;
 };
 
+type TabId = 'overview' | 'details' | 'stack';
+
+const TABS: { id: TabId; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'details', label: 'Details' },
+  { id: 'stack', label: 'Stack' },
+];
+
 const ProjectCard = ({ project }: ProjectCardProps) => {
   const isWorkProject = 'projectPic' in project;
   const projectWithLinks = project as ProjectWithLinks;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
+  const [tab, setTab] = useState<TabId>('overview');
 
   const getStatusVariant = (status?: string) => {
     switch (status) {
@@ -62,17 +71,28 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const nextImg = () =>
     setCurrentImageIndex((p) => (p === projectImages.length - 1 ? 0 : p + 1));
 
+  const Bullets = ({ items, clamp }: { items: string[]; clamp?: boolean }) => (
+    <ul className="space-y-2 text-sm md:text-[15px] leading-relaxed text-gray-600">
+      {items.map((desc, i) => (
+        <li key={i} className="flex items-start gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
+          <span className={clamp ? 'line-clamp-2' : undefined}>{desc}</span>
+        </li>
+      ))}
+    </ul>
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 md:p-5 rounded-2xl bg-white/70 backdrop-blur-md border border-gray-200 shadow-xl ring-1 ring-black/[0.03]"
+      className="flex flex-col lg:flex-row lg:h-full min-h-0 gap-4 lg:gap-6 p-4 md:p-5 rounded-2xl bg-white/70 backdrop-blur-md border border-gray-200 shadow-xl ring-1 ring-black/[0.03]"
     >
-      {/* Image */}
+      {/* Image — fills the card's left column at a fixed share */}
       {hasImages && (
-        <div className="lg:w-[46%] lg:flex-shrink-0 lg:flex lg:items-center">
-          <div className="group relative w-full aspect-[16/10] lg:aspect-auto lg:h-[300px] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+        <div className="lg:w-[46%] lg:flex-shrink-0 lg:self-stretch lg:flex lg:items-center lg:min-h-0">
+          <div className="group relative w-full aspect-[16/10] max-h-full rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
             <button
               type="button"
               onClick={() => setZoomOpen(true)}
@@ -98,16 +118,16 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                 <button
                   onClick={prevImg}
                   aria-label="Previous screenshot"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 z-[2] w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-yellow-500 text-white flex items-center justify-center shadow-lg transition-colors"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-[2] w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-yellow-500 text-white flex items-center justify-center shadow-lg transition-colors"
                 >
-                  <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.5} />
+                  <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
                 </button>
                 <button
                   onClick={nextImg}
                   aria-label="Next screenshot"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 z-[2] w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-yellow-500 text-white flex items-center justify-center shadow-lg transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-[2] w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-yellow-500 text-white flex items-center justify-center shadow-lg transition-colors"
                 >
-                  <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.5} />
+                  <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
                 </button>
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[2] flex gap-1.5">
                   {projectImages.map((_, idx) => (
@@ -130,17 +150,21 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         </div>
       )}
 
-      {/* Info */}
-      <div className={cn('flex flex-col gap-3 min-w-0', hasImages ? 'lg:w-[52%]' : 'w-full')}>
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="text-lg md:text-xl font-bold text-gray-900">
-              {project.projectName}
-            </h3>
-            {project.projectIntro && (
-              <p className="text-sm text-gray-500 mt-1">{project.projectIntro}</p>
-            )}
-          </div>
+      {/* Info — fixed-height column; tabs keep long copy inside the frame */}
+      <div
+        className={cn(
+          'flex flex-col gap-3 min-w-0 min-h-0',
+          hasImages ? 'lg:w-[52%]' : 'w-full'
+        )}
+      >
+        {/* Title row — always visible */}
+        <div className="flex items-start justify-between gap-3 shrink-0">
+          <h3
+            className="text-lg md:text-xl font-bold text-gray-900 truncate"
+            title={project.projectName}
+          >
+            {project.projectName}
+          </h3>
           {isWorkProject && (project as WorkProjectObj).status && (
             <Badge
               variant="outline"
@@ -154,34 +178,86 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           )}
         </div>
 
-        {/* Tech stack */}
-        <div className="flex flex-wrap gap-1.5">
-          {project.stack.map((tech) => (
-            <Badge
-              key={tech}
-              variant="secondary"
-              className="text-xs bg-gray-100 text-gray-700 border border-gray-200 hover:bg-yellow-100 hover:text-yellow-800 transition-colors"
+        {/* Tab bar */}
+        <div
+          role="tablist"
+          className="flex gap-1 border-b border-gray-200 shrink-0"
+        >
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={tab === t.id}
+              onClick={() => setTab(t.id)}
+              className={cn(
+                '-mb-px px-3 py-2 text-sm font-semibold border-b-2 transition-colors cursor-pointer',
+                tab === t.id
+                  ? 'border-amber-500 text-amber-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              )}
             >
-              {tech}
-            </Badge>
+              {t.label}
+            </button>
           ))}
         </div>
 
-        {/* Description */}
-        <ul className="space-y-2 text-[15px] leading-relaxed text-gray-600">
-          {descriptions.map((desc, i) => (
-            <li key={i} className="flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
-              <span>{desc}</span>
-            </li>
-          ))}
-        </ul>
+        {/* Tab content — fixed frame on mobile, fills remaining height on desktop */}
+        <div className="h-44 md:h-52 lg:h-auto lg:flex-1 min-h-0 overflow-y-auto pr-1">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
+            >
+              {tab === 'overview' && (
+                <div className="space-y-3">
+                  {project.projectIntro && (
+                    <p className="text-sm md:text-[15px] leading-relaxed text-gray-700">
+                      {project.projectIntro}
+                    </p>
+                  )}
+                  <Bullets
+                    items={descriptions.slice(0, project.projectIntro ? 2 : 3)}
+                    clamp
+                  />
+                  {descriptions.length > (project.projectIntro ? 2 : 3) && (
+                    <button
+                      onClick={() => setTab('details')}
+                      className="text-xs font-semibold text-amber-600 hover:text-amber-700 cursor-pointer"
+                    >
+                      + {descriptions.length - (project.projectIntro ? 2 : 3)}{' '}
+                      more in Details
+                    </button>
+                  )}
+                </div>
+              )}
 
-        {/* Links */}
+              {tab === 'details' && <Bullets items={descriptions} />}
+
+              {tab === 'stack' && (
+                <div className="flex flex-wrap gap-2">
+                  {project.stack.map((tech) => (
+                    <Badge
+                      key={tech}
+                      variant="secondary"
+                      className="text-xs md:text-sm px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 hover:bg-yellow-100 hover:text-yellow-800 transition-colors"
+                    >
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Links — pinned to the card bottom */}
         {(projectWithLinks.ghlink ||
           projectWithLinks.weblink ||
           projectWithLinks.apilink) && (
-          <div className="flex flex-wrap gap-2 pt-1 mt-auto">
+          <div className="flex flex-wrap gap-2 pt-1 mt-auto shrink-0">
             {projectWithLinks.ghlink && (
               <Button
                 size="sm"

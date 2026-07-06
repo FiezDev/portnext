@@ -1,15 +1,28 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import GoldHeading from '../shared/GoldHeading';
+import GoldHeading, { KICKER } from '../shared/GoldHeading';
 import { ImgixImage } from '@/constants/storage';
 import Image from 'next/image';
 import { MapPin, Download, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WorkProjects, SideProjects } from '@/mocks/projectMock';
+import { coreicon } from '@/constants/mapdata';
 
 const MOTTO_TEXT = 'PASSIONATE TO MAKE THE REMARKABLE THING';
 const FAVORITES = ['Blue', 'Cat', 'Basketball', 'Motorcycle', 'Mobile MOBA'];
 const LOCATION = 'Bangkok, Thailand';
+
+// Derived from real data — keep honest, never hand-typed counts.
+const PROJECT_COUNT =
+  WorkProjects.filter((p) => p.activeFlag !== false).length +
+  SideProjects.length;
+
+const STATS = [
+  { value: '5+', label: 'Years experience' }, // matches the bio copy above
+  { value: `${PROJECT_COUNT}`, label: 'Projects' },
+  { value: `${coreicon.length}`, label: 'Technologies' },
+];
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -44,9 +57,11 @@ const AboutSection = () => {
       animate="animate"
     >
       <motion.div variants={itemVariants}>
-        <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl mb-6 md:mb-8">
+        <p className={`${KICKER} mb-1.5`}>01 · About</p>
+        <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl">
           About Me
         </GoldHeading>
+        <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent mt-4 mb-6 md:mb-8" />
       </motion.div>
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 w-full max-w-4xl">
@@ -87,6 +102,20 @@ const AboutSection = () => {
             <p className="text-sm md:text-base lg:text-lg text-gray-600 leading-relaxed font-light">
               A self-driven, introverted software developer with 5 years of experience, I&apos;m based in Thailand and powered by a steady diet of ramen and juice. My current focus areas include ReactJS, generative AI technologies, and frontend development.
             </p>
+          </motion.div>
+
+          {/* Stats strip — derived counts */}
+          <motion.div variants={itemVariants} className="flex gap-8">
+            {STATS.map((stat) => (
+              <div key={stat.label}>
+                <p className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-500">
+                  {stat.value}
+                </p>
+                <p className="text-[10px] md:text-xs uppercase tracking-wider text-gray-400 font-semibold mt-0.5">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
           </motion.div>
 
           {/* Favorites */}
