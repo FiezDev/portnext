@@ -25,6 +25,8 @@ interface PortfolioCanvasProps {
   currentPage: PageId;
   previousPage?: PageId;
   onGameActiveChange?: (active: boolean) => void;
+  /** Hero video transition prelude: fade the cloud + content, keep the portrait. */
+  clearing?: boolean;
 }
 
 // Depth wrapper: deeper (more blurred) cloud layers drift more with the
@@ -63,7 +65,7 @@ const ParallaxLayer = ({
   );
 };
 
-export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange }: PortfolioCanvasProps) => {
+export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange, clearing = false }: PortfolioCanvasProps) => {
   // Measure the board area so the game uses a 1:1 pixel viewBox → the same word
   // size on every screen (mobile-first, no scale-up).
   const boardRef = useRef<HTMLDivElement>(null);
@@ -161,8 +163,8 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
                   my={parallaxY}
                   depth={isGame || reduced ? 0 : 8 + layerIndex * 7}
                   className="absolute inset-0 overflow-hidden flex items-center justify-center pointer-events-none select-none"
-                  animate={{ opacity: isGame ? 1 : 0.2 }}
-                  transition={{ duration: isGame ? 0.5 : 1, delay: layerIndex * 0.1 }}
+                  animate={{ opacity: clearing ? 0 : isGame ? 1 : 0.2 }}
+                  transition={{ duration: clearing ? 1 : isGame ? 0.5 : 1, delay: clearing ? 0 : layerIndex * 0.1 }}
                   style={{ filter: layer.blur, zIndex: isGame ? 30 : layerIndex }}
                 >
                   <svg
@@ -213,7 +215,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange 
 
               {/* Content - Full width on non-Main pages, 61.8% on Main.
                   Kept mounted but hidden during the game (avoids stagger replay on exit). */}
-              <div className={`h-full overflow-y-auto relative z-20 bg-transparent ${showBackground ? 'w-full md:w-[61.8%]' : 'w-full'} ${isGame ? 'opacity-0 pointer-events-none' : ''}`}>
+              <div className={`h-full overflow-y-auto relative z-20 bg-transparent transition-opacity duration-1000 ${showBackground ? 'w-full md:w-[61.8%]' : 'w-full'} ${isGame || clearing ? 'opacity-0 pointer-events-none' : ''}`}>
                 <PageContent page={currentPage} />
               </div>
 
