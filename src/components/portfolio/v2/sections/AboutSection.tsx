@@ -7,23 +7,10 @@ import { ImgixImage } from '@/constants/storage';
 import Image from 'next/image';
 import { MapPin, Download, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { WorkProjects, SideProjects } from '@/mocks/projectMock';
-import { coreicon } from '@/constants/mapdata';
 
 const MOTTO_TEXT = 'PASSIONATE TO MAKE THE REMARKABLE THING';
 const FAVORITES = ['Blue', 'Cat', 'Basketball', 'Motorcycle', 'Mobile MOBA'];
 const LOCATION = 'Bangkok, Thailand';
-
-// Derived from real data — keep honest, never hand-typed counts.
-const PROJECT_COUNT =
-  WorkProjects.filter((p) => p.activeFlag !== false).length +
-  SideProjects.length;
-
-const STATS = [
-  { value: '5+', label: 'Years experience' }, // matches the bio copy above
-  { value: `${PROJECT_COUNT}`, label: 'Projects' },
-  { value: `${coreicon.length}`, label: 'Technologies' },
-];
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -100,34 +87,39 @@ const AboutSection = () => {
         <div className="flex-1 space-y-4 md:space-y-5">
           {/* Name and Bio */}
           <motion.div variants={itemVariants}>
-            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
               Ittipol Vongapai
             </h3>
-            <p className="text-sm md:text-base lg:text-lg text-gray-600 leading-relaxed font-light">
-              A self-driven, introverted software developer with 5 years of experience, I&apos;m based in Thailand and powered by a steady diet of ramen and juice. My current focus areas include ReactJS, generative AI technologies, and frontend development.
-            </p>
+            <div className="space-y-3 text-sm md:text-base lg:text-lg text-gray-600 leading-relaxed font-light max-w-xl">
+              <p>
+                A self-driven, quietly-obsessive developer from Bangkok —{' '}
+                <span className="font-medium text-amber-600">
+                  five years of turning ideas into working software
+                </span>
+                , from pixel-perfect frontends to the infrastructure humming
+                underneath.
+              </p>
+              <p>
+                These days I live where{' '}
+                <span className="font-medium text-amber-600">
+                  generative AI meets real products
+                </span>{' '}
+                — systems that create, and interfaces that make it feel
+                effortless. Powered by a steady diet of{' '}
+                <span className="font-medium text-gray-800">
+                  ramen and juice
+                </span>
+                .
+              </p>
+            </div>
           </motion.div>
 
-          {/* Stats strip — derived counts */}
-          <motion.div variants={itemVariants} className="flex gap-8">
-            {STATS.map((stat) => (
-              <div key={stat.label}>
-                <p className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-500">
-                  {stat.value}
-                </p>
-                <p className="text-[10px] md:text-xs uppercase tracking-wider text-gray-500 font-semibold mt-0.5">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* Favorites */}
+          {/* Off the clock */}
           <motion.div variants={itemVariants}>
             <div className="flex items-center gap-2 mb-3">
               <Heart className="w-4 h-4 text-yellow-500" />
               <h4 className="text-xs uppercase tracking-widest text-gray-500 font-bold">
-                Favorites
+                Off the clock
               </h4>
             </div>
             <div className="flex flex-wrap gap-2">
