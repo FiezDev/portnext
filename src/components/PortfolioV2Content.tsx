@@ -143,13 +143,17 @@ const PortfolioV2Content = () => {
         style={{ maxWidth: 'var(--max-content-width, 1366px)' }}
       >
         {/* Hero film — full-opacity walk-out/walk-in on Main↔X navs, cage-aligned */}
-        <FilmUnderlay film={morph.film} onEnded={morph.onFilmEnded} />
+        <FilmUnderlay
+          film={morph.film}
+          onEnded={morph.onFilmEnded}
+          onPlaying={morph.onFilmPlaying}
+        />
         <PortfolioCanvas
           currentPage={currentPage}
           previousPage={previousPageRef.current}
           onGameActiveChange={setGameActive}
-          hideCloud={morph.film?.role === 'return'}
-          hidePortrait={morph.film !== null}
+          hideCloud={morph.hideCloud}
+          hidePortrait={morph.hidePortrait}
         />
       </div>
 

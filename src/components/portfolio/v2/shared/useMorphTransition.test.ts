@@ -3,6 +3,7 @@ import path from 'path';
 import {
   canShowFilm,
   clipSrc,
+  filmMasks,
   pairRole,
   MORPH_TIMINGS,
 } from './useMorphTransition';
@@ -46,6 +47,24 @@ describe('canShowFilm', () => {
 
   it('readiness is per-role — the other role being missing changes nothing', () => {
     expect(canShowFilm({ ...base, ready: { return: false } })).toBe(true);
+  });
+});
+
+describe('filmMasks — what the film replaces', () => {
+  it('walk-out: portrait stays until the film actually PAINTS (frame 1 = page pixels)', () => {
+    expect(filmMasks({ role: 'leave' }, false).hidePortrait).toBe(false);
+    expect(filmMasks({ role: 'leave' }, true).hidePortrait).toBe(true);
+  });
+
+  it('walk-in: portrait hidden for the whole film; cloud waits too', () => {
+    expect(filmMasks({ role: 'return' }, false)).toEqual({
+      hidePortrait: true,
+      hideCloud: true,
+    });
+  });
+
+  it('no film ⇒ nothing hidden — a film that never plays never blanks the page', () => {
+    expect(filmMasks(null, false)).toEqual({ hidePortrait: false, hideCloud: false });
   });
 });
 

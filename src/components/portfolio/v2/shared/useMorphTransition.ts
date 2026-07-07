@@ -50,8 +50,22 @@ export const canShowFilm = (opts: {
   !opts.reduced &&
   opts.ready[opts.role] !== false;
 
+/** Pure policy — which page elements the film replaces right now.
+ *  leave: keep the live portrait until the film is actually PAINTING
+ *  (its first frame is bitmap-identical to the page, so the swap is
+ *  invisible); a film that never plays never hides anything.
+ *  return: portrait hidden for the whole film, cloud waits too. */
+export const filmMasks = (
+  film: { role: ClipRole } | null,
+  playing: boolean
+): { hidePortrait: boolean; hideCloud: boolean } => ({
+  hidePortrait: film !== null && (film.role === 'return' || playing),
+  hideCloud: film?.role === 'return',
+});
+
 export const useMorphTransition = (reduced: boolean) => {
   const [film, setFilm] = useState<{ src: string; role: ClipRole } | null>(null);
+  const [playing, setPlaying] = useState(false);
   const [wide, setWide] = useState(false);
   const readyRef = useRef<Partial<Record<ClipRole, boolean>>>({});
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -103,6 +117,7 @@ export const useMorphTransition = (reduced: boolean) => {
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = null;
     setFilm(null);
+    setPlaying(false);
   }, []);
 
   /** Call on every navigation with the ORIGIN page. */
@@ -115,6 +130,7 @@ export const useMorphTransition = (reduced: boolean) => {
       }
       const r = role as ClipRole;
       setFilm({ src: clipSrc(r), role: r });
+      setPlaying(false);
       if (timerRef.current) clearTimeout(timerRef.current);
       // Films play UNDER the page and run to their natural end ('ended'
       // drives teardown); this timer is only the safety net.
@@ -123,12 +139,17 @@ export const useMorphTransition = (reduced: boolean) => {
     [clearFilm, reduced, wide]
   );
 
-  /** Film finished — tear down. The film freezes on its last frame and fades
-   *  out over returnFadeMs while the live portrait fades in on the same
-   *  clock: one dissolve, no double-exposure. */
+  /** Film finished (or failed) — hard-cut teardown. The clip's last frame is
+   *  a literal screenshot of the page, so the cut is bitmap-identical. */
   const onFilmEnded = useCallback(() => {
     clearFilm();
   }, [clearFilm]);
+
+  /** The video is actually rendering frames now — safe to swap the portrait
+   *  underneath it (frame 1 is a literal screenshot of the page). */
+  const onFilmPlaying = useCallback(() => {
+    setPlaying(true);
+  }, []);
 
   useEffect(
     () => () => {
@@ -137,5 +158,7 @@ export const useMorphTransition = (reduced: boolean) => {
     []
   );
 
-  return { film, onNavigate, onFilmEnded };
+  const masks = filmMasks(film, playing);
+
+  return { film, ...masks, onNavigate, onFilmEnded, onFilmPlaying };
 };

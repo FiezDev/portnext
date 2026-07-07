@@ -234,39 +234,35 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange,
         </AnimatePresence>
 
         {/* Portrait — sibling of the page trees so hidePortrait applies the
-            same frame the film starts (walk-out) and the film ends (walk-in).
-            Film navs: instant hide/show (frames match). Non-film navs away
-            from Main: graceful fade via the custom exit. */}
-        <AnimatePresence custom={hidePortrait}>
-          {showBackground && !isGame && !hidePortrait && (
-            <motion.div
-              key="hero-portrait"
-              className="absolute top-0 h-full pointer-events-none left-0 w-full min-[1366px]:left-auto min-[1366px]:right-0 min-[1366px]:w-[38.2%] z-20 hidden md:block"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { duration: 0 } }}
-              variants={{
-                exit: (film: boolean) => ({
-                  opacity: 0,
-                  transition: { duration: film ? 0 : 0.45 },
-                }),
-              }}
-              exit="exit"
-            >
-              <div className="relative w-full h-full flex items-center justify-center">
-                <div className="absolute bottom-0 w-full h-full flex items-end pointer-events-none justify-start min-[1366px]:justify-end">
-                  <div className="h-[90%] w-full flex items-end justify-start min-[1366px]:justify-end">
-                    <img
-                      src="/images/user-portrait.webp"
-                      alt="Portrait"
-                      loading="eager"
-                      className="object-contain object-left-bottom min-[1366px]:object-bottom drop-shadow-2xl h-full w-full opacity-20 min-[1366px]:opacity-100"
-                    />
-                  </div>
-                </div>
+            same frame a film starts or ends. ALWAYS MOUNTED: unmounting while
+            hidden forced an image re-decode at the film→page cut (a 1–3 frame
+            flash — the "blip"). Kept in the DOM and toggled via opacity only,
+            the swap is a pure compositor flip. Film navs: instant. Non-film
+            navs away from Main: graceful 0.45s fade. */}
+        <motion.div
+          className="absolute top-0 h-full pointer-events-none left-0 w-full min-[1366px]:left-auto min-[1366px]:right-0 min-[1366px]:w-[38.2%] z-20 hidden md:block"
+          initial={false}
+          animate={{
+            opacity: showBackground && !isGame && !hidePortrait ? 1 : 0,
+          }}
+          transition={{
+            duration: hidePortrait || showBackground ? 0 : 0.45,
+          }}
+        >
+          <div className="relative w-full h-full flex items-center justify-center">
+            <div className="absolute bottom-0 w-full h-full flex items-end pointer-events-none justify-start min-[1366px]:justify-end">
+              <div className="h-[90%] w-full flex items-end justify-start min-[1366px]:justify-end">
+                <img
+                  src="/images/user-portrait.webp"
+                  alt="Portrait"
+                  loading="eager"
+                  decoding="sync"
+                  className="object-contain object-left-bottom min-[1366px]:object-right-bottom drop-shadow-2xl h-full w-full opacity-20 min-[1366px]:opacity-100"
+                />
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </GoldenContainer>
   );
