@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import GoldHeading, { KICKER } from '../shared/GoldHeading';
+import { MORPH_LAYOUT_TRANSITION } from '../shared/useMorphTransition';
 import { useGlitchText } from '@/hooks/useGlitchText';
 
 const JOB_TITLES = [
@@ -49,18 +50,26 @@ const MainSection = () => {
       initial="initial"
       animate="animate"
     >
-      {/* PORTFOLIO Heading */}
+      {/* PORTFOLIO Heading — kicker/heading/rule morph into every page's header */}
       <motion.div variants={itemVariants}>
-        <p className={`${KICKER} mb-2`}>00 · Welcome</p>
+        <motion.p layoutId="page-kicker" transition={MORPH_LAYOUT_TRANSITION} className={`${KICKER} mb-2`}>
+          00 · Welcome
+        </motion.p>
         <GoldHeading
           as="h1"
+          layoutId="page-heading"
+          transition={MORPH_LAYOUT_TRANSITION}
           className="text-5xl md:text-7xl lg:text-8xl mb-4 leading-none"
         >
           PORT
           <br />
           FOLIO
         </GoldHeading>
-        <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent mb-5" />
+        <motion.div
+          layoutId="page-rule"
+          transition={MORPH_LAYOUT_TRANSITION}
+          className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent mb-5"
+        />
       </motion.div>
 
       {/* GlitchText Job Title */}
@@ -86,6 +95,7 @@ const MainSection = () => {
         className="relative"
       >
         <motion.p
+          layoutId="motto-line"
           className="text-sm md:text-base italic text-gray-500 max-w-md"
           animate={{
             textShadow: [
@@ -98,6 +108,7 @@ const MainSection = () => {
             duration: 3,
             repeat: Infinity,
             ease: 'easeInOut',
+            ...MORPH_LAYOUT_TRANSITION,
           }}
         >
           &ldquo;{QUOTE_TEXT}&rdquo;

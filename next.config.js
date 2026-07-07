@@ -6,7 +6,9 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'https', hostname: 'fiez.imgix.net' },
-      { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
+      // firebasestorage entry removed: unused, and the host is multi-tenant —
+      // an unscoped pattern lets anyone proxy arbitrary buckets through our
+      // image optimizer (review finding).
     ],
   },
   reactCompiler: true,

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import GoldHeading, { KICKER } from '../shared/GoldHeading';
+import { MORPH_LAYOUT_TRANSITION } from '../shared/useMorphTransition';
 import { ImgixImage } from '@/constants/storage';
 import Image from 'next/image';
 import { MapPin, Download, Heart } from 'lucide-react';
@@ -57,11 +58,22 @@ const AboutSection = () => {
       animate="animate"
     >
       <motion.div variants={itemVariants}>
-        <p className={`${KICKER} mb-1.5`}>01 · About</p>
-        <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl">
+        <motion.p layoutId="page-kicker" transition={MORPH_LAYOUT_TRANSITION} className={`${KICKER} mb-1.5`}>
+          01 · About
+        </motion.p>
+        <GoldHeading
+          as="h2"
+          layoutId="page-heading"
+          transition={MORPH_LAYOUT_TRANSITION}
+          className="text-4xl md:text-5xl lg:text-6xl"
+        >
           About Me
         </GoldHeading>
-        <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent mt-4 mb-6 md:mb-8" />
+        <motion.div
+          layoutId="page-rule"
+          transition={MORPH_LAYOUT_TRANSITION}
+          className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent mt-4 mb-6 md:mb-8"
+        />
       </motion.div>
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 w-full max-w-4xl">
@@ -70,21 +82,13 @@ const AboutSection = () => {
           variants={itemVariants}
           className="relative group flex-shrink-0 self-start"
         >
-          <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden">
-            {/* Base Image */}
+          <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden bg-amber-50/60">
+            {/* Local headshot — imgix profilepic source is dead (403, bucket read-only) */}
             <Image
-              src={ImgixImage.profilepic_faceMe}
+              src="/images/profile-face.webp"
               alt="Ittipol Vongapai"
               fill
-              className="object-cover transition-opacity duration-300 group-hover:opacity-0"
-              sizes="160px"
-            />
-            {/* Hover Image */}
-            <Image
-              src={ImgixImage.profilepic_faceMeEff}
-              alt="Ittipol Vongapai"
-              fill
-              className="object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              className="object-cover"
               sizes="160px"
             />
             {/* Border Glow on Hover */}
@@ -111,7 +115,7 @@ const AboutSection = () => {
                 <p className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-500">
                   {stat.value}
                 </p>
-                <p className="text-[10px] md:text-xs uppercase tracking-wider text-gray-400 font-semibold mt-0.5">
+                <p className="text-[10px] md:text-xs uppercase tracking-wider text-gray-500 font-semibold mt-0.5">
                   {stat.label}
                 </p>
               </div>
@@ -122,7 +126,7 @@ const AboutSection = () => {
           <motion.div variants={itemVariants}>
             <div className="flex items-center gap-2 mb-3">
               <Heart className="w-4 h-4 text-yellow-500" />
-              <h4 className="text-xs uppercase tracking-widest text-gray-400 font-bold">
+              <h4 className="text-xs uppercase tracking-widest text-gray-500 font-bold">
                 Favorites
               </h4>
             </div>
@@ -165,9 +169,13 @@ const AboutSection = () => {
             variants={itemVariants}
             className="pt-4 md:pt-6"
           >
-            <p className="text-xs md:text-sm uppercase tracking-[0.15em] md:tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-600 font-medium">
+            <motion.p
+              layoutId="motto-line"
+              transition={MORPH_LAYOUT_TRANSITION}
+              className="text-xs md:text-sm uppercase tracking-[0.15em] md:tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-600 font-medium"
+            >
               &ldquo;{MOTTO_TEXT}&rdquo;
-            </p>
+            </motion.p>
           </motion.div>
         </div>
       </div>

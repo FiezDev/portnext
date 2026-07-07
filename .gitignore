@@ -45,3 +45,9 @@ nextjs/
 
 # git worktrees
 .worktrees/
+
+# review artifacts + build caches
+.reviews/
+*.tsbuildinfo
+next-env.d.ts
+docs/df-deep-build/portfolio-video-transitions/takes/

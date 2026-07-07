@@ -4,15 +4,17 @@ import { cn } from '@/lib/utils';
 import {
   AnimatePresence,
   motion,
+  MotionConfig,
   useMotionValue,
   useReducedMotion,
   useSpring,
 } from 'framer-motion';
+import { Briefcase, Home, Mail, Sparkles, User } from 'lucide-react';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { PortfolioCanvas } from './portfolio/v2/PortfolioCanvas';
+import FilmUnderlay from './portfolio/v2/shared/FilmUnderlay';
 import GoldCursor from './portfolio/v2/shared/GoldCursor';
-import HeroVideoOverlay from './portfolio/v2/shared/HeroVideoOverlay';
-import { useHeroTransition } from './portfolio/v2/shared/useHeroTransition';
+import { useMorphTransition } from './portfolio/v2/shared/useMorphTransition';
 import { PageId, PAGE_ORDER, getAdjacentPage } from './portfolio/v2/shared/useComplexTransition';
 
 // Nav button that leans toward the cursor (desktop micro-interaction).
@@ -54,42 +56,49 @@ const MagneticButton = ({
 
 const PAGE_ITEMS: PageId[] = PAGE_ORDER;
 
+// Mobile bar shows the same menu as icons
+const MOBILE_NAV_ICONS: Record<PageId, typeof Home> = {
+  Main: Home,
+  About: User,
+  Skill: Sparkles,
+  Projects: Briefcase,
+  Contact: Mail,
+};
+
 const PortfolioV2Content = () => {
   const [currentPage, setCurrentPage] = useState<PageId>('Main');
   const [gameActive, setGameActive] = useState(false);
   const previousPageRef = useRef<PageId>('Main');
   const reducedMotion = useReducedMotion();
 
-  // Plain page swap (also used by the video transition while covered)
-  const commitPage = useCallback((newPage: PageId) => {
-    setCurrentPage((prev) => {
-      if (newPage === prev) return prev;
-      previousPageRef.current = prev;
-      return newPage;
-    });
-  }, []);
+  const morph = useMorphTransition(!!reducedMotion);
 
-  const hero = useHeroTransition({
-    currentPage,
-    reduced: !!reducedMotion,
-    commit: commitPage,
-  });
-
-  // Cinematic path when possible, existing slide otherwise
+  // Every navigation IS the transition: pages crossfade while shared
+  // elements (kicker/heading/rule/portrait/motto) FLIP-morph between
+  // layouts. Ink splatters + the faded graffiti film dress the travel.
   const handlePageChange = useCallback(
     (newPage: PageId) => {
-      if (newPage === currentPage) return;
-      if (!hero.requestTransition(newPage)) {
-        commitPage(newPage);
+      setCurrentPage((prev) => {
+        if (newPage === prev) return prev;
+        previousPageRef.current = prev;
+        return newPage;
+      });
+      if (newPage !== currentPage) {
+        morph.onNavigate(currentPage, newPage); // origin decides the film
       }
     },
-    [commitPage, currentPage, hero]
+    [currentPage, morph]
   );
 
   // Keyboard navigation (disabled while the game is running — focus mode)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameActive || hero.phase !== 'idle') return;
+      if (gameActive) return;
+      // Never steal arrows from form fields / editable targets (H1: caret
+      // movement was navigating away and wiping typed input).
+      const t = e.target as HTMLElement | null;
+      if (t?.closest('input, textarea, select, [contenteditable="true"]')) return;
+      if (e.altKey || e.metaKey || e.ctrlKey) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         const nextPage = getAdjacentPage(currentPage, 'next');
         if (nextPage && nextPage !== currentPage) {
@@ -105,9 +114,13 @@ const PortfolioV2Content = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, handlePageChange, gameActive, hero.phase]);
+  }, [currentPage, handlePageChange, gameActive]);
 
   return (
+    // reducedMotion="user": framer does NOT auto-honor the OS setting for
+    // layout/layoutId animations — this gates the morph FLIPs (films are
+    // already gated in the hook).
+    <MotionConfig reducedMotion="user">
     <div className="relative w-full min-h-screen bg-white overflow-hidden font-sans flex justify-center">
 
       {/* Gold cursor accent — desktop pointers only */}
@@ -129,18 +142,18 @@ const PortfolioV2Content = () => {
         className="w-full h-screen relative z-10"
         style={{ maxWidth: 'var(--max-content-width, 1366px)' }}
       >
+        {/* Hero film — full-opacity walk-out/walk-in on Main↔X navs, cage-aligned */}
+        <FilmUnderlay film={morph.film} onEnded={morph.onFilmEnded} />
         <PortfolioCanvas
           currentPage={currentPage}
           previousPage={previousPageRef.current}
           onGameActiveChange={setGameActive}
-          clearing={hero.phase === 'clearing'}
+          hideCloud={morph.film?.role === 'return'}
+          hidePortrait={morph.film !== null}
         />
       </div>
 
-      {/* Cinematic Main→X transition clip */}
-      <HeroVideoOverlay phase={hero.phase} src={hero.activeClip} onSkip={hero.skip} />
-
-      {/* Fixed Bottom Navigation Menu — hidden during the word-hunt game (focus mode) */}
+      {/* Fixed Bottom Navigation Menu (desktop) — hidden during the word-hunt game */}
       <AnimatePresence>
         {!gameActive && (
           <motion.div
@@ -149,7 +162,7 @@ const PortfolioV2Content = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed bottom-0 left-0 w-full z-[100] flex items-center justify-center gap-1 p-2 bg-[#1A1A1A] backdrop-blur-md border-t border-white/10 shadow-2xl"
+            className="fixed bottom-0 left-0 w-full z-[100] hidden md:flex items-center justify-center gap-1 p-2 bg-[#1A1A1A] backdrop-blur-md border-t border-white/10 shadow-2xl"
           >
             {PAGE_ITEMS.map((page, pageIndex) => (
             <MagneticButton
@@ -164,9 +177,10 @@ const PortfolioV2Content = () => {
             >
                 {currentPage === page && (
                 <motion.div
-                    layoutId="activeTab"
                     className="absolute inset-0 bg-[#FBBF24] rounded-full"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                 />
                 )}
                 <span className="relative z-10 flex items-baseline gap-1.5">
@@ -185,7 +199,47 @@ const PortfolioV2Content = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile navigation — same bar, items as icons */}
+      <AnimatePresence>
+        {!gameActive && (
+          <motion.div
+            key="mobile-nav"
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="fixed bottom-0 left-0 w-full z-[100] flex md:hidden items-center justify-center gap-1 p-2 bg-[#1A1A1A] backdrop-blur-md border-t border-white/10 shadow-2xl"
+          >
+            {PAGE_ITEMS.map((page, pageIndex) => {
+              const Icon = MOBILE_NAV_ICONS[page];
+              return (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  aria-label={`0${pageIndex} ${page}`}
+                  className={cn(
+                    'relative flex h-11 w-11 items-center justify-center rounded-full transition-colors duration-300',
+                    currentPage === page ? 'text-stone-900' : 'text-gray-400'
+                  )}
+                >
+                  {currentPage === page && (
+                    <motion.div
+                      className="absolute inset-0 bg-[#FBBF24] rounded-full"
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                    />
+                  )}
+                  <Icon className="relative z-10 h-5 w-5" />
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+    </MotionConfig>
   );
 };
 

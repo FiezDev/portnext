@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import GoldHeading, { KICKER } from '../shared/GoldHeading';
+import { MORPH_LAYOUT_TRANSITION } from '../shared/useMorphTransition';
 import { codeUse, infoUse } from '@/constants/mapdata';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
@@ -52,7 +53,7 @@ const formVariants = {
 
 const inputCls = (invalid?: boolean) =>
   cn(
-    'w-full rounded-xl border bg-white/70 px-4 py-3 text-sm text-gray-800 transition-all outline-none placeholder:text-gray-400',
+    'w-full rounded-xl border bg-white/70 px-4 py-3 text-sm text-gray-800 transition-all outline-none placeholder:text-gray-500',
     invalid
       ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-100'
       : 'border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100'
@@ -183,16 +184,24 @@ const ContactSection = () => {
           variants={itemVariants}
           className="lg:w-[38.2%] flex flex-col gap-5 justify-center"
         >
-          <p className={KICKER}>04 · Contact</p>
+          <motion.p layoutId="page-kicker" transition={MORPH_LAYOUT_TRANSITION} className={KICKER}>
+            04 · Contact
+          </motion.p>
           <GoldHeading
             as="h2"
+            layoutId="page-heading"
+            transition={MORPH_LAYOUT_TRANSITION}
             className="text-5xl md:text-6xl lg:text-7xl leading-[0.95]"
           >
             Let&apos;s
             <br />
             Talk
           </GoldHeading>
-          <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent" />
+          <motion.div
+            layoutId="page-rule"
+            transition={MORPH_LAYOUT_TRANSITION}
+            className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent"
+          />
           <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-sm">
             Have a project, a role, or an idea worth building? My inbox is
             open.
@@ -208,20 +217,20 @@ const ContactSection = () => {
               Open for opportunities
             </span>
           </div>
-          <p className="flex items-center gap-1.5 text-xs text-gray-400 -mt-3">
+          <p className="flex items-center gap-1.5 text-xs text-gray-500 -mt-3">
             <MapPin className="h-3.5 w-3.5" />
             Bangkok, Thailand · GMT+7
           </p>
 
-          {/* Emails — primary channel, large targets + one-click copy */}
-          <div className="space-y-1.5">
+          {/* Emails — primary channel + one-click copy. 2-col on mobile. */}
+          <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-col lg:gap-1.5">
             {EMAILS.map((email) => (
-              <div key={email} className="flex items-center gap-1.5">
+              <div key={email} className="flex min-w-0 items-center gap-1.5">
                 <a
                   href={`mailto:${email}`}
-                  className="group flex min-w-0 items-center gap-3 text-base md:text-lg font-semibold text-gray-800 hover:text-amber-600 transition-colors"
+                  className="group flex min-w-0 items-center gap-2 lg:gap-3 text-sm md:text-base lg:text-lg font-semibold text-gray-800 hover:text-amber-600 transition-colors"
                 >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600 transition-colors group-hover:bg-amber-500 group-hover:text-white">
+                  <span className="hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600 transition-colors group-hover:bg-amber-500 group-hover:text-white">
                     <FontAwesomeIcon icon={faEnvelope} className="text-sm" />
                   </span>
                   <span className="truncate underline-offset-4 group-hover:underline">
@@ -233,7 +242,7 @@ const ContactSection = () => {
                   onClick={() => copyEmail(email)}
                   aria-label={`Copy ${email}`}
                   title="Copy email"
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-amber-50 hover:text-amber-600 cursor-pointer"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-amber-50 hover:text-amber-600 cursor-pointer"
                 >
                   {copiedEmail === email ? (
                     <Check className="h-4 w-4 text-green-600" />
@@ -254,32 +263,19 @@ const ContactSection = () => {
             ))}
           </div>
 
-          {/* Social + connect */}
+          {/* Connect — GitHub + socials as text links, 2-col on mobile */}
           <div className="space-y-3 pt-1">
-            <div className="flex flex-wrap gap-2.5">
-              {codeUse.map((link) => (
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 lg:grid-cols-1">
+              {[...codeUse.filter((link) => link.text !== 'CodePen'), ...infoUse].map((info) => (
                 <a
-                  key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white/70 text-gray-600 transition-all hover:border-amber-400 hover:bg-amber-50 hover:text-amber-600 hover:-translate-y-0.5"
-                >
-                  <FontAwesomeIcon icon={link.icon} />
-                </a>
-              ))}
-            </div>
-            <div className="space-y-2">
-              {infoUse.map((info) => (
-                <a
-                  key={info.id}
+                  key={info.text}
                   href={info.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-sm text-gray-600 hover:text-amber-600 transition-colors"
+                  className="flex min-w-0 items-center gap-2 lg:gap-3 text-sm text-gray-600 hover:text-amber-600 transition-colors"
                 >
-                  <FontAwesomeIcon icon={info.icon} className="w-4" />
-                  <span>{info.text}</span>
+                  <FontAwesomeIcon icon={info.icon} className="w-4 shrink-0" />
+                  <span className="truncate">{info.text}</span>
                 </a>
               ))}
             </div>

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import GoldHeading, { KICKER } from '../shared/GoldHeading';
+import { MORPH_LAYOUT_TRANSITION } from '../shared/useMorphTransition';
 import { coreicon } from '@/constants/mapdata';
 
 // Editorial grouping — the icon data has no categories, so the section owns them.
@@ -52,21 +53,29 @@ const SkillsSection = () => {
         variants={itemVariants}
         className="lg:w-[38.2%] shrink-0 flex flex-col gap-4 lg:gap-5"
       >
-        <p className={KICKER}>02 · Capabilities</p>
+        <motion.p layoutId="page-kicker" transition={MORPH_LAYOUT_TRANSITION} className={KICKER}>
+          02 · Capabilities
+        </motion.p>
         <GoldHeading
           as="h2"
+          layoutId="page-heading"
+          transition={MORPH_LAYOUT_TRANSITION}
           className="text-5xl md:text-6xl lg:text-7xl leading-[0.95]"
         >
           Core
           <br />
           Skills
         </GoldHeading>
-        <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent" />
+        <motion.div
+          layoutId="page-rule"
+          transition={MORPH_LAYOUT_TRANSITION}
+          className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent"
+        />
         <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-sm">
           The tools I reach for daily — typed, tested, and shipped to
           production.
         </p>
-        <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
+        <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
           {coreicon.length} technologies · {GROUPS.length} domains
         </p>
       </motion.div>
@@ -86,7 +95,7 @@ const SkillsSection = () => {
                 <h3 className="text-xs md:text-sm font-semibold uppercase tracking-[0.2em] text-gray-800">
                   {group.label}
                 </h3>
-                <span className="text-xs text-gray-400">{items.length}</span>
+                <span className="text-xs text-gray-500">{items.length}</span>
                 <span className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
               </div>
               <div className="flex flex-wrap gap-2 md:gap-2.5">

@@ -1,14 +1,15 @@
 'use client';
 
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import GoldHeading, { KICKER } from '../shared/GoldHeading';
+import { MORPH_LAYOUT_TRANSITION } from '../shared/useMorphTransition';
 import ProjectCard from './ProjectCard';
 import { WorkProjects, SideProjects } from '@/mocks/projectMock';
 import { WorkProjectObj, SideProjectObj } from '@/types/object';
 import { cn, resolveImageSrc } from '@/lib/utils';
-import { Briefcase, Code2 } from 'lucide-react';
+import { Briefcase, ChevronLeft, ChevronRight, Code2 } from 'lucide-react';
 import { nextFeatured } from './bentoLayout';
 
 type ProjectType = 'work' | 'side';
@@ -29,6 +30,38 @@ const ProjectsSection = () => {
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const [hoverPaused, setHoverPaused] = useState(false);
   const reducedMotion = useReducedMotion();
+
+  // Horizontal strip (below lg): scroll affordances for mouse users —
+  // edge fades + chevron buttons + vertical-wheel → horizontal translation.
+  const stripRef = useRef<HTMLDivElement>(null);
+  const [canScroll, setCanScroll] = useState({ left: false, right: false });
+
+  const updateScrollHints = useCallback(() => {
+    const el = stripRef.current;
+    if (!el) return;
+    setCanScroll({
+      left: el.scrollLeft > 4,
+      right: el.scrollLeft < el.scrollWidth - el.clientWidth - 4,
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = stripRef.current;
+    if (!el) return;
+    updateScrollHints();
+    el.addEventListener('scroll', updateScrollHints, { passive: true });
+    window.addEventListener('resize', updateScrollHints);
+    // Mouse path = the chevron buttons (+ native shift-wheel / trackpad pan).
+    // A wheel-hijack handler was removed here: it preventDefault()ed even at
+    // the strip's ends, trapping page scroll (review finding).
+    return () => {
+      el.removeEventListener('scroll', updateScrollHints);
+      window.removeEventListener('resize', updateScrollHints);
+    };
+  }, [updateScrollHints, projectType]);
+
+  const nudgeStrip = (dir: 1 | -1) =>
+    stripRef.current?.scrollBy({ left: dir * 500, behavior: 'smooth' });
 
   const sortedWorkProjects = [...WorkProjects]
     .filter((p) => p.activeFlag !== false)
@@ -64,8 +97,15 @@ const ProjectsSection = () => {
       {/* Header: kicker + title left, segmented toggle right */}
       <div className="flex items-end justify-between gap-4 shrink-0">
         <div>
-          <p className={cn(KICKER, 'mb-1.5')}>03 · Selected Work</p>
-          <GoldHeading as="h2" className="text-4xl md:text-5xl lg:text-6xl">
+          <motion.p layoutId="page-kicker" transition={MORPH_LAYOUT_TRANSITION} className={cn(KICKER, 'mb-1.5')}>
+            03 · Selected Work
+          </motion.p>
+          <GoldHeading
+            as="h2"
+            layoutId="page-heading"
+            transition={MORPH_LAYOUT_TRANSITION}
+            className="text-4xl md:text-5xl lg:text-6xl"
+          >
             Projects
           </GoldHeading>
         </div>
@@ -102,7 +142,7 @@ const ProjectsSection = () => {
         {/* Featured — in-flow, golden major column; card fills a fixed frame */}
         <div className="lg:w-[61.8%] min-w-0 lg:min-h-0 flex flex-col gap-2">
           <div className="flex items-center gap-3 shrink-0">
-            <span className="font-mono text-xs text-gray-400">
+            <span className="font-mono text-xs text-gray-500">
               {pad(featuredIndex)} / {pad(projects.length - 1)}
             </span>
             <span className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
@@ -123,8 +163,36 @@ const ProjectsSection = () => {
           </AnimatePresence>
         </div>
 
-        {/* Selector rail — horizontal strip above the card on mobile, vertical list on desktop */}
-        <div className="order-first lg:order-none lg:w-[38.2%] min-h-0 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto pb-1 lg:pb-0 lg:pr-1">
+        {/* Selector rail — horizontal strip above the card on mobile, vertical list on desktop.
+            touch-pan-x claims horizontal swipes on touch devices (iOS was
+            letting the page's vertical scroller swallow them). Edge fades +
+            chevrons signal scrollability and give mouse users a click path. */}
+        <div className="relative order-first lg:order-none lg:w-[38.2%] lg:min-h-0 lg:flex lg:flex-col">
+          {canScroll.left && (
+            <>
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#FAFAF9] to-transparent lg:hidden" />
+              <button
+                onClick={() => nudgeStrip(-1)}
+                aria-label="Scroll projects left"
+                className="absolute left-1 top-1/2 z-20 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white/95 text-amber-600 shadow-md lg:hidden"
+              >
+                <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
+              </button>
+            </>
+          )}
+          {canScroll.right && (
+            <>
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#FAFAF9] to-transparent lg:hidden" />
+              <button
+                onClick={() => nudgeStrip(1)}
+                aria-label="Scroll projects right"
+                className="absolute right-1 top-1/2 z-20 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white/95 text-amber-600 shadow-md motion-safe:animate-pulse lg:hidden"
+              >
+                <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+              </button>
+            </>
+          )}
+        <div ref={stripRef} className="min-h-0 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto pb-1 lg:pb-0 lg:pr-1 touch-pan-x lg:touch-auto overscroll-x-contain snap-x">
           {projects.map((p, index) => {
             const img = firstImage(p);
             const active = index === featuredIndex;
@@ -134,7 +202,7 @@ const ProjectsSection = () => {
                 onClick={() => setFeaturedIndex(index)}
                 aria-current={active}
                 className={cn(
-                  'group flex items-center gap-3 rounded-xl border p-2 pr-3 text-left transition-all cursor-pointer shrink-0 w-60 lg:w-auto',
+                  'group flex items-center gap-3 rounded-xl border p-2 pr-3 text-left transition-all cursor-pointer shrink-0 w-60 lg:w-auto snap-start',
                   active
                     ? 'border-amber-400 ring-1 ring-amber-400 bg-amber-50/70 shadow-md shadow-amber-500/10'
                     : 'border-gray-200 bg-white/70 hover:border-amber-300 hover:bg-white'
@@ -150,7 +218,7 @@ const ProjectsSection = () => {
                       sizes="64px"
                     />
                   ) : (
-                    <span className="flex h-full items-center justify-center text-sm font-bold text-gray-400">
+                    <span className="flex h-full items-center justify-center text-sm font-bold text-gray-500">
                       {p.projectName.charAt(0)}
                     </span>
                   )}
@@ -203,6 +271,7 @@ const ProjectsSection = () => {
               </button>
             );
           })}
+        </div>
         </div>
       </div>
     </motion.div>
