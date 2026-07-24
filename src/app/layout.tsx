@@ -5,6 +5,7 @@ import { Titillium_Web } from 'next/font/google';
 import Script from 'next/script';
 import { ReactNode, Suspense } from 'react';
 import AnalyticsTracker from '../components/global/AnalyticsTracker';
+import FloatingChat from '../components/global/FloatingChat';
 import '../styles/globals.css';
 
 const titillium = Titillium_Web({
@@ -47,7 +48,12 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         <Suspense>
           <AnalyticsTracker />
         </Suspense>
-        <ReactQueryProviders>{children}</ReactQueryProviders>
+        <ReactQueryProviders>
+          {children}
+          {/* T7: global floating chat — sibling of children so it survives the
+              in-page /portfolio PageId nav. */}
+          <FloatingChat />
+        </ReactQueryProviders>
         {/* </ThemeProvider> */}
       </body>
     </html>
