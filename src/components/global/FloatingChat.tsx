@@ -59,6 +59,19 @@ interface StatusResponse {
   sources?: { title: string; url: string }[];
 }
 
+// MED review fix: a bot-sourced source URL is attacker-controllable. Only
+// render it as a clickable href if it's an absolute http(s) URL — otherwise
+// drop the link and render the title as plain text (defends against
+// javascript: / data: URL execution from a compromised or hostile bot).
+function isSafeUrl(u: string): boolean {
+  try {
+    const parsed = new URL(u);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 // Tiny UUID v4 — avoids pulling a dep and works in all modern browsers.
 function uuid(): string {
   const c = globalThis.crypto as
@@ -388,17 +401,27 @@ const FloatingChat = ({
                   <p className="whitespace-pre-wrap">{m.content}</p>
                   {m.sources && m.sources.length > 0 && (
                     <ul className="mt-1 flex flex-col gap-0.5">
-                      {m.sources.map((s, i) => (
-                        <li key={`${s.url}-${i}`} className="text-xs underline">
-                          <a
-                            href={s.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                      {m.sources.map((s, i) => {
+                        const safe = typeof s.url === 'string' && isSafeUrl(s.url);
+                        return (
+                          <li
+                            key={`${s.url}-${i}`}
+                            className={safe ? 'text-xs underline' : 'text-xs'}
                           >
-                            {s.title}
-                          </a>
-                        </li>
-                      ))}
+                            {safe ? (
+                              <a
+                                href={s.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {s.title}
+                              </a>
+                            ) : (
+                              <span>{s.title}</span>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
                 </div>

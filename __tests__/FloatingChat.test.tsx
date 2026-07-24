@@ -205,3 +205,93 @@ describe('AC-T7-5 degradation to Unavailable', () => {
     jest.useRealTimers();
   });
 });
+
+// --------------------------------------------------------------------------
+// [MED] Source-URL XSS hardening: a bot-sourced source URL is attacker-
+// controllable. A `javascript:` URL must NOT be rendered as a clickable href.
+// --------------------------------------------------------------------------
+describe('[MED] FloatingChat source-URL XSS guard', () => {
+  it('renders a safe https:// source as a link', async () => {
+    jest.useFakeTimers();
+    fetchMock
+      .mockResolvedValueOnce(jsonRes({ pendingId: 'p-x', status: 'pending' }, 202))
+      .mockResolvedValueOnce(
+        jsonRes({
+          status: 'answered',
+          answer: 'see source',
+          sources: [{ title: 'safe', url: 'https://fiez.dev/safe' }],
+        }),
+      );
+
+    render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    });
+    const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'q' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /send/i }));
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      const link = screen.queryByRole('link', { name: /safe/i });
+      expect(link).not.toBeNull();
+      expect((link as HTMLAnchorElement).href).toBe('https://fiez.dev/safe');
+    });
+    jest.useRealTimers();
+  });
+
+  it('does NOT render a javascript: source as a clickable href (renders as plain text)', async () => {
+    jest.useFakeTimers();
+    fetchMock
+      .mockResolvedValueOnce(jsonRes({ pendingId: 'p-xss', status: 'pending' }, 202))
+      .mockResolvedValueOnce(
+        jsonRes({
+          status: 'answered',
+          answer: 'see evil',
+          sources: [
+            { title: 'evil', url: 'javascript:alert(document.cookie)' },
+          ],
+        }),
+      );
+
+    render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    });
+    const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'q' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /send/i }));
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+
+    // Title text still renders...
+    await waitFor(() => {
+      expect(screen.getByText('evil')).toBeInTheDocument();
+    });
+    // ...but there is NO anchor link with the dangerous URL.
+    const link = screen.queryByRole('link', { name: /evil/i });
+    expect(link).toBeNull();
+    jest.useRealTimers();
+  });
+});
