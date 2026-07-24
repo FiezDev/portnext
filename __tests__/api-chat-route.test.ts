@@ -126,6 +126,76 @@ describe('AC-T7-3 GET /api/chat?pendingId=…', () => {
 });
 
 // --------------------------------------------------------------------------
+// AC-T11-6: X-Correlation-Id is forwarded (or minted) to the bot on both hops.
+// --------------------------------------------------------------------------
+describe('AC-T11-6 X-Correlation-Id propagation', () => {
+  it('POST forwards the incoming X-Correlation-Id header to the bot', async () => {
+    fetchMock.mockResolvedValue(
+      jsonRes({ pendingId: 'pend-cid', status: 'pending' }, 202),
+    );
+    const incoming = '11111111-2222-3333-4444-555555555555';
+
+    const req = new Request('https://host.test/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Correlation-Id': incoming,
+      },
+      body: JSON.stringify({
+        message: 'hello',
+        client_request_id: 'cid-req-1',
+      }),
+    });
+    const res = await POST(req as unknown as Request);
+    expect(res.status).toBe(202);
+
+    const [, init] = fetchMock.mock.calls[0];
+    const headers = new Headers((init as RequestInit).headers);
+    expect(headers.get('X-Correlation-Id')).toBe(incoming);
+  });
+
+  it('POST mints a UUID X-Correlation-Id when the caller sent none', async () => {
+    fetchMock.mockResolvedValue(
+      jsonRes({ pendingId: 'pend-mint', status: 'pending' }, 202),
+    );
+    const req = new Request('https://host.test/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'hello',
+        client_request_id: 'cid-req-2',
+      }),
+    });
+    await POST(req as unknown as Request);
+
+    const [, init] = fetchMock.mock.calls[0];
+    const forwarded = new Headers((init as RequestInit).headers).get(
+      'X-Correlation-Id',
+    );
+    expect(forwarded).toBeTruthy();
+    expect(forwarded).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+  });
+
+  it('GET forwards the incoming X-Correlation-Id header to the bot /pending poll', async () => {
+    fetchMock.mockResolvedValue(jsonRes({ status: 'pending' }));
+    const incoming = 'deadbeef-0000-1111-2222-333333333333';
+
+    const url = new URL('https://host.test/api/chat?pendingId=poll-1');
+    const req = new Request(url.toString(), {
+      method: 'GET',
+      headers: { 'X-Correlation-Id': incoming },
+    });
+    await GET(req as unknown as Request);
+
+    const [, init] = fetchMock.mock.calls[0];
+    const headers = new Headers((init as RequestInit).headers);
+    expect(headers.get('X-Correlation-Id')).toBe(incoming);
+  });
+});
+
+// --------------------------------------------------------------------------
 // AC-T7-4 (grep-style assertion): the route module file does not expose
 // NEXT_PUBLIC_-prefixed bot env vars or hardcode the secret in source.
 // --------------------------------------------------------------------------

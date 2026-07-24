@@ -260,11 +260,18 @@ const FloatingChat = ({
     setDraft('');
     setStatus('composing');
 
+    // AC-T11-6: a per-send correlation id propagates widget→Vercel→bot→line-gate
+    // so a single sendback can be traced across all three services' logs.
+    const correlationId = uuid();
+
     let res: Response;
     try {
       res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Correlation-Id': correlationId,
+        },
         body: JSON.stringify({
           message: trimmed,
           mode: '3kok',

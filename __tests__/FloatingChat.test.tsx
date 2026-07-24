@@ -147,6 +147,16 @@ describe('AC-T7-1 / AC-T7-3 send + poll flow', () => {
     expect(postedBody.client_request_id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
     );
+    // AC-T11-6: a per-send X-Correlation-Id header travels with the POST so the
+    // sendback is traceable widget→Vercel→bot→line-gate.
+    const postHeaders = new Headers(
+      (postCall![1] as RequestInit).headers as Record<string, string>,
+    );
+    const correlationId = postHeaders.get('X-Correlation-Id');
+    expect(correlationId).toBeTruthy();
+    expect(correlationId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
     jest.useRealTimers();
   });
 });

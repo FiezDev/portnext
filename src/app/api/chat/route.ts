@@ -13,6 +13,23 @@ export const dynamic = 'force-dynamic';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' } as const;
 
+// AC-T11-6: a UUID v4 correlation id propagated widget→here→bot→line-gate so a
+// single sendback can be traced across every service's logs. crypto.randomUUID
+// is available in the Node runtime; the fallback covers older targets.
+function uuid(): string {
+  const c = globalThis.crypto as
+    | { randomUUID?: () => string }
+    | undefined;
+  if (c && typeof c.randomUUID === 'function') return c.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (ch) => {
+    const r = Math.floor(Math.random() * 16);
+    const v = ch === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+const CORRELATION_HEADER = 'X-Correlation-Id';
+
 function bad(message: string, status = 400): Response {
   return new Response(JSON.stringify({ error: message }), {
     status,
@@ -71,6 +88,11 @@ export async function POST(req: Request): Promise<Response> {
   if (typeof mode === 'string') forwardPayload.mode = mode;
   if (typeof sessionId === 'string') forwardPayload.sessionId = sessionId;
 
+  // AC-T11-6: forward the incoming correlation id, or mint one if the widget
+  // didn't send it — so the trace never breaks at this hop.
+  const correlationId =
+    req.headers.get(CORRELATION_HEADER) || uuid();
+
   let upstream: Response;
   try {
     upstream = await fetch(`${botUrl.replace(/\/$/, '')}/chat/request`, {
@@ -78,6 +100,7 @@ export async function POST(req: Request): Promise<Response> {
       headers: {
         ...JSON_HEADERS,
         Authorization: `Bearer ${botSecret}`,
+        [CORRELATION_HEADER]: correlationId,
       },
       body: JSON.stringify(forwardPayload),
       cache: 'no-store',
@@ -131,6 +154,10 @@ export async function GET(req: Request): Promise<Response> {
     return bad('missing_pendingId');
   }
 
+  // AC-T11-6: same forward-or-mint as POST — a poll is part of the same sendback.
+  const correlationId =
+    req.headers.get(CORRELATION_HEADER) || uuid();
+
   let upstream: Response;
   try {
     upstream = await fetch(
@@ -140,6 +167,7 @@ export async function GET(req: Request): Promise<Response> {
         headers: {
           ...JSON_HEADERS,
           Authorization: `Bearer ${botSecret}`,
+          [CORRELATION_HEADER]: correlationId,
         },
         cache: 'no-store',
       },
