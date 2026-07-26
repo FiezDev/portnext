@@ -20,6 +20,10 @@
 //     applied at the edge before this function runs. The in-memory bucket is
 //     per server instance and resets on cold start.
 
+// AC-T4-1: HMAC widget→bot auth. Every forwarded call is signed so the bot can
+// prove the request came from portnext (not a stranger) and isn't a replay.
+import { createHmac } from 'crypto';
+
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +41,46 @@ const JSON_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'Cache-Control': 'no-store',
 } as const;
+
+// --- AC-T4-1 HMAC widget→bot auth ----------------------------------------
+// Bot contract (must match app/widget_auth.py:require_widget_auth exactly):
+//   X-Timestamp = unix seconds (string); bot rejects if |now-ts| > 60
+//   X-Signature = HMAC-SHA256(secret, "<ts>:<path>").hexdigest() (hex)
+//   path        = the bot route's pathname — /session, /chat/request,
+//                 /pending/{id} — with NO query and NO trailing slash, so it
+//                 matches the bot-side `<ts>:<path>` byte-for-byte.
+// Takes the FULL bot URL being fetched so it can extract the pathname; falls
+// back to the raw string if it isn't a parseable URL (e.g. a bare "/session").
+function botPath(u: string): string {
+  try {
+    return new URL(u).pathname;
+  } catch {
+    return u;
+  }
+}
+
+// Returns the auth header set for a single bot fetch: caller's `base` headers
+// (Content-Type / correlation-id / …) merged under Authorization +
+// X-Timestamp + X-Signature. Authorization is ALWAYS derived from the secret
+// and overrides any stale Authorization in `base`. A fresh timestamp is
+// minted per call so each of the 3 fetches signs its own (ts, path) pair.
+export function signHeaders(
+  secret: string,
+  url: string,
+  base: Record<string, string> = {},
+): Record<string, string> {
+  const ts = Math.floor(Date.now() / 1000).toString();
+  const path = botPath(url);
+  const sig = createHmac('sha256', secret)
+    .update(`${ts}:${path}`)
+    .digest('hex');
+  return {
+    ...base,
+    Authorization: `Bearer ${secret}`,
+    'X-Timestamp': ts,
+    'X-Signature': sig,
+  };
+}
 
 // --- Origin allowlist ----------------------------------------------------
 function getAllowedOrigins(): string[] {
@@ -224,18 +268,21 @@ export async function POST(req: Request): Promise<Response> {
   // didn't send it — so the trace never breaks at this hop.
   const correlationId = req.headers.get(CORRELATION_HEADER) || uuid();
   const base = botUrl.replace(/\/$/, '');
-  const authHeaders: Record<string, string> = {
+  // AC-T4-1: shared base for every bot fetch — JSON content-type + the
+  // correlation id. signHeaders adds Authorization + X-Timestamp + X-Signature
+  // per fetch (each fetch signs its own (ts, path) pair).
+  const baseHeaders = {
     ...JSON_HEADERS,
-    Authorization: `Bearer ${botSecret}`,
     [CORRELATION_HEADER]: correlationId,
-  };
+  } as Record<string, string>;
 
   // 1. Create a chat session for this visitor.
+  const sessionUrl = `${base}/session`;
   let sessionRes: Response;
   try {
-    sessionRes = await fetch(`${base}/session`, {
+    sessionRes = await fetch(sessionUrl, {
       method: 'POST',
-      headers: authHeaders,
+      headers: signHeaders(botSecret, sessionUrl, baseHeaders),
       body: JSON.stringify({ email: visitorEmail, mode: botMode }),
       cache: 'no-store',
     });
@@ -254,11 +301,12 @@ export async function POST(req: Request): Promise<Response> {
   if (!sessionId) return bad('bot_session_no_id', 502);
 
   // 2. Gated sendback: POST /chat/request {session_id, question}.
+  const chatUrl = `${base}/chat/request`;
   let upstream: Response;
   try {
-    upstream = await fetch(`${base}/chat/request`, {
+    upstream = await fetch(chatUrl, {
       method: 'POST',
-      headers: authHeaders,
+      headers: signHeaders(botSecret, chatUrl, baseHeaders),
       body: JSON.stringify({ session_id: sessionId, question: message }),
       cache: 'no-store',
     });
@@ -309,20 +357,18 @@ export async function GET(req: Request): Promise<Response> {
   // AC-T11-6: same forward-or-mint as POST — a poll is part of the same sendback.
   const correlationId = req.headers.get(CORRELATION_HEADER) || uuid();
 
+  // AC-T4-1: GET /pending/{id} carries the same HMAC trio as POST.
+  const pendingUrl = `${botUrl.replace(/\/$/, '')}/pending/${encodeURIComponent(pendingId)}`;
   let upstream: Response;
   try {
-    upstream = await fetch(
-      `${botUrl.replace(/\/$/, '')}/pending/${encodeURIComponent(pendingId)}`,
-      {
-        method: 'GET',
-        headers: {
-          ...JSON_HEADERS,
-          Authorization: `Bearer ${botSecret}`,
-          [CORRELATION_HEADER]: correlationId,
-        },
-        cache: 'no-store',
-      },
-    );
+    upstream = await fetch(pendingUrl, {
+      method: 'GET',
+      headers: signHeaders(botSecret, pendingUrl, {
+        ...JSON_HEADERS,
+        [CORRELATION_HEADER]: correlationId,
+      }),
+      cache: 'no-store',
+    });
   } catch {
     return serverUnavailable(502, 'bot_unreachable');
   }
