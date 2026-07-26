@@ -118,10 +118,18 @@ const FloatingChat = ({
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<ChatStatus>('open');
   const [draft, setDraft] = useState('');
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   // AC-T2-1: per-FAB mode (no localStorage — each open is a fresh
   // session in that mode). 'personal' = Artemis, '3kok' = สามก๊ก.
   const [mode, setMode] = useState<'personal' | '3kok'>('personal');
+  // Per-mode message history: each bot keeps its OWN list. Switching FAB
+  // swaps the visible list — no leak, no loss (the bug where chatting with
+  // Artemis then opening สามก๊ก showed Artemis's history).
+  const [messagesByMode, setMessagesByMode] = useState<
+    Record<'personal' | '3kok', ChatMessage[]>
+  >({ personal: [], '3kok': [] });
+  // Derived: the active mode's history. All reads (render, auto-scroll dep)
+  // go through this, so swapping `mode` swaps the visible list automatically.
+  const messages = messagesByMode[mode];
   // AC-T3-1..2: dismissable consent notice. Persists per-browser via
   // localStorage so a visitor who closed it doesn't see it again on reload.
   const [consentDismissed, setConsentDismissed] = useState(
@@ -229,15 +237,22 @@ const FloatingChat = ({
       }
       const s = body?.status;
       if (s === 'answered' && typeof body.answer === 'string') {
-        setMessages((prev) => [
+        // Append the assistant answer to the mode that SENT the request.
+        // `mode` is captured in this closure (pollOnce has `mode` in its
+        // deps), and the scheduled timer retains the originating instance,
+        // so even a mid-poll mode-switch routes the answer to the right bot.
+        setMessagesByMode((prev) => ({
           ...prev,
-          {
-            id: uuid(),
-            role: 'assistant',
-            content: body.answer as string,
-            sources: Array.isArray(body.sources) ? body.sources : undefined,
-          },
-        ]);
+          [mode]: [
+            ...prev[mode],
+            {
+              id: uuid(),
+              role: 'assistant',
+              content: body.answer as string,
+              sources: Array.isArray(body.sources) ? body.sources : undefined,
+            },
+          ],
+        }));
         setStatus('answered');
         stopPolling();
         return;
@@ -255,7 +270,7 @@ const FloatingChat = ({
       // still pending -> keep polling with backoff.
       schedule(Math.min(nextBackoff(delayMs), pollMaxMs));
     },
-    [stopPolling, pollDurationMaxMs, pollMaxMs, pollMinMs],
+    [stopPolling, pollDurationMaxMs, pollMaxMs, pollMinMs, mode],
   );
 
   const startAwaiting = useCallback(
@@ -288,7 +303,7 @@ const FloatingChat = ({
       role: 'user',
       content: trimmed,
     };
-    setMessages((prev) => [...prev, userMsg]);
+    setMessagesByMode((prev) => ({ ...prev, [mode]: [...prev[mode], userMsg] }));
     setDraft('');
     setStatus('composing');
 
@@ -353,6 +368,10 @@ const FloatingChat = ({
           type="button"
           aria-label="Chat with Artemis"
           onClick={() => {
+            // Switching bots (not toggling the same one) resets status so an
+            // 'awaiting'/'answered' state from the other bot doesn't bleed
+            // into the freshly opened chat.
+            if (mode !== 'personal') setStatus('open');
             setMode('personal');
             setOpen((v) => (mode === 'personal' ? !v : true));
           }}
@@ -368,6 +387,7 @@ const FloatingChat = ({
           type="button"
           aria-label="Chat with สามก๊ก"
           onClick={() => {
+            if (mode !== '3kok') setStatus('open');
             setMode('3kok');
             setOpen((v) => (mode === '3kok' ? !v : true));
           }}
