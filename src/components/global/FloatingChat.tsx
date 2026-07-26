@@ -11,6 +11,8 @@ import { faClose, faPaperPlane, faWindowMinimize } from '@fortawesome/free-solid
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { DebounceInput } from 'react-debounce-input';
 
 // --- Constants (AC-T7-5) -------------------------------------------------
@@ -398,7 +400,31 @@ const FloatingChat = ({
                       : 'self-start max-w-[85%] rounded-lg bg-white/10 px-2 py-1 text-sm'
                   }
                 >
-                  <p className="whitespace-pre-wrap">{m.content}</p>
+                  {m.role === 'user' ? (
+                    // USER input is NEVER parsed as markdown (XSS). Plain text only.
+                    <p className="whitespace-pre-wrap">{m.content}</p>
+                  ) : (
+                    // ASSISTANT answers render structured markdown. The isSafeUrl
+                    // guard reuses the same check as the source-citation branch
+                    // — a javascript:/data: URL collapses to an inert <span>.
+                    <div className="chat-md">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          a: ({ href, children }) =>
+                            isSafeUrl(href ?? '')
+                              ? (
+                                <a href={href} target="_blank" rel="noreferrer">
+                                  {children}
+                                </a>
+                              )
+                              : <span>{children}</span>,
+                        }}
+                      >
+                        {m.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                   {m.sources && m.sources.length > 0 && (
                     <ul className="mt-1 flex flex-col gap-0.5">
                       {m.sources.map((s, i) => {

@@ -93,7 +93,7 @@ describe('AC-T7-1 / AC-T7-3 send + poll flow', () => {
         }),
       );
 
-    render(
+    const { container } = render(
       <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
@@ -125,11 +125,11 @@ describe('AC-T7-1 / AC-T7-3 send + poll flow', () => {
       await Promise.resolve();
     });
 
-    // Eventually the answer renders.
+    // Eventually the answer renders. T1: react-markdown + remark-gfm now
+    // autolink the email in the answer, splitting it across <p>+<a> — use
+    // toHaveTextContent (combined text) rather than getByText (single element).
     await waitFor(() => {
-      expect(
-        screen.getByText(/You can reach me at fiez@example.com/i),
-      ).toBeInTheDocument();
+      expect(container).toHaveTextContent(/You can reach me at fiez@example.com/i);
     });
     // And the source citation.
     expect(screen.getByText('Contact page')).toBeInTheDocument();

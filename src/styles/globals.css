@@ -311,3 +311,96 @@ a:hover {
     stroke-dashoffset: 0;
   }
 }
+
+/*
+ * AC-T1-4 — chat assistant markdown styling.
+ * Scoped to .chat-md (the assistant bubble wrapper) so user bubbles — which
+ * never render markdown — are untouched. Uses @theme tokens, not raw hex:
+ * var(--color-head) = #0F4C75. Thai-capable font stack via the --font-noto-thai
+ * variable applied on <body> by layout.tsx.
+ */
+.chat-md {
+  font-family: var(--font-noto-thai), 'Titillium Web', 'Noto Sans Thai', sans-serif;
+  line-height: 1.5;
+}
+
+.chat-md :where(p) {
+  margin: 0 0 0.4em;
+}
+
+.chat-md :where(p):last-child,
+.chat-md :where(ul):last-child,
+.chat-md :where(table):last-child {
+  margin-bottom: 0;
+}
+
+.chat-md :where(strong) {
+  color: var(--color-head);
+  font-weight: 700;
+}
+
+.chat-md :where(em) {
+  color: var(--color-light);
+  font-style: italic;
+}
+
+.chat-md :where(a) {
+  color: var(--color-light);
+  text-decoration: underline;
+}
+
+.chat-md :where(ul),
+.chat-md :where(ol) {
+  margin: 0.2em 0;
+  padding-left: 1.2em;
+}
+
+.chat-md :where(li) {
+  margin: 0.1em 0;
+}
+
+.chat-md :where(table) {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.4em 0;
+  font-size: 0.875em;
+}
+
+.chat-md :where(th),
+.chat-md :where(td) {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  text-align: left;
+}
+
+.chat-md :where(th) {
+  background: color-mix(in srgb, var(--color-head) 35%, transparent);
+  font-weight: 600;
+}
+
+.chat-md :where(blockquote) {
+  border-left: 3px solid var(--color-head);
+  margin: 0.4em 0;
+  padding: 0.1em 0 0.1em 0.6em;
+  color: var(--color-light);
+}
+
+.chat-md :where(code) {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 0.875em;
+}
+
+.chat-md :where(pre) {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 10px;
+  overflow-x: auto;
+}
+
+.chat-md :where(pre) :where(code) {
+  background: none;
+  padding: 0;
+}
