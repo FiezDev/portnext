@@ -101,12 +101,6 @@ function uuid(): string {
     .join('')}-${hex.slice(8, 10).join('')}-${hex.slice(10, 16).join('')}`;
 }
 
-function nextBackoff(prev: number): number {
-  // Exponential 3s -> 15s.
-  const doubled = prev * 2;
-  return Math.min(Math.max(doubled, POLL_MIN_MS), POLL_MAX_MS);
-}
-
 // --- Component -----------------------------------------------------------
 const FloatingChat = ({
   pollMinMs = POLL_MIN_MS,
@@ -267,8 +261,12 @@ const FloatingChat = ({
         stopPolling();
         return;
       }
-      // still pending -> keep polling with backoff.
-      schedule(Math.min(nextBackoff(delayMs), pollMaxMs));
+      // Still pending -> keep a CONSTANT cadence. A gated answer lands ~10s
+      // after send (owner taps Approve, then ~9s of generation); exponential
+      // backoff (3s -> 9s -> 21s) surfaced it up to 10s late. pollMinMs (3s)
+      // also equals the /api/chat rate-limit refill (1 token / 3s), so a
+      // steady poll can never trip its own 429.
+      schedule(pollMinMs);
     },
     [stopPolling, pollDurationMaxMs, pollMaxMs, pollMinMs, mode],
   );

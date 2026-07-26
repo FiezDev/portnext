@@ -295,3 +295,49 @@ describe('[MED] FloatingChat source-URL XSS guard', () => {
     jest.useRealTimers();
   });
 });
+
+// --------------------------------------------------------------------------
+// Poll cadence: a gated answer lands ~10s after send (owner taps Approve, then
+// ~9s of generation). Exponential backoff (3s -> 9s -> 21s) surfaces it up to
+// 10s late, so pending polls hold a CONSTANT pollMinMs cadence — which also
+// matches the /api/chat rate-limit refill of 1 token / 3s, so it can't 429.
+// --------------------------------------------------------------------------
+describe('poll cadence stays constant while pending', () => {
+  it('schedules the next pending poll at pollMinMs, not double', async () => {
+    jest.useFakeTimers();
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonRes({ pendingId: 'p-cadence', status: 'pending' }, 202),
+      )
+      .mockResolvedValue(jsonRes({ status: 'pending' }));
+
+    render(
+      <FloatingChat pollMinMs={50} pollMaxMs={5000} pollDurationMaxMs={60_000} />,
+    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+    });
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText(/message/i), {
+        target: { value: 'ping' },
+      });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /send/i }));
+    });
+
+    // POST + the first scheduled poll (50ms).
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    // 60ms on, a constant cadence has polled again; a 2x backoff (100ms) has not.
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+});
