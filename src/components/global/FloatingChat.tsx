@@ -7,7 +7,14 @@
 // same-origin to /api/chat (which proxies the portfolio bot). No bot secret
 // ever touches the browser.
 
-import { faClose, faPaperPlane, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
+import {
+  faClose,
+  faPaperPlane,
+  faScroll,
+  faShieldHalved,
+  faUser,
+  faWindowMinimize,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -351,11 +358,11 @@ const FloatingChat = ({
           }}
           aria-expanded={open && mode === 'personal'}
           aria-haspopup="dialog"
-          className={`glass flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-2xl leading-none text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+          className={`glass flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
             open && mode === 'personal' ? 'ring-2 ring-head' : ''
           }`}
         >
-          <span aria-hidden="true">🧠</span>
+          <FontAwesomeIcon icon={faUser} className="h-5 w-5" aria-hidden="true" />
         </button>
         <button
           type="button"
@@ -366,11 +373,11 @@ const FloatingChat = ({
           }}
           aria-expanded={open && mode === '3kok'}
           aria-haspopup="dialog"
-          className={`glass flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-2xl leading-none text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+          className={`glass flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
             open && mode === '3kok' ? 'ring-2 ring-head' : ''
           }`}
         >
-          <span aria-hidden="true">📜</span>
+          <FontAwesomeIcon icon={faScroll} className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 
@@ -390,15 +397,25 @@ const FloatingChat = ({
           >
             {/* Header */}
             <header className="flex items-center justify-between border-b border-white/15 pb-2">
-              <h2 className="text-sm font-semibold tracking-wide">
-                {mode === '3kok' ? '📜 สามก๊ก' : '🧠 Artemis'}
+              <h2 className="flex items-center gap-1.5 text-sm font-semibold tracking-wide">
+                {mode === '3kok' ? (
+                  <>
+                    <FontAwesomeIcon icon={faScroll} className="h-4 w-4" aria-hidden="true" />
+                    <span>สามก๊ก</span>
+                  </>
+                ) : (
+                  <>
+                    <FontAwesomeIcon icon={faUser} className="h-4 w-4" aria-hidden="true" />
+                    <span>Artemis</span>
+                  </>
+                )}
               </h2>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   aria-label="Minimize chat"
                   onClick={() => setOpen(false)}
-                  className="text-white/80 hover:text-white"
+                  className="text-light/80 hover:text-white"
                 >
                   <FontAwesomeIcon icon={faWindowMinimize} className="h-4 w-4" />
                 </button>
@@ -408,7 +425,7 @@ const FloatingChat = ({
                   onClick={() => {
                     setOpen(false);
                   }}
-                  className="text-white/80 hover:text-white"
+                  className="text-light/80 hover:text-white"
                 >
                   <FontAwesomeIcon icon={faClose} className="h-4 w-4" />
                 </button>
@@ -422,7 +439,7 @@ const FloatingChat = ({
               className="flex grow flex-col gap-2 overflow-y-auto py-2"
             >
               {messages.length === 0 && (
-                <p className="m-auto text-center text-sm text-white/60">
+                <p className="m-auto text-center text-sm text-light/70">
                   Ask me anything about my work, stack, or availability.
                 </p>
               )}
@@ -432,7 +449,7 @@ const FloatingChat = ({
                   className={
                     m.role === 'user'
                       ? 'self-end max-w-[80%] rounded-lg bg-head/80 px-2 py-1 text-sm'
-                      : 'self-start max-w-[85%] rounded-lg bg-white/10 px-2 py-1 text-sm'
+                      : 'self-start max-w-[85%] rounded-lg bg-normal/15 px-2 py-1 text-sm'
                   }
                 >
                   {m.role === 'user' ? (
@@ -490,14 +507,14 @@ const FloatingChat = ({
 
               {status === 'awaiting' && (
                 <p
-                  className="self-start rounded-lg bg-white/10 px-2 py-1 text-sm text-white/80"
+                  className="self-start rounded-lg bg-normal/15 px-2 py-1 text-sm text-light/80"
                   data-testid="awaiting-indicator"
                 >
                   Awaiting Fiez&apos;s reply…
                 </p>
               )}
               {status === 'unavailable' && (
-                <p className="self-start rounded-lg bg-red-500/20 px-2 py-1 text-sm">
+                <p className="self-start rounded-lg bg-error/20 px-2 py-1 text-sm">
                   Chat unavailable — Fiez may be offline
                 </p>
               )}
@@ -512,7 +529,7 @@ const FloatingChat = ({
                 </p>
               )}
               {status === 'error' && (
-                <p className="self-start rounded-lg bg-red-500/20 px-2 py-1 text-sm">
+                <p className="self-start rounded-lg bg-error/20 px-2 py-1 text-sm">
                   Something went wrong. Please try again.
                 </p>
               )}
@@ -520,8 +537,13 @@ const FloatingChat = ({
 
             {/* AC-T3-1..2: consent notice — sits above the composer, dismissable. */}
             {!consentDismissed && (
-              <div className="flex items-center gap-2 rounded-lg bg-white/5 px-2 py-1 text-xs text-white/60">
-                <span>💬 Answered only after the owner approves. Q&amp;A are reviewed &amp; logged to improve the bot.</span>
+              <div className="flex items-center gap-2 rounded-lg bg-normal/10 px-2 py-1 text-xs text-light/70">
+                <FontAwesomeIcon
+                  icon={faShieldHalved}
+                  className="h-3.5 w-3.5 shrink-0"
+                  aria-hidden="true"
+                />
+                <span>Answered only after the owner approves. Q&amp;A are reviewed &amp; logged to improve the bot.</span>
                 <button
                   type="button"
                   aria-label="Dismiss consent notice"
@@ -536,7 +558,7 @@ const FloatingChat = ({
                     }
                   }}
                 >
-                  ×
+                  <FontAwesomeIcon icon={faClose} className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>
             )}
@@ -562,7 +584,7 @@ const FloatingChat = ({
                 }}
                 placeholder="Type a message…  (Enter to send, Shift+Enter for newline)"
                 rows={1}
-                className="max-h-28 min-h-[44px] w-full resize-none rounded-lg bg-white/10 p-2 text-sm text-white placeholder-white/50 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/40"
+                className="max-h-28 min-h-[44px] w-full resize-none rounded-lg bg-normal/15 p-2 text-sm text-white placeholder-light/50 focus:border-head focus:outline-none focus:ring-2 focus:ring-head/40"
               />
               <button
                 type="button"
