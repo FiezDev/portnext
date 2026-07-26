@@ -2,6 +2,43 @@ import { SideProjectObj, WorkProjectObj } from '@/src/types/object';
 
 export const WorkProjects: WorkProjectObj[] = [
   {
+    projectName: 'Hydrosense',
+    projectFullName: 'Hydrosense (พรายน้ำ) — Flood Early-Warning Platform',
+    projectIntro:
+      'Flood early-warning platform — an operator common operating picture plus a public alert portal.',
+    projectType: 'Work',
+    projectID: 9,
+    activeFlag: true,
+    status: 'Ongoing',
+    createDate: 1777593600000,
+    updateDate: 1785024000000,
+    stack: [
+      'TypeScript',
+      'SvelteKit 5',
+      'Svelte',
+      'pnpm',
+      'PostgreSQL',
+      'Jest',
+      'Playwright',
+      'Docker',
+      'AWS',
+      'GitHub Actions',
+    ],
+    projectPic: {
+      picurl: {
+        width: 400,
+        height: 300,
+        pic: [],
+      },
+    },
+    projectDesc: [
+      '- Primary author of a flood early-warning platform (about three quarters of its commit history) — a SvelteKit 5 static-SPA monorepo shipping three surfaces from one workspace: the operator COP (common operating picture), a public portal PWA, and the public web site.',
+      '- Structured as a pnpm monorepo with shared packages, typed API contracts, service clients, end-to-end tests and its own infrastructure directory, so every surface consumes one contract and one design system.',
+      '- Built the COP end to end — live station map, water-level and rainfall telemetry, threshold alerting and operator dashboards — with a Jest suite of roughly 150 cases pinning the alert-threshold logic, boundary values included.',
+      '- Ships to staging from a version tag through GitHub Actions and SSM, with a post-deploy smoke check.',
+    ],
+  },
+  {
     projectName: 'RiceGuard Platform',
     projectFullName: 'RiceGuard — Agritech IoT + AI Crop Monitoring',
     projectIntro:
@@ -43,9 +80,9 @@ export const WorkProjects: WorkProjectObj[] = [
       },
     },
     projectDesc: [
-      '- Built the operations side of an agritech IoT platform — the admin console (device management, farmer oversight, alert triage), the AI-Ops console (model monitoring, anomaly detection, system health), the analytics dashboards, and the GraphQL backend API.',
+      '- Own the operations backend of an agritech IoT platform end to end: the GraphQL API (author of nearly its entire commit history), the admin console for device management, farmer oversight and alert triage, and the AI-Ops console for model monitoring and system health.',
       '- Designed and provisioned the entire AWS production infrastructure: a VPC with public/private subnets across two AZs, ALB + NLB, a RabbitMQ broker for MQTTS/AMQP telemetry, EC2-hosted API, PostgreSQL/TimescaleDB, S3 backups and Secrets Manager — as idempotent infrastructure-as-code with GitHub Actions CI/CD. Flow: field telemetry → MQTTS/NLB → RabbitMQ → API → TimescaleDB.',
-      '- AI in the product: pest & disease detection, soil-NPK and IoT-anomaly models, weather and yield (XGBoost) prediction, AI-Ops model monitoring, and pgvector semantic search over the knowledge base.',
+      '- The platform also ships AI features — pest and disease detection, soil-NPK and IoT-anomaly models, weather and yield (XGBoost) prediction, and semantic search over the knowledge base. My side is the API, the consoles and the production infrastructure they run on.',
     ],
   },
   {
@@ -256,6 +293,33 @@ export const WorkProjects: WorkProjectObj[] = [
 
 export const SideProjects: SideProjectObj[] = [
   {
+    projectName: 'sealmind',
+    projectIntro:
+      'Open-source memory for AI agents — single binary, markdown on disk, BM25 search, MCP server.',
+    stack: ['Rust', 'MCP', 'BM25', 'Markdown', 'SOPS', 'Docker'],
+    projectDesc: [
+      'An MIT-licensed memory store for AI coding agents: notes stay as plain markdown on disk, a BM25 hybrid index gives facet search over them, and an MCP server lets Claude Code and Codex read and write that memory directly. Written against the Rust standard library with no third-party crates.',
+      'The architecture was chosen by measurement, not taste — a published benchmark report puts the plain-markdown plus BM25 design against a vector-database implementation and shows it winning on speed, footprint and the hard correctness gates.',
+      'Security-first by construction: reads are vault-contained, writes are guarded against path traversal, and secrets are stored as pointers resolved from SOPS or Bitwarden at read time rather than kept in the store.',
+      'Shipped as tagged releases with prebuilt binaries (latest v0.9.0), CI, an install script, SECURITY.md and a changelog.',
+    ],
+    ghlink: 'github.com/FiezDev/sealmind',
+    weblink: '',
+  },
+  {
+    projectName: 'Simpler',
+    projectIntro:
+      'Electron browser that opens any URL in a locked aspect ratio — DRM-capable and sandboxed.',
+    stack: ['Electron', 'TypeScript', 'Playwright', 'Widevine', 'electron-builder'],
+    projectDesc: [
+      'A minimal desktop browser for one job: put a single web view on screen at a fixed aspect ratio, remember the geometry per URL, and stay out of the way. MIT licensed.',
+      'Plays DRM-protected video by building on the castLabs Electron fork for Widevine, and keeps each view sandboxed with context isolation instead of trusting page scripts.',
+      'Tested with Playwright driving the packaged Electron app end to end, and packaged for Windows x64 and macOS arm64.',
+    ],
+    ghlink: 'github.com/FiezDev/simpler-browser',
+    weblink: '',
+  },
+  {
     projectName: 'AtEasePlatform',
     projectIntro:
       'AI content-automation platform — a visual workflow builder that turns one idea into multi-platform posts.',
@@ -289,25 +353,74 @@ export const SideProjects: SideProjectObj[] = [
   {
     projectName: 'ORG-TOOLS',
     projectIntro:
-      'Internal engineering platform — turns Jira projects into versioned ISO documentation.',
+      'ISO/IEC 29110 documentation pipeline — generates a compliant document set straight from the codebase.',
     stack: [
       'TypeScript',
       'Bun',
       'React',
       'Vite',
+      'Python',
       'PostgreSQL',
+      'pgvector',
+      'Mermaid',
       'Jira API',
       'AWS S3',
     ],
     projectDesc: [
-      'A team platform that assembles versioned ISO documentation from Jira: architecture diagrams, app screenshots and exportable ISO documents (Word) with full version history.',
-      'Also handles Jira task creation, a flexible Excel/CSV issue exporter with custom column mapping, a shared-memory knowledge graph, and zero-knowledge credential vaults (the server stores only ciphertext).',
-      'AI: an LLM drafts the ISO documents from Jira issues, knowledge-graph chunks are embedded for semantic (pgvector) search, and an LLM assistant is wired in for Q&A over the workspace.',
+      'Sole author of an engineering platform built around an ISO/IEC 29110 documentation pipeline: point it at a codebase and its issue tracker, and it produces the Basic Profile document set — project plan, requirements, architecture and design, traceability, and verification records — as versioned Word documents ready for an audit.',
+      'The pipeline reads the repository rather than a questionnaire. It derives system overviews and architecture diagrams from the source, pulls implementation evidence and traceability from issues and commits, captures application screenshots, then drafts each document under a review loop that records a verdict and a changelog on every regeneration.',
+      'Incremental by design: a re-run fingerprints its inputs and regenerates only what changed, so an audit cycle costs minutes instead of a rewrite — and every document keeps a full version history for surveillance audits.',
+      'Around the pipeline: Jira task creation, an Excel/CSV issue exporter with custom column mapping, a shared-memory knowledge graph with pgvector semantic search, and zero-knowledge credential vaults (the server stores only ciphertext).',
     ],
     pic: [
       '/screenshot/orgtools-iso-library.png',
       '/screenshot/orgtools-export.png',
       '/screenshot/orgtools-jira-tasks.png',
+    ],
+    ghlink: '',
+    weblink: '',
+  },
+  {
+    projectName: 'Portfolio Concierge',
+    projectIntro:
+      'The owner-approved chat on this site — RAG answers that only send after I approve them.',
+    stack: [
+      'Python',
+      'FastAPI',
+      'Next.js',
+      'Qdrant',
+      'LLMs',
+      'LINE Messaging API',
+      'Cloudflare Tunnel',
+    ],
+    projectDesc: [
+      'The chat widget on this page. A visitor question is retrieved against a curated public corpus, then held: nothing is generated or shown until I approve that specific question from a LINE push on my phone. Approve and the answer generates and appears; ignore it and it expires.',
+      'Built as a same-origin serverless proxy so the bot URL and secret never reach the browser, with HMAC request signing between widget and bot, a per-IP token bucket, and a correlation id threaded through every hop for tracing.',
+      'Answers in English or Thai, cites its sources, and abstains rather than guessing when the corpus has nothing relevant.',
+    ],
+    ghlink: '',
+    weblink: '',
+  },
+  {
+    projectName: 'QuadOne',
+    projectIntro:
+      'AI inbox triage — a solo build that reads the queue and decides what deserves attention.',
+    stack: ['TypeScript', 'LLMs', 'PostgreSQL'],
+    projectDesc: [
+      'An LLM-powered triage layer for a noisy inbox: classify, summarise and rank incoming items so the queue surfaces what actually needs a human, instead of arriving in timestamp order.',
+      'Solo build, private repository.',
+    ],
+    ghlink: '',
+    weblink: '',
+  },
+  {
+    projectName: 'git-doc',
+    projectIntro:
+      'Turns raw git history across many repositories into a readable work summary.',
+    stack: ['Python', 'LLMs', 'Excel'],
+    projectDesc: [
+      'Walks the commit history of multiple repositories and produces an AI-summarised report of what actually shipped over a period — exportable to Excel for reporting instead of hand-written status updates.',
+      'Private repository; described here because the work it automates is a chore every team recognises.',
     ],
     ghlink: '',
     weblink: '',
