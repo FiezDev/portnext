@@ -182,10 +182,9 @@ export async function POST(req: Request): Promise<Response> {
     return bad('invalid_json');
   }
 
-  const { message, mode, sessionId, client_request_id } = (body ?? {}) as {
+  const { message, mode, client_request_id } = (body ?? {}) as {
     message?: unknown;
     mode?: unknown;
-    sessionId?: unknown;
     client_request_id?: unknown;
   };
 
@@ -202,60 +201,75 @@ export async function POST(req: Request): Promise<Response> {
     return bad('missing_client_request_id');
   }
 
-  const forwardPayload: Record<string, unknown> = {
-    message,
-    client_request_id,
-  };
-  if (typeof mode === 'string') forwardPayload.mode = mode;
-  if (typeof sessionId === 'string') forwardPayload.sessionId = sessionId;
+  // Bot contract: POST /session {email, mode} → {id,…}; POST /chat/request
+  // {session_id, question} → {id, status, note}. The widget is anonymous, so
+  // synthesize a stable visitor email per client_request_id (retries reuse the
+  // same session). The bot's mode vocabulary is 'personal' | 'samkok' (samkok
+  // == 3kok); map the widget's term.
+  const visitorEmail = `visitor+${client_request_id}@portfolio.local`;
+  const botMode = mode === '3kok' ? 'samkok' : 'personal';
 
   // AC-T11-6: forward the incoming correlation id, or mint one if the widget
   // didn't send it — so the trace never breaks at this hop.
   const correlationId = req.headers.get(CORRELATION_HEADER) || uuid();
+  const base = botUrl.replace(/\/$/, '');
+  const authHeaders: Record<string, string> = {
+    ...JSON_HEADERS,
+    Authorization: `Bearer ${botSecret}`,
+    [CORRELATION_HEADER]: correlationId,
+  };
 
+  // 1. Create a chat session for this visitor.
+  let sessionRes: Response;
+  try {
+    sessionRes = await fetch(`${base}/session`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({ email: visitorEmail, mode: botMode }),
+      cache: 'no-store',
+    });
+  } catch {
+    return serverUnavailable(502, 'bot_unreachable');
+  }
+  if (sessionRes.status >= 500) return serverUnavailable(sessionRes.status, 'bot_unreachable');
+  if (!sessionRes.ok) {
+    return new Response(
+      JSON.stringify({ status: 'error', upstreamStatus: sessionRes.status, stage: 'session' }),
+      { status: sessionRes.status, headers: JSON_HEADERS },
+    );
+  }
+  const sessionBody = (await sessionRes.json().catch(() => ({}))) as { id?: string };
+  const sessionId = sessionBody.id;
+  if (!sessionId) return bad('bot_session_no_id', 502);
+
+  // 2. Gated sendback: POST /chat/request {session_id, question}.
   let upstream: Response;
   try {
-    upstream = await fetch(`${botUrl.replace(/\/$/, '')}/chat/request`, {
+    upstream = await fetch(`${base}/chat/request`, {
       method: 'POST',
-      headers: {
-        ...JSON_HEADERS,
-        Authorization: `Bearer ${botSecret}`,
-        [CORRELATION_HEADER]: correlationId,
-      },
-      body: JSON.stringify(forwardPayload),
+      headers: authHeaders,
+      body: JSON.stringify({ session_id: sessionId, question: message }),
       cache: 'no-store',
     });
   } catch {
     return serverUnavailable(502, 'bot_unreachable');
   }
 
-  // Passthrough for the two success states the widget expects.
   if (upstream.status === 202 || upstream.status === 200) {
-    const text = await upstream.text();
-    let parsed: unknown = null;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      parsed = { raw: text };
-    }
-    const obj = (parsed ?? {}) as { pendingId?: unknown; status?: unknown };
-    const pendingId =
-      typeof obj.pendingId === 'string' ? obj.pendingId : undefined;
+    const obj = (await upstream.json().catch(() => ({}))) as { id?: string; status?: string };
+    const pendingId = typeof obj.id === 'string' ? obj.id : undefined;
     return new Response(
       JSON.stringify({
         pendingId,
+        sessionId,
         status: typeof obj.status === 'string' ? obj.status : 'pending',
       }),
       { status: 202, headers: JSON_HEADERS },
     );
   }
-
-  // 4xx/5xx from the bot: pass through a structured error. 5xx is unreachable.
-  if (upstream.status >= 500) {
-    return serverUnavailable(upstream.status, 'bot_unreachable');
-  }
+  if (upstream.status >= 500) return serverUnavailable(upstream.status, 'bot_unreachable');
   return new Response(
-    JSON.stringify({ status: 'error', upstreamStatus: upstream.status }),
+    JSON.stringify({ status: 'error', upstreamStatus: upstream.status, stage: 'sendback' }),
     { status: upstream.status, headers: JSON_HEADERS },
   );
 }
