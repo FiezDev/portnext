@@ -40,6 +40,22 @@ function jsonRes(body: unknown, status = 200): Response {
   });
 }
 
+// The route makes TWO bot calls per POST: /session (bot replies {id}) and then
+// /chat/request (bot replies {id, status}). Mock both, keyed on URL, and hand
+// back a FRESH Response per call — a Response body can only be read once.
+function mockBot(
+  sendback: Record<string, unknown> = { id: 'pend-123', status: 'pending' },
+  sendbackStatus = 202,
+): void {
+  fetchMock.mockImplementation((url: Parameters<FetchImpl>[0]) =>
+    Promise.resolve(
+      String(url).endsWith('/session')
+        ? jsonRes({ id: 'sess-1' }, 200)
+        : jsonRes(sendback, sendbackStatus),
+    ),
+  );
+}
+
 // Helper: a POST request that looks same-origin to the allowlist.
 function allowedPost(
   body: Record<string, unknown>,
@@ -69,9 +85,7 @@ function allowedGet(headers: Record<string, string> = {}): Request {
 // --------------------------------------------------------------------------
 describe('AC-T7-2 / AC-T7-6 POST /api/chat', () => {
   it('forwards the message to the bot with Bearer secret + client_request_id and returns pendingId', async () => {
-    fetchMock.mockResolvedValue(
-      jsonRes({ pendingId: 'pend-123', status: 'pending' }, 202),
-    );
+    mockBot();
 
     const req = allowedPost({
       message: 'hello',
@@ -81,26 +95,36 @@ describe('AC-T7-2 / AC-T7-6 POST /api/chat', () => {
     const res = await POST(req as unknown as Request);
     expect(res.status).toBe(202);
     const json = await res.json();
-    expect(json).toEqual({ pendingId: 'pend-123', status: 'pending' });
+    expect(json).toEqual({
+      pendingId: 'pend-123',
+      sessionId: 'sess-1',
+      status: 'pending',
+    });
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [calledUrl, init] = fetchMock.mock.calls[0];
+    // Hop 1: /session, visitor email derived from client_request_id so a
+    // retried POST reuses the same session. Hop 2: the gated sendback.
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const [sessionUrl, sessionInit] = fetchMock.mock.calls[0];
+    expect(String(sessionUrl)).toBe('https://bot.example.test/session');
+    const sessionBody = JSON.parse((sessionInit as RequestInit).body as string);
+    expect(sessionBody.email).toBe(
+      'visitor+11111111-2222-3333-4444-555555555555@portfolio.local',
+    );
+    expect(sessionBody.mode).toBe('3kok');
+
+    const [calledUrl, init] = fetchMock.mock.calls[1];
     expect(String(calledUrl)).toBe('https://bot.example.test/chat/request');
     const headers = new Headers((init as RequestInit).headers);
     expect(headers.get('Authorization')).toBe('Bearer super-secret-token');
     expect(headers.get('Content-Type')).toBe('application/json');
     const forwardedBody = JSON.parse((init as RequestInit).body as string);
-    expect(forwardedBody.message).toBe('hello');
-    expect(forwardedBody.client_request_id).toBe(
-      '11111111-2222-3333-4444-555555555555',
-    );
+    expect(forwardedBody.question).toBe('hello');
+    expect(forwardedBody.session_id).toBe('sess-1');
   });
 
   // AC-T7-4: NO secret leaks in the response body.
   it('does NOT leak the bot secret in the response (AC-T7-4)', async () => {
-    fetchMock.mockResolvedValue(
-      jsonRes({ pendingId: 'pend-456', status: 'pending' }, 202),
-    );
+    mockBot({ id: 'pend-456', status: 'pending' });
     const req = allowedPost({
       message: 'x',
       client_request_id: '22222222-2222-3333-4444-555555555555',
@@ -145,9 +169,7 @@ describe('AC-T7-3 GET /api/chat?pendingId=…', () => {
 // --------------------------------------------------------------------------
 describe('AC-T11-6 X-Correlation-Id propagation', () => {
   it('POST forwards the incoming X-Correlation-Id header to the bot', async () => {
-    fetchMock.mockResolvedValue(
-      jsonRes({ pendingId: 'pend-cid', status: 'pending' }, 202),
-    );
+    mockBot({ id: 'pend-cid', status: 'pending' });
     const incoming = '11111111-2222-3333-4444-555555555555';
 
     const req = allowedPost(
@@ -163,9 +185,7 @@ describe('AC-T11-6 X-Correlation-Id propagation', () => {
   });
 
   it('POST mints a UUID X-Correlation-Id when the caller sent none', async () => {
-    fetchMock.mockResolvedValue(
-      jsonRes({ pendingId: 'pend-mint', status: 'pending' }, 202),
-    );
+    mockBot({ id: 'pend-mint', status: 'pending' });
     const req = allowedPost({
       message: 'hello',
       client_request_id: 'cid-req-2',
@@ -257,9 +277,7 @@ describe('[HIGH] Origin/Referer allowlist', () => {
   });
 
   it('accepts a POST with a same-origin Referer when no Origin is sent', async () => {
-    fetchMock.mockResolvedValue(
-      jsonRes({ pendingId: 'p', status: 'pending' }, 202),
-    );
+    mockBot();
     const req = new Request('https://fiez.dev/api/chat', {
       method: 'POST',
       headers: {
@@ -279,9 +297,7 @@ describe('[HIGH] Origin/Referer allowlist', () => {
   it('respects PORTFOLIO_ALLOWED_ORIGINS override (localhost allowed in dev)', async () => {
     process.env.PORTFOLIO_ALLOWED_ORIGINS =
       'http://localhost:3000,https://fiez.dev';
-    fetchMock.mockResolvedValue(
-      jsonRes({ pendingId: 'p', status: 'pending' }, 202),
-    );
+    mockBot();
     const req = new Request('http://localhost:3000/api/chat', {
       method: 'POST',
       headers: {
@@ -321,9 +337,7 @@ describe('[HIGH] message length cap', () => {
   });
 
   it('accepts a message of exactly 4000 chars', async () => {
-    fetchMock.mockResolvedValue(
-      jsonRes({ pendingId: 'p', status: 'pending' }, 202),
-    );
+    mockBot();
     const req = allowedPost({
       message: 'a'.repeat(4000),
       client_request_id: 'x',
@@ -338,9 +352,7 @@ describe('[HIGH] per-IP token-bucket rate limit', () => {
   it('returns 429 once the burst is exceeded', async () => {
     // Each call returns a FRESH Response — a Response body can only be read
     // once, and the route consumes upstream.text() on each success.
-    fetchMock.mockImplementation(() =>
-      Promise.resolve(jsonRes({ pendingId: 'p', status: 'pending' }, 202)),
-    );
+    mockBot();
     // Burst is 5 — the first 5 succeed, the 6th is throttled.
     const results: number[] = [];
     for (let i = 0; i < 6; i++) {
@@ -353,9 +365,7 @@ describe('[HIGH] per-IP token-bucket rate limit', () => {
   });
 
   it('429 response body is rate_limited', async () => {
-    fetchMock.mockImplementation(() =>
-      Promise.resolve(jsonRes({ pendingId: 'p', status: 'pending' }, 202)),
-    );
+    mockBot();
     for (let i = 0; i < 5; i++) {
       await POST(allowedPost({ message: 'hi', client_request_id: `b-${i}` }));
     }
@@ -397,9 +407,7 @@ describe('[MED] GET response allowlist + security headers', () => {
   });
 
   it('POST 202 response carries nosniff + no-store headers', async () => {
-    fetchMock.mockResolvedValue(
-      jsonRes({ pendingId: 'p', status: 'pending' }, 202),
-    );
+    mockBot();
     const res = await POST(
       allowedPost({ message: 'hi', client_request_id: 'h-1' }),
     );
