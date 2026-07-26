@@ -42,7 +42,7 @@ afterEach(() => {
 describe('AC-T7-1 FloatingChat bubble + panel', () => {
   it('renders the floating button and opens the panel on click', async () => {
     render(<FloatingChat />);
-    const bubble = screen.getByRole('button', { name: /chat with fiez/i });
+    const bubble = screen.getByRole('button', { name: /chat with artemis/i });
     expect(bubble).toBeInTheDocument();
 
     await act(async () => {
@@ -57,7 +57,7 @@ describe('AC-T7-1 FloatingChat bubble + panel', () => {
 
   it('closes the panel on Esc', async () => {
     render(<FloatingChat />);
-    const bubble = screen.getByRole('button', { name: /chat with fiez/i });
+    const bubble = screen.getByRole('button', { name: /chat with artemis/i });
     await act(async () => {
       fireEvent.click(bubble);
     });
@@ -97,7 +97,7 @@ describe('AC-T7-1 / AC-T7-3 send + poll flow', () => {
       <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
     });
 
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
@@ -176,7 +176,7 @@ describe('AC-T7-5 degradation to Unavailable', () => {
       <FloatingChat pollMinMs={20} pollMaxMs={20} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {
@@ -225,7 +225,7 @@ describe('[MED] FloatingChat source-URL XSS guard', () => {
 
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {
@@ -267,7 +267,7 @@ describe('[MED] FloatingChat source-URL XSS guard', () => {
 
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {

@@ -112,6 +112,9 @@ const FloatingChat = ({
   const [status, setStatus] = useState<ChatStatus>('open');
   const [draft, setDraft] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // AC-T2-1: per-FAB mode (no localStorage — each open is a fresh
+  // session in that mode). 'personal' = Artemis, '3kok' = สามก๊ก.
+  const [mode, setMode] = useState<'personal' | '3kok'>('personal');
 
   // Polling refs (kept off React state to avoid re-render churn).
   const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -289,7 +292,7 @@ const FloatingChat = ({
         },
         body: JSON.stringify({
           message: trimmed,
-          mode: '3kok',
+          mode,
           client_request_id: clientRequestId,
         }),
       });
@@ -314,7 +317,7 @@ const FloatingChat = ({
       return;
     }
     startAwaiting(body.pendingId);
-  }, [draft, status, startAwaiting]);
+  }, [draft, status, startAwaiting, mode]);
 
   // --- Render ------------------------------------------------------------
   const openTransition = useMemo(
@@ -327,17 +330,42 @@ const FloatingChat = ({
 
   return (
     <>
-      {/* Floating button */}
-      <button
-        type="button"
-        aria-label="Chat with Fiez"
-        onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-20 right-4 md:bottom-24 md:right-6 z-[200] flex h-14 w-14 items-center justify-center rounded-full bg-head text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-        aria-expanded={open}
-        aria-haspopup="dialog"
-      >
-        <FontAwesomeIcon icon={faPaperPlane} className="h-5 w-5" />
-      </button>
+      {/* Two themed entry FABs (AC-T2-1): Artemis = personal advisor,
+          สามก๊ก = Three-Kingdoms scholar. Each FAB pins the panel to its
+          mode; clicking the active bot's FAB toggles the panel, clicking
+          the other switches mode + opens. No localStorage (stress fix). */}
+      <div className="fixed bottom-20 right-4 md:bottom-24 md:right-6 z-[200] flex flex-col gap-2">
+        <button
+          type="button"
+          aria-label="Chat with Artemis"
+          onClick={() => {
+            setMode('personal');
+            setOpen((v) => (mode === 'personal' ? !v : true));
+          }}
+          aria-expanded={open && mode === 'personal'}
+          aria-haspopup="dialog"
+          className={`glass flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-2xl leading-none text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+            open && mode === 'personal' ? 'ring-2 ring-head' : ''
+          }`}
+        >
+          <span aria-hidden="true">🧠</span>
+        </button>
+        <button
+          type="button"
+          aria-label="Chat with สามก๊ก"
+          onClick={() => {
+            setMode('3kok');
+            setOpen((v) => (mode === '3kok' ? !v : true));
+          }}
+          aria-expanded={open && mode === '3kok'}
+          aria-haspopup="dialog"
+          className={`glass flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-2xl leading-none text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+            open && mode === '3kok' ? 'ring-2 ring-head' : ''
+          }`}
+        >
+          <span aria-hidden="true">📜</span>
+        </button>
+      </div>
 
       <AnimatePresence>
         {open && (
@@ -355,9 +383,9 @@ const FloatingChat = ({
           >
             {/* Header */}
             <header className="flex items-center justify-between border-b border-white/15 pb-2">
-              <span className="text-sm font-semibold tracking-wide">
-                Chat with Fiez
-              </span>
+              <h2 className="text-sm font-semibold tracking-wide">
+                {mode === '3kok' ? '📜 สามก๊ก' : '🧠 Artemis'}
+              </h2>
               <div className="flex items-center gap-3">
                 <button
                   type="button"

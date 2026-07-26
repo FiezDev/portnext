@@ -55,6 +55,17 @@ function originAllowed(req: Request): boolean {
   const allow = getAllowedOrigins();
   const origin = req.headers.get('Origin');
   const referer = req.headers.get('Referer');
+  const host = req.headers.get('Host');
+  // Same-origin via Origin (POSTs carry it). Always allowed — covers localhost
+  // vs 127.0.0.1 vs a Bonjour hostname vs any deployed host without enumerating.
+  if (origin && host) {
+    try { if (new URL(origin).host === host) return true; } catch { /* allowlist */ }
+  }
+  // Same-origin via Referer — same-origin GETs (the widget's status poll) often
+  // omit Origin but do send Referer; accept when Referer's host == request Host.
+  if (referer && host) {
+    try { if (new URL(referer).host === host) return true; } catch { /* allowlist */ }
+  }
   if (origin) return allow.includes(origin);
   if (referer) {
     try {
@@ -64,8 +75,6 @@ function originAllowed(req: Request): boolean {
       return false;
     }
   }
-  // No Origin AND no Referer: treat as disallowed (browsers always send one
-  // of these on cross-origin or same-origin CORS/fetch POSTs).
   return false;
 }
 
@@ -207,7 +216,9 @@ export async function POST(req: Request): Promise<Response> {
   // same session). The bot's mode vocabulary is 'personal' | 'samkok' (samkok
   // == 3kok); map the widget's term.
   const visitorEmail = `visitor+${client_request_id}@portfolio.local`;
-  const botMode = mode === '3kok' ? 'samkok' : 'personal';
+  // The bot's Mode enum values are the literals "personal" and "3kok" — pass
+  // through unchanged, default personal.
+  const botMode = mode === '3kok' ? '3kok' : 'personal';
 
   // AC-T11-6: forward the incoming correlation id, or mint one if the widget
   // didn't send it — so the trace never breaks at this hop.

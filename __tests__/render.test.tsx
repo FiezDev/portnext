@@ -43,7 +43,7 @@ afterEach(() => {
 // Helper: open the panel, type into the composer, click send.
 async function sendUserMessage(text: string) {
   await act(async () => {
-    fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
   });
   const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
   await act(async () => {
