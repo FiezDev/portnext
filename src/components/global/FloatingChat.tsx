@@ -115,6 +115,13 @@ const FloatingChat = ({
   // AC-T2-1: per-FAB mode (no localStorage — each open is a fresh
   // session in that mode). 'personal' = Artemis, '3kok' = สามก๊ก.
   const [mode, setMode] = useState<'personal' | '3kok'>('personal');
+  // AC-T3-1..2: dismissable consent notice. Persists per-browser via
+  // localStorage so a visitor who closed it doesn't see it again on reload.
+  const [consentDismissed, setConsentDismissed] = useState(
+    () =>
+      typeof localStorage !== 'undefined' &&
+      localStorage.getItem('concierge_consent_dismissed') === '1',
+  );
 
   // Polling refs (kept off React state to avoid re-render churn).
   const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -510,6 +517,29 @@ const FloatingChat = ({
                 </p>
               )}
             </div>
+
+            {/* AC-T3-1..2: consent notice — sits above the composer, dismissable. */}
+            {!consentDismissed && (
+              <div className="flex items-center gap-2 rounded-lg bg-white/5 px-2 py-1 text-xs text-white/60">
+                <span>💬 Answered only after the owner approves. Q&amp;A are reviewed &amp; logged to improve the bot.</span>
+                <button
+                  type="button"
+                  aria-label="Dismiss consent notice"
+                  className="ml-auto"
+                  onClick={() => {
+                    setConsentDismissed(true);
+                    try {
+                      localStorage.setItem('concierge_consent_dismissed', '1');
+                    } catch {
+                      // localStorage may be blocked (private mode); consent
+                      // just won't persist across reloads — acceptable.
+                    }
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
 
             {/* Composer */}
             <div className="flex items-end gap-2 border-t border-white/15 pt-2">
