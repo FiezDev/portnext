@@ -341,3 +341,30 @@ describe('poll cadence stays constant while pending', () => {
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 });
+
+// --------------------------------------------------------------------------
+// The empty-state intro must describe the bot you actually opened. It used to
+// be Artemis copy ("my work, stack, or availability") for BOTH FABs, so the
+// สามก๊ก bot introduced itself as a portfolio assistant.
+// --------------------------------------------------------------------------
+describe('empty-state intro is per-bot', () => {
+  it('introduces the สามก๊ก bot by what it answers, not the portfolio copy', async () => {
+    const { container } = render(<FloatingChat />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with สามก๊ก/i }));
+    });
+    // ตัวละคร ("characters") appears only in the 3kok intro, so this pins the
+    // intro copy rather than the header label.
+    expect(container).toHaveTextContent(/ตัวละคร/);
+    expect(container).toHaveTextContent(/Three Kingdoms/i);
+    expect(container).not.toHaveTextContent(/work, stack, or availability/i);
+  });
+
+  it('keeps the portfolio copy for Artemis', async () => {
+    const { container } = render(<FloatingChat />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+    });
+    expect(container).toHaveTextContent(/work, stack, or availability/i);
+  });
+});

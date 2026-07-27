@@ -458,7 +458,17 @@ const FloatingChat = ({
             >
               {messages.length === 0 && (
                 <p className="m-auto text-center text-sm text-light/70">
-                  Ask me anything about my work, stack, or availability.
+                  {mode === '3kok' ? (
+                    <>
+                      ถามได้ทุกเรื่องเกี่ยวกับสามก๊ก — ตัวละคร เหตุการณ์ และกลศึก
+                      <span className="mt-1 block text-xs text-light/60">
+                        Answered from the สามก๊ก (Three Kingdoms) novel, with the
+                        passages cited.
+                      </span>
+                    </>
+                  ) : (
+                    'Ask me anything about my work, stack, or availability.'
+                  )}
                 </p>
               )}
               {messages.map((m) => (
