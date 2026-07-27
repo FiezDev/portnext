@@ -306,6 +306,7 @@ export const SideProjects: SideProjectObj[] = [
       'Security-first by construction: reads are vault-contained, writes are guarded against path traversal, and secrets are stored as pointers resolved from SOPS or Bitwarden at read time rather than kept in the store.',
       'Shipped as tagged releases with prebuilt binaries (latest v0.9.0), CI, an install script, SECURITY.md and a changelog.',
     ],
+    pic: ['/screenshot/sealmind-readme.png'],
     ghlink: 'github.com/FiezDev/sealmind',
     weblink: '',
   },
@@ -318,6 +319,10 @@ export const SideProjects: SideProjectObj[] = [
       'A minimal desktop browser for one job: put a single web view on screen at a fixed aspect ratio, remember the geometry per URL, and stay out of the way. MIT licensed.',
       'Plays DRM-protected video by building on the castLabs Electron fork for Widevine, and keeps each view sandboxed with context isolation instead of trusting page scripts.',
       'Tested with Playwright driving the packaged Electron app end to end, and packaged for Windows x64 and macOS arm64.',
+    ],
+    pic: [
+      '/screenshot/simpler-launcher.png',
+      '/screenshot/simpler-window.jpg',
     ],
     ghlink: 'github.com/FiezDev/simpler-browser',
     weblink: '',
