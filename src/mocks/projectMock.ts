@@ -412,30 +412,6 @@ export const SideProjects: SideProjectObj[] = [
     weblink: '',
   },
   {
-    projectName: 'QuadOne',
-    projectIntro:
-      'AI inbox triage — a solo build that reads the queue and decides what deserves attention.',
-    stack: ['TypeScript', 'LLMs', 'PostgreSQL'],
-    projectDesc: [
-      'An LLM-powered triage layer for a noisy inbox: classify, summarise and rank incoming items so the queue surfaces what actually needs a human, instead of arriving in timestamp order.',
-      'Solo build, private repository.',
-    ],
-    ghlink: '',
-    weblink: '',
-  },
-  {
-    projectName: 'git-doc',
-    projectIntro:
-      'Turns raw git history across many repositories into a readable work summary.',
-    stack: ['Python', 'LLMs', 'Excel'],
-    projectDesc: [
-      'Walks the commit history of multiple repositories and produces an AI-summarised report of what actually shipped over a period — exportable to Excel for reporting instead of hand-written status updates.',
-      'Private repository; described here because the work it automates is a chore every team recognises.',
-    ],
-    ghlink: '',
-    weblink: '',
-  },
-  {
     projectName: 'Vehicle Verifier',
     projectIntro:
       'Supervisor QC tool for verifying vehicle classifications — Human label vs AI prediction.',
