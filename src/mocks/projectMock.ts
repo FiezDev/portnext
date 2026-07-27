@@ -45,7 +45,7 @@ export const WorkProjects: WorkProjectObj[] = [
     projectName: 'RiceGuard Platform',
     projectFullName: 'RiceGuard — Agritech IoT + AI Crop Monitoring',
     projectIntro:
-      'Agritech IoT platform — ops dashboards, GraphQL API & the full AWS production infrastructure',
+      'Agritech IoT platform — I own the GraphQL API, the operator consoles, and the AWS production infrastructure.',
     projectType: 'Work',
     projectID: 8,
     activeFlag: true,
@@ -135,7 +135,8 @@ export const WorkProjects: WorkProjectObj[] = [
       '- Roll out new functionalities such as user authentication, customer analytics reports, and coupon systems.',
       '- Provide customer support for application-related issues and feature inquiries.',
     ],
-    projectIntro: 'Health Insurance WebApp',
+    projectIntro:
+      'Insurance web app I maintained and extended — authentication, customer analytics reports and coupons on an AngularJS and C# stack.',
     projectType: 'Work',
     createDate: 1662146547653,
     stack: ['AngularJS', 'Typescript', 'PrimeNG', 'C#', 'MySQL'],
@@ -148,7 +149,8 @@ export const WorkProjects: WorkProjectObj[] = [
     projectType: 'Work',
     createDate: 1662146685746,
     activeFlag: true,
-    projectIntro: 'Taxi Service App',
+    projectIntro:
+      'Taxi platform front end — navigation, driver ratings, and the admin CRUD for drivers and vehicles.',
     updateDate: 1662146685746,
     projectID: 3,
     stack: ['VueJS', 'Vuetify', 'Typescript', 'Flutter', 'C#', 'Firebase'],
@@ -175,7 +177,8 @@ export const WorkProjects: WorkProjectObj[] = [
     projectFullName: '',
     updateDate: 1697999736000,
     projectID: 4,
-    projectIntro: 'NestIFly CRM/API',
+    projectIntro:
+      'NestIFly CRM and API — built the architecture and the UI from scratch, then took it to production on Google Cloud.',
     projectName: 'Darkphoenix/Blackbird',
     projectPic: {
       picurl: {
@@ -223,7 +226,8 @@ export const WorkProjects: WorkProjectObj[] = [
         height: 300,
       },
     },
-    projectIntro: 'Stocklend Application',
+    projectIntro:
+      'Stock-lending mobile app — shipped regular React Native releases to the App Store and Google Play and kept them healthy.',
     projectType: 'Work',
     updateDate: 1697999736000,
     stack: ['Javascript', 'React', 'ReactNative', 'NativeBase'],
@@ -255,7 +259,8 @@ export const WorkProjects: WorkProjectObj[] = [
         height: 300,
       },
     },
-    projectIntro: 'Lottery Service WebApp and BackOffice',
+    projectIntro:
+      'Lottery service web app and back office — front-end architecture on a modern React and Next.js stack.',
     projectType: 'Work',
     updateDate: 1735201459636,
     stack: [
@@ -298,7 +303,7 @@ export const SideProjects: SideProjectObj[] = [
   {
     projectName: 'sealmind',
     projectIntro:
-      'Open-source memory for AI agents — single binary, markdown on disk, BM25 search, MCP server.',
+      'Open-source Rust memory for AI agents — one binary, markdown on disk, BM25 search, MCP server.',
     stack: ['Rust', 'MCP', 'BM25', 'Markdown', 'SOPS', 'Docker'],
     projectDesc: [
       'An MIT-licensed memory store for AI coding agents: notes stay as plain markdown on disk, a BM25 hybrid index gives facet search over them, and an MCP server lets Claude Code and Codex read and write that memory directly. Written against the Rust standard library with no third-party crates.',
@@ -322,6 +327,7 @@ export const SideProjects: SideProjectObj[] = [
     ],
     pic: [
       '/screenshot/simpler-launcher.png',
+      '/screenshot/simpler-windows.jpg',
       '/screenshot/simpler-window.jpg',
     ],
     ghlink: 'github.com/FiezDev/simpler-browser',
@@ -391,7 +397,7 @@ export const SideProjects: SideProjectObj[] = [
   {
     projectName: 'Artemis & สามก๊ก Chat',
     projectIntro:
-      'Two chatbots on this site — ask Artemis about me and my work, or ask สามก๊ก about the Three Kingdoms. I approve every answer before it sends.',
+      'Two chatbots on this site: ask Artemis about my work, or สามก๊ก about the Three Kingdoms. I approve every answer before it sends.',
     stack: [
       'Python',
       'FastAPI',

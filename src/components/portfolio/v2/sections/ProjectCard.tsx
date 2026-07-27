@@ -211,26 +211,21 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
             >
+              {/* Overview is the HEADLINE, nothing more: one or two sentences a
+                  visitor can read at a glance. Details is the long form. The old
+                  Overview repeated the first bullets and clamped them, so it read
+                  as a truncated Details rather than a summary. */}
               {tab === 'overview' && (
-                <div className="space-y-3">
-                  {project.projectIntro && (
-                    <p className="text-sm md:text-[15px] leading-relaxed text-gray-700">
-                      {project.projectIntro}
-                    </p>
-                  )}
-                  {/* Overview shows the first bullets IN FULL — the old
-                      line-clamp-2 was sized for one-line copy and now cuts
-                      mid-sentence. The remainder still lives behind Details. */}
-                  <Bullets
-                    items={descriptions.slice(0, project.projectIntro ? 2 : 3)}
-                  />
-                  {descriptions.length > (project.projectIntro ? 2 : 3) && (
+                <div className="space-y-4">
+                  <p className="text-[15px] md:text-base leading-relaxed text-gray-800">
+                    {project.projectIntro || descriptions[0]}
+                  </p>
+                  {descriptions.length > 0 && (
                     <button
                       onClick={() => setTab('details')}
-                      className="text-xs font-semibold text-amber-600 hover:text-amber-700 cursor-pointer"
+                      className="cursor-pointer text-xs font-semibold text-amber-600 hover:text-amber-700"
                     >
-                      + {descriptions.length - (project.projectIntro ? 2 : 3)}{' '}
-                      more in Details
+                      Read the full detail →
                     </button>
                   )}
                 </div>
