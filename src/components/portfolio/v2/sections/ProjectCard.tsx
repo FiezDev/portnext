@@ -71,12 +71,12 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const nextImg = () =>
     setCurrentImageIndex((p) => (p === projectImages.length - 1 ? 0 : p + 1));
 
-  const Bullets = ({ items, clamp }: { items: string[]; clamp?: boolean }) => (
+  const Bullets = ({ items }: { items: string[] }) => (
     <ul className="space-y-2 text-sm md:text-[15px] leading-relaxed text-gray-600">
       {items.map((desc, i) => (
         <li key={i} className="flex items-start gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
-          <span className={clamp ? 'line-clamp-2' : undefined}>{desc}</span>
+          <span>{desc}</span>
         </li>
       ))}
     </ul>
@@ -218,9 +218,11 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                       {project.projectIntro}
                     </p>
                   )}
+                  {/* Overview shows the first bullets IN FULL — the old
+                      line-clamp-2 was sized for one-line copy and now cuts
+                      mid-sentence. The remainder still lives behind Details. */}
                   <Bullets
                     items={descriptions.slice(0, project.projectIntro ? 2 : 3)}
-                    clamp
                   />
                   {descriptions.length > (project.projectIntro ? 2 : 3) && (
                     <button
