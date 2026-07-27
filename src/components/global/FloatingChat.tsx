@@ -375,8 +375,10 @@ const FloatingChat = ({
           }}
           aria-expanded={open && mode === 'personal'}
           aria-haspopup="dialog"
-          className={`glass flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-            open && mode === 'personal' ? 'ring-2 ring-head' : ''
+          className={`flex h-14 w-14 items-center justify-center rounded-full border shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+            open && mode === 'personal'
+              ? 'border-accent bg-accent text-black'
+              : 'border-accent/40 bg-black text-accent'
           }`}
         >
           <FontAwesomeIcon icon={faUser} className="h-5 w-5" aria-hidden="true" />
@@ -391,8 +393,10 @@ const FloatingChat = ({
           }}
           aria-expanded={open && mode === '3kok'}
           aria-haspopup="dialog"
-          className={`glass flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-            open && mode === '3kok' ? 'ring-2 ring-head' : ''
+          className={`flex h-14 w-14 items-center justify-center rounded-full border shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+            open && mode === '3kok'
+              ? 'border-accent bg-accent text-black'
+              : 'border-accent/40 bg-black text-accent'
           }`}
         >
           <FontAwesomeIcon icon={faScroll} className="h-5 w-5" aria-hidden="true" />
@@ -407,23 +411,23 @@ const FloatingChat = ({
             aria-label="Chat with Fiez"
             aria-live="polite"
             aria-modal="false"
-            className="glass fixed bottom-36 right-4 md:bottom-40 md:right-6 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-white/20 p-3 text-white"
+            className="fixed bottom-36 right-4 md:bottom-40 md:right-6 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-accent/25 bg-black/95 p-3 text-white shadow-2xl shadow-black/60 backdrop-blur-md"
             initial={reducedMotion ? false : { opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? undefined : { opacity: 0, y: 12, scale: 0.98 }}
             transition={openTransition}
           >
             {/* Header */}
-            <header className="flex items-center justify-between border-b border-white/15 pb-2">
+            <header className="flex items-center justify-between border-b border-accent/20 pb-2">
               <h2 className="flex items-center gap-1.5 text-sm font-semibold tracking-wide">
                 {mode === '3kok' ? (
                   <>
-                    <FontAwesomeIcon icon={faScroll} className="h-4 w-4" aria-hidden="true" />
+                    <FontAwesomeIcon icon={faScroll} className="h-4 w-4 text-accent" aria-hidden="true" />
                     <span>สามก๊ก</span>
                   </>
                 ) : (
                   <>
-                    <FontAwesomeIcon icon={faUser} className="h-4 w-4" aria-hidden="true" />
+                    <FontAwesomeIcon icon={faUser} className="h-4 w-4 text-accent" aria-hidden="true" />
                     <span>Artemis</span>
                   </>
                 )}
@@ -433,7 +437,7 @@ const FloatingChat = ({
                   type="button"
                   aria-label="Minimize chat"
                   onClick={() => setOpen(false)}
-                  className="text-light/80 hover:text-white"
+                  className="rounded text-white/70 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   <FontAwesomeIcon icon={faWindowMinimize} className="h-4 w-4" />
                 </button>
@@ -443,7 +447,7 @@ const FloatingChat = ({
                   onClick={() => {
                     setOpen(false);
                   }}
-                  className="text-light/80 hover:text-white"
+                  className="rounded text-white/70 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   <FontAwesomeIcon icon={faClose} className="h-4 w-4" />
                 </button>
@@ -457,11 +461,11 @@ const FloatingChat = ({
               className="flex grow flex-col gap-2 overflow-y-auto py-2"
             >
               {messages.length === 0 && (
-                <p className="m-auto text-center text-sm text-light/70">
+                <p className="m-auto text-center text-sm text-white/70">
                   {mode === '3kok' ? (
                     <>
                       ถามได้ทุกเรื่องเกี่ยวกับสามก๊ก — ตัวละคร เหตุการณ์ และกลศึก
-                      <span className="mt-1 block text-xs text-light/60">
+                      <span className="mt-1 block text-xs text-white/50">
                         Answered from the สามก๊ก (Three Kingdoms) novel, with the
                         passages cited.
                       </span>
@@ -476,8 +480,8 @@ const FloatingChat = ({
                   key={m.id}
                   className={
                     m.role === 'user'
-                      ? 'self-end max-w-[80%] rounded-lg bg-head/80 px-2 py-1 text-sm'
-                      : 'self-start max-w-[85%] rounded-lg bg-normal/15 px-2 py-1 text-sm'
+                      ? 'self-end max-w-[80%] rounded-lg bg-accent px-2 py-1 text-sm font-medium text-black'
+                      : 'self-start max-w-[85%] rounded-lg bg-white/10 px-2 py-1 text-sm text-white'
                   }
                 >
                   {m.role === 'user' ? (
@@ -512,7 +516,7 @@ const FloatingChat = ({
                         return (
                           <li
                             key={`${s.url}-${i}`}
-                            className={safe ? 'text-xs underline' : 'text-xs'}
+                            className={safe ? 'text-xs text-accent underline' : 'text-xs text-white/60'}
                           >
                             {safe ? (
                               <a
@@ -535,7 +539,7 @@ const FloatingChat = ({
 
               {status === 'awaiting' && (
                 <p
-                  className="self-start rounded-lg bg-normal/15 px-2 py-1 text-sm text-light/80"
+                  className="self-start rounded-lg bg-white/10 px-2 py-1 text-sm text-white/80"
                   data-testid="awaiting-indicator"
                 >
                   Awaiting Fiez&apos;s reply…
@@ -565,7 +569,7 @@ const FloatingChat = ({
 
             {/* AC-T3-1..2: consent notice — sits above the composer, dismissable. */}
             {!consentDismissed && (
-              <div className="flex items-center gap-2 rounded-lg bg-normal/10 px-2 py-1 text-xs text-light/70">
+              <div className="flex items-center gap-2 rounded-lg bg-white/5 px-2 py-1 text-xs text-white/70">
                 <FontAwesomeIcon
                   icon={faShieldHalved}
                   className="h-3.5 w-3.5 shrink-0"
@@ -612,14 +616,14 @@ const FloatingChat = ({
                 }}
                 placeholder="Type a message…  (Enter to send, Shift+Enter for newline)"
                 rows={1}
-                className="max-h-28 min-h-[44px] w-full resize-none rounded-lg bg-normal/15 p-2 text-sm text-white placeholder-light/50 focus:border-head focus:outline-none focus:ring-2 focus:ring-head/40"
+                className="max-h-28 min-h-[44px] w-full resize-none rounded-lg border border-white/10 bg-white/10 p-2 text-sm text-white placeholder-white/60 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50"
               />
               <button
                 type="button"
                 aria-label="Send"
                 disabled={status === 'awaiting' || status === 'composing'}
                 onClick={() => void send()}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-head text-white disabled:opacity-40"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-black transition-colors hover:bg-accent-h focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-40"
               >
                 <FontAwesomeIcon icon={faPaperPlane} className="h-4 w-4" />
               </button>

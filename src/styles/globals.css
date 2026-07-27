@@ -19,6 +19,11 @@
   --color-success: #5cb85c;
   --color-error: #f66;
   --color-grey: #888;
+  /* v2 accent: the yellow/black/white language /portfolio and /work already use
+     (amber-400 + its hover step). Declared as a theme token so components say
+     bg-accent / text-accent / ring-accent instead of scattering raw amber-*. */
+  --color-accent: #FBBF24;
+  --color-accent-h: #FCD34D;
 
   /* Layout */
   --max-content-width: 1366px;
@@ -316,7 +321,7 @@ a:hover {
  * AC-T1-4 — chat assistant markdown styling.
  * Scoped to .chat-md (the assistant bubble wrapper) so user bubbles — which
  * never render markdown — are untouched. Uses @theme tokens, not raw hex:
- * var(--color-head) = #0F4C75. Thai-capable font stack via the --font-noto-thai
+ * var(--color-accent) = #FBBF24. Thai-capable font stack via the --font-noto-thai
  * variable applied on <body> by layout.tsx.
  */
 .chat-md {
@@ -335,17 +340,17 @@ a:hover {
 }
 
 .chat-md :where(strong) {
-  color: var(--color-head);
+  color: var(--color-accent);
   font-weight: 700;
 }
 
 .chat-md :where(em) {
-  color: var(--color-light);
+  color: rgba(255, 255, 255, 0.85);
   font-style: italic;
 }
 
 .chat-md :where(a) {
-  color: var(--color-light);
+  color: var(--color-accent);
   text-decoration: underline;
 }
 
@@ -374,15 +379,16 @@ a:hover {
 }
 
 .chat-md :where(th) {
-  background: color-mix(in srgb, var(--color-head) 35%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  color: #000;
   font-weight: 600;
 }
 
 .chat-md :where(blockquote) {
-  border-left: 3px solid var(--color-head);
+  border-left: 3px solid var(--color-accent);
   margin: 0.4em 0;
   padding: 0.1em 0 0.1em 0.6em;
-  color: var(--color-light);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .chat-md :where(code) {
