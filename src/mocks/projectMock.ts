@@ -30,7 +30,7 @@ export const WorkProjects: WorkProjectObj[] = [
         height: 300,
         pic: [
           '/screenshot/hydrosense-cop.jpg',
-          '/screenshot/hydrosense-cop-station.jpg',
+          '/screenshot/hydrosense-setup.png',
         ],
       },
     },
