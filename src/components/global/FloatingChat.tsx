@@ -28,6 +28,18 @@ const POLL_MIN_MS = 3000; // backoff floor
 const POLL_MAX_MS = 15000; // backoff ceiling
 const POLL_DURATION_MAX_MS = 10 * 60 * 1000; // ~10 min total client budget
 
+// Edge-anchored folder tab. w-11 keeps the tap target at 44px; border-r-0 lets it
+// sit flush against the viewport edge so it reads as a tab, not a floating pill.
+const TAB_BASE =
+  'flex w-11 items-center justify-center rounded-l-lg border border-r-0 py-4 ' +
+  'text-[11px] font-semibold uppercase tracking-[0.18em] ' +
+  'shadow-[-4px_0_14px_rgba(0,0,0,0.35)] transition-colors ' +
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ' +
+  'focus-visible:outline-accent';
+// Vertical text reading bottom-to-top — the convention for right-edge tabs.
+const VERTICAL_LABEL =
+  '[writing-mode:vertical-rl] rotate-180 whitespace-nowrap leading-none';
+
 // --- Component props -----------------------------------------------------
 interface FloatingChatProps {
   /** Override the base poll interval — used by tests to avoid multi-second waits. */
@@ -128,7 +140,12 @@ const FloatingChat = ({
   // localStorage so a visitor who closed it doesn't see it again on reload.
   const [consentDismissed, setConsentDismissed] = useState(
     () =>
-      typeof localStorage !== 'undefined' &&
+      // Node 25 defines a localStorage GLOBAL STUB whose methods are missing, so
+      // `typeof localStorage !== 'undefined'` passes during SSR and then throws
+      // on .getItem — a 500 on every render under that runtime. Check for the
+      // browser and for the method itself.
+      typeof window !== 'undefined' &&
+      typeof localStorage?.getItem === 'function' &&
       localStorage.getItem('concierge_consent_dismissed') === '1',
   );
 
@@ -361,12 +378,14 @@ const FloatingChat = ({
           สามก๊ก = Three-Kingdoms scholar. Each FAB pins the panel to its
           mode; clicking the active bot's FAB toggles the panel, clicking
           the other switches mode + opens. No localStorage (stress fix). */}
-      {/* Stack is 120px tall (2x56 + 8 gap). Panel is lifted clear of it below,
-          so the open bot stays visible and switchable while chatting. */}
-      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[200] flex flex-col gap-2">
+      {/* Folder tabs flush to the right edge, vertically centred. The label is
+          TEXT saying what each bot answers, not a glyph a stranger has to
+          decode. The panel opens to their left so both tabs stay visible and
+          switchable while chatting. */}
+      <div className="fixed right-0 top-1/2 z-[200] flex -translate-y-1/2 flex-col gap-2">
         <button
           type="button"
-          aria-label="Chat with Artemis"
+          aria-label="Ask about me — chat with Artemis"
           onClick={() => {
             // Switching bots (not toggling the same one) resets status so an
             // 'awaiting'/'answered' state from the other bot doesn't bleed
@@ -377,17 +396,17 @@ const FloatingChat = ({
           }}
           aria-expanded={open && mode === 'personal'}
           aria-haspopup="dialog"
-          className={`flex h-14 w-14 items-center justify-center rounded-full border shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+          className={`${TAB_BASE} ${
             open && mode === 'personal'
               ? 'border-accent bg-accent text-black'
-              : 'border-accent/40 bg-black text-accent'
+              : 'border-accent/40 bg-black text-accent hover:bg-accent/15'
           }`}
         >
-          <FontAwesomeIcon icon={faUser} className="h-5 w-5" aria-hidden="true" />
+          <span className={VERTICAL_LABEL}>Ask about me</span>
         </button>
         <button
           type="button"
-          aria-label="Chat with สามก๊ก"
+          aria-label="Ask 3 Kingdoms — chat with สามก๊ก"
           onClick={() => {
             if (mode !== '3kok') setStatus('open');
             setMode('3kok');
@@ -395,13 +414,13 @@ const FloatingChat = ({
           }}
           aria-expanded={open && mode === '3kok'}
           aria-haspopup="dialog"
-          className={`flex h-14 w-14 items-center justify-center rounded-full border shadow-lg shadow-black/30 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+          className={`${TAB_BASE} ${
             open && mode === '3kok'
               ? 'border-accent bg-accent text-black'
-              : 'border-accent/40 bg-black text-accent'
+              : 'border-accent/40 bg-black text-accent hover:bg-accent/15'
           }`}
         >
-          <FontAwesomeIcon icon={faScroll} className="h-5 w-5" aria-hidden="true" />
+          <span className={VERTICAL_LABEL}>Ask 3 Kingdoms</span>
         </button>
       </div>
 
@@ -413,7 +432,7 @@ const FloatingChat = ({
             aria-label="Chat with Fiez"
             aria-live="polite"
             aria-modal="false"
-            className="fixed bottom-40 right-4 md:bottom-44 md:right-6 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-accent/25 bg-black/95 p-3 text-white shadow-2xl shadow-black/60 backdrop-blur-md"
+            className="fixed bottom-6 right-14 md:right-16 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-accent/25 bg-black/95 p-3 text-white shadow-2xl shadow-black/60 backdrop-blur-md"
             initial={reducedMotion ? false : { opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? undefined : { opacity: 0, y: 12, scale: 0.98 }}
