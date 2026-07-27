@@ -384,20 +384,22 @@ export const SideProjects: SideProjectObj[] = [
     weblink: '',
   },
   {
-    projectName: 'Portfolio Concierge',
+    projectName: 'Artemis & สามก๊ก Chat',
     projectIntro:
-      'The owner-approved chat on this site — RAG answers that only send after I approve them.',
+      'Two chatbots on this site — ask Artemis about me and my work, or ask สามก๊ก about the Three Kingdoms. I approve every answer before it sends.',
     stack: [
       'Python',
       'FastAPI',
       'Next.js',
       'Qdrant',
       'LLMs',
+      'RAG',
       'LINE Messaging API',
       'Cloudflare Tunnel',
     ],
     projectDesc: [
-      'The chat widget on this page. A visitor question is retrieved against a curated public corpus, then held: nothing is generated or shown until I approve that specific question from a LINE push on my phone. Approve and the answer generates and appears; ignore it and it expires.',
+      'Two bots behind one widget, each with its own button, corpus and conversation history. **Artemis** answers questions about me — what I have built, the stack I work in, how to reach me. **สามก๊ก** is a Three Kingdoms scholar: ask it about characters, events or strategy and it answers from the Thai novel, citing the passages it used.',
+      'Nothing is generated or shown until I approve that specific question from a LINE push on my phone. Approve and the answer generates and appears; ignore it and it expires. A visitor is never talking to an unsupervised bot.',
       'Built as a same-origin serverless proxy so the bot URL and secret never reach the browser, with HMAC request signing between widget and bot, a per-IP token bucket, and a correlation id threaded through every hop for tracing.',
       'Answers in English or Thai, cites its sources, and abstains rather than guessing when the corpus has nothing relevant.',
     ],
