@@ -361,7 +361,9 @@ const FloatingChat = ({
           สามก๊ก = Three-Kingdoms scholar. Each FAB pins the panel to its
           mode; clicking the active bot's FAB toggles the panel, clicking
           the other switches mode + opens. No localStorage (stress fix). */}
-      <div className="fixed bottom-20 right-4 md:bottom-24 md:right-6 z-[200] flex flex-col gap-2">
+      {/* Stack is 120px tall (2x56 + 8 gap). Panel is lifted clear of it below,
+          so the open bot stays visible and switchable while chatting. */}
+      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[200] flex flex-col gap-2">
         <button
           type="button"
           aria-label="Chat with Artemis"
@@ -411,7 +413,7 @@ const FloatingChat = ({
             aria-label="Chat with Fiez"
             aria-live="polite"
             aria-modal="false"
-            className="fixed bottom-36 right-4 md:bottom-40 md:right-6 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-accent/25 bg-black/95 p-3 text-white shadow-2xl shadow-black/60 backdrop-blur-md"
+            className="fixed bottom-40 right-4 md:bottom-44 md:right-6 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-accent/25 bg-black/95 p-3 text-white shadow-2xl shadow-black/60 backdrop-blur-md"
             initial={reducedMotion ? false : { opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? undefined : { opacity: 0, y: 12, scale: 0.98 }}
