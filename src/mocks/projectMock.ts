@@ -28,7 +28,10 @@ export const WorkProjects: WorkProjectObj[] = [
       picurl: {
         width: 400,
         height: 300,
-        pic: [],
+        pic: [
+          '/screenshot/hydrosense-cop.jpg',
+          '/screenshot/hydrosense-cop-station.jpg',
+        ],
       },
     },
     projectDesc: [
