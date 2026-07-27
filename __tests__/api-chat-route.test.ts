@@ -454,3 +454,75 @@ describe('[LOW] serverUnavailable distinguishes config vs unreachable', () => {
     expect(json.error).toBe('bot_unreachable');
   });
 });
+
+// --------------------------------------------------------------------------
+// Session continuity. The route used to mint a NEW bot session per message
+// (visitor+<random-uuid>@…), so the bot answered every question as turn one
+// while the widget displayed a continuous transcript.
+// --------------------------------------------------------------------------
+describe('session reuse + transcript rehydrate', () => {
+  it('reuses a supplied sessionId and skips the /session hop', async () => {
+    mockBot();
+    const req = allowedPost({
+      message: 'and the AWS part?',
+      client_request_id: 'crid-1',
+      sessionId: 'sess-existing',
+    });
+    const res = await POST(req as unknown as Request);
+    expect(res.status).toBe(202);
+    expect(await res.json()).toEqual({
+      pendingId: 'pend-123',
+      sessionId: 'sess-existing',
+      status: 'pending',
+    });
+    // ONE hop only — no session creation.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe('https://bot.example.test/chat/request');
+    const body = JSON.parse((init as RequestInit).body as string);
+    expect(body.session_id).toBe('sess-existing');
+  });
+
+  it('puts a sanitised display name in the session identity', async () => {
+    mockBot();
+    const req = allowedPost({
+      message: 'hi',
+      client_request_id: 'crid-2',
+      displayName: 'Ittipol V! <script>',
+    });
+    await POST(req as unknown as Request);
+    const [, sessionInit] = fetchMock.mock.calls[0];
+    const body = JSON.parse((sessionInit as RequestInit).body as string);
+    expect(body.email).toMatch(/^visitor\+ittipol-v-script-crid-2@portfolio\.local$/);
+    expect(body.email).not.toMatch(/[<>!]/);
+  });
+
+  it('rehydrates a transcript and allowlists the rows', async () => {
+    fetchMock.mockResolvedValue(
+      jsonRes([
+        { role: 'user', content: 'who are you', extra: 'dropme' },
+        { role: 'assistant', content: 'I am Fiez', sources: [{ label: 'a' }] },
+        { role: 'system', content: 'should be filtered' },
+        { role: 'assistant', content: 42 },
+      ]),
+    );
+    const req = new Request('https://fiez.dev/api/chat?sessionId=sess-9', {
+      method: 'GET',
+      headers: { Origin: ALLOWED_ORIGIN },
+    });
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({
+      messages: [
+        { role: 'user', content: 'who are you' },
+        { role: 'assistant', content: 'I am Fiez', sources: [{ label: 'a' }] },
+      ],
+    });
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(String(url)).toContain('/widget/messages?session_id=sess-9');
+    // Signed on the PATH only (no query), matching the bot contract.
+    const headers = new Headers((init as RequestInit).headers);
+    expect(headers.get('X-Signature')).toBeTruthy();
+    expect(headers.get('Authorization')).toBe('Bearer super-secret-token');
+  });
+});

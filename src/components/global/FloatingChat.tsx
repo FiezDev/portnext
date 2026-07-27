@@ -40,6 +40,77 @@ const TAB_BASE =
 const VERTICAL_LABEL =
   '[writing-mode:vertical-rl] rotate-180 whitespace-nowrap leading-none';
 
+// --- session persistence ---------------------------------------------------
+// The transcript used to live only in React state and the proxy minted a NEW bot
+// session per message, so a refresh lost the conversation and the bot answered
+// every question as turn one. The browser now keeps {name, session ids,
+// transcript}; the session id doubles as a resume code that rehydrates the
+// conversation on any device.
+const STORE_KEY = 'concierge_session_v1';
+const CONSENT_KEY = 'concierge_consent_dismissed';
+const MAX_STORED_MESSAGES = 40; // per bot — keeps localStorage small
+
+type Mode = 'personal' | '3kok';
+type ByMode<T> = Record<Mode, T>;
+interface StoredSession {
+  displayName: string;
+  sessionId: ByMode<string | null>;
+  messages: ByMode<ChatMessage[]>;
+}
+
+// localStorage can be absent (SSR), a method-less stub (Node 25), or throw
+// (Safari private mode). One guarded accessor for every call site.
+function safeStore(): Storage | null {
+  try {
+    if (typeof window === 'undefined') return null;
+    if (typeof localStorage?.getItem !== 'function') return null;
+    return localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function loadStored(): StoredSession | null {
+  const ls = safeStore();
+  if (!ls) return null;
+  try {
+    const parsed = JSON.parse(ls.getItem(STORE_KEY) || 'null') as unknown;
+    const o = parsed as Partial<StoredSession> | null;
+    if (!o || typeof o.displayName !== 'string' || !o.displayName) return null;
+    const mode = (m: Mode) => ({
+      id: (o.sessionId?.[m] ?? null) as string | null,
+      msgs: Array.isArray(o.messages?.[m]) ? (o.messages as ByMode<ChatMessage[]>)[m] : [],
+    });
+    const p = mode('personal');
+    const k = mode('3kok');
+    return {
+      displayName: o.displayName.slice(0, 40),
+      sessionId: { personal: p.id, '3kok': k.id },
+      messages: { personal: p.msgs, '3kok': k.msgs },
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveStored(v: StoredSession): void {
+  const ls = safeStore();
+  if (!ls) return;
+  const trim = (m: ChatMessage[]) => m.slice(-MAX_STORED_MESSAGES);
+  try {
+    ls.setItem(
+      STORE_KEY,
+      JSON.stringify({
+        displayName: v.displayName,
+        sessionId: v.sessionId,
+        messages: { personal: trim(v.messages.personal), '3kok': trim(v.messages['3kok']) },
+      }),
+    );
+  } catch {
+    // Quota or private mode — the conversation just won't survive a reload.
+  }
+}
+
 // --- Component props -----------------------------------------------------
 interface FloatingChatProps {
   /** Override the base poll interval — used by tests to avoid multi-second waits. */
@@ -71,6 +142,7 @@ interface ChatMessage {
 
 interface PendingResponse {
   pendingId?: string;
+  sessionId?: string;
   status: string;
 }
 
@@ -132,7 +204,18 @@ const FloatingChat = ({
   // Artemis then opening สามก๊ก showed Artemis's history).
   const [messagesByMode, setMessagesByMode] = useState<
     Record<'personal' | '3kok', ChatMessage[]>
-  >({ personal: [], '3kok': [] });
+  >(() => loadStored()?.messages ?? { personal: [], '3kok': [] });
+  // Identity gate: a display name (so an approved answer reaches the right
+  // person) and per-bot session ids (so the bot has multi-turn context).
+  const [displayName, setDisplayName] = useState<string>(
+    () => loadStored()?.displayName ?? '',
+  );
+  const [sessionIdByMode, setSessionIdByMode] = useState<
+    Record<'personal' | '3kok', string | null>
+  >(() => loadStored()?.sessionId ?? { personal: null, '3kok': null });
+  const [nameDraft, setNameDraft] = useState('');
+  const [resumeDraft, setResumeDraft] = useState('');
+  const [gateError, setGateError] = useState<string | null>(null);
   // Derived: the active mode's history. All reads (render, auto-scroll dep)
   // go through this, so swapping `mode` swaps the visible list automatically.
   const messages = messagesByMode[mode];
@@ -146,7 +229,7 @@ const FloatingChat = ({
       // browser and for the method itself.
       typeof window !== 'undefined' &&
       typeof localStorage?.getItem === 'function' &&
-      localStorage.getItem('concierge_consent_dismissed') === '1',
+      localStorage.getItem(CONSENT_KEY) === '1',
   );
 
   // Polling refs (kept off React state to avoid re-render churn).
@@ -158,6 +241,57 @@ const FloatingChat = ({
   const abortedRef = useRef<boolean>(false);
 
   const messageListRef = useRef<HTMLDivElement>(null);
+
+  // Persist identity + transcript whenever either changes. Only after the gate
+  // is passed, so we never write a half-filled record.
+  useEffect(() => {
+    if (!displayName) return;
+    saveStored({ displayName, sessionId: sessionIdByMode, messages: messagesByMode });
+  }, [displayName, sessionIdByMode, messagesByMode]);
+
+  // Pull a transcript back from the server for a session id. This is what makes
+  // a resume code work on a machine that has never seen this conversation.
+  const rehydrate = useCallback(
+    async (sid: string): Promise<boolean> => {
+      try {
+        const res = await fetch(`/api/chat?sessionId=${encodeURIComponent(sid)}`);
+        if (!res.ok) return false;
+        const body = (await res.json()) as {
+          messages?: { role: 'user' | 'assistant'; content: string; sources?: ChatMessage['sources'] }[];
+        };
+        const rows = Array.isArray(body?.messages) ? body.messages : [];
+        setMessagesByMode((prev) => ({
+          ...prev,
+          [mode]: rows.map((m) => ({
+            id: uuid(),
+            role: m.role,
+            content: m.content,
+            sources: m.sources,
+          })),
+        }));
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [mode],
+  );
+
+  const startChat = useCallback(async () => {
+    const name = nameDraft.trim();
+    if (name.length < 2) return;
+    const code = resumeDraft.trim();
+    setGateError(null);
+    if (code) {
+      const ok = await rehydrate(code);
+      if (!ok) {
+        setGateError('That resume code did not match a conversation.');
+        return;
+      }
+      setSessionIdByMode((prev) => ({ ...prev, [mode]: code }));
+    }
+    setDisplayName(name);
+  }, [nameDraft, resumeDraft, mode, rehydrate]);
 
   // Auto-scroll the message list to the bottom whenever it changes.
   useEffect(() => {
@@ -338,6 +472,9 @@ const FloatingChat = ({
           message: trimmed,
           mode,
           client_request_id: clientRequestId,
+          // Reusing the session is what gives the bot conversation context.
+          sessionId: sessionIdByMode[mode],
+          displayName,
         }),
       });
     } catch {
@@ -360,8 +497,16 @@ const FloatingChat = ({
       setStatus('error');
       return;
     }
+    // First message mints the session; keep it so later turns reuse it and the
+    // visitor has a resume code.
+    const newSession = body.sessionId;
+    if (typeof newSession === 'string' && newSession) {
+      setSessionIdByMode((prev) =>
+        prev[mode] === newSession ? prev : { ...prev, [mode]: newSession },
+      );
+    }
     startAwaiting(body.pendingId);
-  }, [draft, status, startAwaiting, mode]);
+  }, [draft, status, startAwaiting, mode, sessionIdByMode, displayName]);
 
   // --- Render ------------------------------------------------------------
   const openTransition = useMemo(
@@ -475,6 +620,97 @@ const FloatingChat = ({
               </div>
             </header>
 
+            {/* AC-T3-1..2: consent notice. Rendered ABOVE the gate so it is on screen
+                when the visitor presses Start chat, which is the moment they
+                agree. Dismissable, and the dismissal persists per browser. */}
+            {!consentDismissed && (
+              <div className="flex items-center gap-2 rounded-lg bg-white/5 px-2 py-1 text-xs text-white/70">
+                <FontAwesomeIcon
+                  icon={faShieldHalved}
+                  className="h-3.5 w-3.5 shrink-0"
+                  aria-hidden="true"
+                />
+                <span>
+                  By using this chat you agree that everything sent here is stored,
+                  reviewed by the owner, and may be collected and used for model
+                  research.
+                </span>
+                <button
+                  type="button"
+                  aria-label="Dismiss consent notice"
+                  className="ml-auto"
+                  onClick={() => {
+                    setConsentDismissed(true);
+                    try {
+                      localStorage.setItem(CONSENT_KEY, '1');
+                    } catch {
+                      // localStorage may be blocked (private mode); consent
+                      // just won't persist across reloads — acceptable.
+                    }
+                  }}
+                >
+                  <FontAwesomeIcon icon={faClose} className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </div>
+            )}
+
+            {/* Identity gate. A name means an approved answer reaches a person
+                rather than an anonymous socket, and it anchors the session so
+                follow-up questions have context. The resume code is that
+                session id — paste it on another machine to continue there. */}
+            {!displayName ? (
+              <form
+                className="flex grow flex-col justify-center gap-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void startChat();
+                }}
+              >
+                <p className="text-sm text-white/70">
+                  Tell me who I am talking to. I review and approve every answer
+                  personally, so a name helps.
+                </p>
+                <div>
+                  <label htmlFor="concierge-name" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/60">
+                    Your name
+                  </label>
+                  <input
+                    id="concierge-name"
+                    value={nameDraft}
+                    onChange={(e) => setNameDraft(e.target.value)}
+                    maxLength={40}
+                    autoComplete="name"
+                    placeholder="e.g. Alex"
+                    className="w-full rounded-lg border border-white/10 bg-white/10 p-2 text-sm text-white placeholder-white/60 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="concierge-resume" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/60">
+                    Resume code (optional)
+                  </label>
+                  <input
+                    id="concierge-resume"
+                    value={resumeDraft}
+                    onChange={(e) => setResumeDraft(e.target.value)}
+                    placeholder="Paste to continue an earlier chat"
+                    className="w-full rounded-lg border border-white/10 bg-white/10 p-2 text-sm text-white placeholder-white/60 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  />
+                </div>
+                {gateError && (
+                  <p className="text-xs text-red-300" role="alert">
+                    {gateError}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={nameDraft.trim().length < 2}
+                  className="rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-black transition-colors hover:bg-accent-h focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-40"
+                >
+                  Start chat
+                </button>
+              </form>
+            ) : (
+              <>
             {/* Message list */}
             <div
               ref={messageListRef}
@@ -588,33 +824,6 @@ const FloatingChat = ({
               )}
             </div>
 
-            {/* AC-T3-1..2: consent notice — sits above the composer, dismissable. */}
-            {!consentDismissed && (
-              <div className="flex items-center gap-2 rounded-lg bg-white/5 px-2 py-1 text-xs text-white/70">
-                <FontAwesomeIcon
-                  icon={faShieldHalved}
-                  className="h-3.5 w-3.5 shrink-0"
-                  aria-hidden="true"
-                />
-                <span>Answered only after the owner approves. Q&amp;A are reviewed &amp; logged to improve the bot.</span>
-                <button
-                  type="button"
-                  aria-label="Dismiss consent notice"
-                  className="ml-auto"
-                  onClick={() => {
-                    setConsentDismissed(true);
-                    try {
-                      localStorage.setItem('concierge_consent_dismissed', '1');
-                    } catch {
-                      // localStorage may be blocked (private mode); consent
-                      // just won't persist across reloads — acceptable.
-                    }
-                  }}
-                >
-                  <FontAwesomeIcon icon={faClose} className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
-              </div>
-            )}
 
             {/* Composer */}
             <div className="flex items-end gap-2 border-t border-white/15 pt-2">
@@ -649,6 +858,32 @@ const FloatingChat = ({
                 <FontAwesomeIcon icon={faPaperPlane} className="h-4 w-4" />
               </button>
             </div>
+
+            {/* The session id IS the resume code: device-independent, so it is
+                shown rather than hidden. Anyone holding it can read this
+                transcript, which is why it is only ever displayed to the person
+                whose browser created it. */}
+            {sessionIdByMode[mode] && (
+              <div className="mt-1 flex items-center gap-2 text-[11px] text-white/50">
+                <span className="shrink-0">Resume code</span>
+                <code className="min-w-0 flex-1 truncate text-white/70">
+                  {sessionIdByMode[mode]}
+                </code>
+                <button
+                  type="button"
+                  className="shrink-0 rounded text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  onClick={() => {
+                    void navigator.clipboard
+                      ?.writeText(sessionIdByMode[mode] as string)
+                      .catch(() => {});
+                  }}
+                >
+                  Copy
+                </button>
+              </div>
+            )}
+              </>
+            )}
           </motion.section>
         )}
       </AnimatePresence>

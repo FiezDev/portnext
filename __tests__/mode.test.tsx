@@ -2,6 +2,21 @@ import { fireEvent, render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import FloatingChat from "@/components/global/FloatingChat";
 
+// The identity gate stands in front of the chat now. These suites exercise the
+// conversation itself, so seed a returning visitor (the shape localStorage
+// holds) instead of clicking through the gate in every test. Gate behaviour has
+// its own tests in FloatingChat.test.tsx.
+function seedReturningVisitor(name = 'Tester') {
+  localStorage.setItem(
+    'concierge_session_v1',
+    JSON.stringify({
+      displayName: name,
+      sessionId: { personal: null, '3kok': null },
+      messages: { personal: [], '3kok': [] },
+    }),
+  );
+}
+
 // --- Shared fetch mock ---------------------------------------------------
 // Same plumbing as __tests__/FloatingChat.test.tsx — jsdom has no global
 // Response/Request, so we return a minimal plain object that quacks like a
@@ -27,6 +42,8 @@ function jsonRes(body: unknown, status = 200): FakeResponse {
 }
 
 beforeEach(() => {
+  localStorage.clear();
+  seedReturningVisitor();
   fetchMock = jest.fn() as unknown as FetchMock;
   (globalThis as { fetch: unknown }).fetch = fetchMock;
   // Default: any unplanned poll returns pending (no answer).

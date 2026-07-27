@@ -235,11 +235,14 @@ export async function POST(req: Request): Promise<Response> {
     return bad('invalid_json');
   }
 
-  const { message, mode, client_request_id } = (body ?? {}) as {
-    message?: unknown;
-    mode?: unknown;
-    client_request_id?: unknown;
-  };
+  const { message, mode, client_request_id, sessionId: sessionIdIn, displayName } =
+    (body ?? {}) as {
+      message?: unknown;
+      mode?: unknown;
+      client_request_id?: unknown;
+      sessionId?: unknown;
+      displayName?: unknown;
+    };
 
   if (typeof message !== 'string' || message.trim().length === 0) {
     return bad('message_required');
@@ -259,7 +262,19 @@ export async function POST(req: Request): Promise<Response> {
   // synthesize a stable visitor email per client_request_id (retries reuse the
   // same session). The bot's mode vocabulary is 'personal' | 'samkok' (samkok
   // == 3kok); map the widget's term.
-  const visitorEmail = `visitor+${client_request_id}@portfolio.local`;
+  // Identity: the visitor's own display name plus the stable id their browser
+  // keeps, so one person maps to one session instead of a fresh session per
+  // message (which is what made the bot answer every turn as turn one).
+  // Sanitised because it becomes an email local-part.
+  const nameSlug =
+    typeof displayName === 'string'
+      ? displayName
+          .toLowerCase()
+          .replace(/[^a-z0-9._-]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .slice(0, 24)
+      : '';
+  const visitorEmail = `visitor+${nameSlug ? `${nameSlug}-` : ''}${client_request_id}@portfolio.local`;
   // The bot's Mode enum values are the literals "personal" and "3kok" — pass
   // through unchanged, default personal.
   const botMode = mode === '3kok' ? '3kok' : 'personal';
@@ -276,7 +291,50 @@ export async function POST(req: Request): Promise<Response> {
     [CORRELATION_HEADER]: correlationId,
   } as Record<string, string>;
 
-  // 1. Create a chat session for this visitor.
+  // 1. Reuse the caller's session when they have one; only mint a new one on the
+  // first message. Passing sessionId through is what gives the bot multi-turn
+  // context — this route previously documented the field and ignored it.
+  const reusedSessionId =
+    typeof sessionIdIn === 'string' && sessionIdIn.length > 0 ? sessionIdIn : null;
+  if (reusedSessionId) {
+    const chatUrlR = `${base}/chat/request`;
+    let upstreamR: Response;
+    try {
+      upstreamR = await fetch(chatUrlR, {
+        method: 'POST',
+        headers: signHeaders(botSecret, chatUrlR, baseHeaders),
+        body: JSON.stringify({ session_id: reusedSessionId, question: message }),
+        cache: 'no-store',
+      });
+    } catch {
+      return serverUnavailable(502, 'bot_unreachable');
+    }
+    if (upstreamR.status === 202 || upstreamR.status === 200) {
+      const objR = (await upstreamR.json().catch(() => ({}))) as {
+        id?: string;
+        status?: string;
+      };
+      return new Response(
+        JSON.stringify({
+          pendingId: typeof objR.id === 'string' ? objR.id : undefined,
+          sessionId: reusedSessionId,
+          status: typeof objR.status === 'string' ? objR.status : 'pending',
+        }),
+        { status: 202, headers: JSON_HEADERS },
+      );
+    }
+    if (upstreamR.status >= 500)
+      return serverUnavailable(upstreamR.status, 'bot_unreachable');
+    return new Response(
+      JSON.stringify({
+        status: 'error',
+        upstreamStatus: upstreamR.status,
+        stage: 'sendback',
+      }),
+      { status: upstreamR.status, headers: JSON_HEADERS },
+    );
+  }
+
   const sessionUrl = `${base}/session`;
   let sessionRes: Response;
   try {
@@ -349,6 +407,48 @@ export async function GET(req: Request): Promise<Response> {
   }
 
   const { searchParams } = new URL(req.url);
+  const historyFor = searchParams.get('sessionId');
+  if (historyFor) {
+    // Rehydrate a transcript: the widget calls this on load (own browser) or
+    // after a resume code is pasted (any browser). Signed, because the bot's
+    // /widget/messages requires HMAC — a session id alone must not read it.
+    const msgsUrl = `${botUrl.replace(/\/$/, '')}/widget/messages?session_id=${encodeURIComponent(historyFor)}`;
+    let up: Response;
+    try {
+      up = await fetch(msgsUrl, {
+        method: 'GET',
+        headers: signHeaders(botSecret, msgsUrl, { ...JSON_HEADERS }),
+        cache: 'no-store',
+      });
+    } catch {
+      return serverUnavailable(502, 'bot_unreachable');
+    }
+    if (!up.ok) {
+      return new Response(JSON.stringify({ status: 'error', upstreamStatus: up.status }), {
+        status: up.status >= 500 ? 502 : up.status,
+        headers: JSON_HEADERS,
+      });
+    }
+    const raw = (await up.json().catch(() => [])) as unknown;
+    const rows = Array.isArray(raw) ? raw : [];
+    const messages = rows.flatMap((r) => {
+      const m = (r ?? {}) as { role?: unknown; content?: unknown; sources?: unknown };
+      if (m.role !== 'user' && m.role !== 'assistant') return [];
+      if (typeof m.content !== 'string') return [];
+      return [
+        {
+          role: m.role,
+          content: m.content,
+          ...(Array.isArray(m.sources) ? { sources: m.sources } : {}),
+        },
+      ];
+    });
+    return new Response(JSON.stringify({ messages }), {
+      status: 200,
+      headers: JSON_HEADERS,
+    });
+  }
+
   const pendingId = searchParams.get('pendingId');
   if (!pendingId) {
     return bad('missing_pendingId');

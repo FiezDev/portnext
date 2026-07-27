@@ -2,6 +2,21 @@ import { fireEvent, render, screen, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import FloatingChat from '@/components/global/FloatingChat';
 
+// The identity gate stands in front of the chat now. These suites exercise the
+// conversation itself, so seed a returning visitor (the shape localStorage
+// holds) instead of clicking through the gate in every test. Gate behaviour has
+// its own tests in FloatingChat.test.tsx.
+function seedReturningVisitor(name = 'Tester') {
+  localStorage.setItem(
+    'concierge_session_v1',
+    JSON.stringify({
+      displayName: name,
+      sessionId: { personal: null, '3kok': null },
+      messages: { personal: [], '3kok': [] },
+    }),
+  );
+}
+
 // --- Shared fetch mock ---------------------------------------------------
 // jsdom has no global Response/Request, so we return a minimal plain object
 // that quacks like a Response (only the fields the widget reads).
@@ -26,6 +41,8 @@ function jsonRes(body: unknown, status = 200): FakeResponse {
 }
 
 beforeEach(() => {
+  localStorage.clear();
+  seedReturningVisitor();
   fetchMock = jest.fn() as unknown as FetchMock;
   (globalThis as { fetch: unknown }).fetch = fetchMock;
   fetchMock.mockResolvedValue(jsonRes({ status: 'pending' }));
@@ -366,5 +383,113 @@ describe('empty-state intro is per-bot', () => {
       fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
     });
     expect(container).toHaveTextContent(/work, stack, or availability/i);
+  });
+});
+
+// --------------------------------------------------------------------------
+// Identity gate + session persistence. Before this, the transcript lived only
+// in React state and the proxy minted a new bot session per message, so a
+// refresh lost the conversation and the bot had no multi-turn context.
+// --------------------------------------------------------------------------
+describe('identity gate and session persistence', () => {
+  async function openArtemis() {
+    render(<FloatingChat />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+    });
+  }
+
+  it('asks for a name before showing the composer on a first visit', async () => {
+    localStorage.clear();
+    await openArtemis();
+    expect(screen.getByLabelText(/your name/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^message$/i)).not.toBeInTheDocument();
+  });
+
+  it('will not start until the name is long enough', async () => {
+    localStorage.clear();
+    await openArtemis();
+    const start = screen.getByRole('button', { name: /start chat/i });
+    expect(start).toBeDisabled();
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText(/your name/i), {
+        target: { value: 'A' },
+      });
+    });
+    expect(start).toBeDisabled();
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText(/your name/i), {
+        target: { value: 'Alex' },
+      });
+    });
+    expect(start).toBeEnabled();
+  });
+
+  it('reveals the composer after starting and remembers the name', async () => {
+    localStorage.clear();
+    await openArtemis();
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText(/your name/i), {
+        target: { value: 'Alex' },
+      });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
+    });
+    expect(screen.getByLabelText(/^message$/i)).toBeInTheDocument();
+    expect(localStorage.getItem('concierge_session_v1')).toContain('Alex');
+  });
+
+  it('rehydrates a transcript from a resume code', async () => {
+    localStorage.clear();
+    fetchMock.mockResolvedValueOnce(
+      jsonRes({
+        messages: [
+          { role: 'user', content: 'earlier question' },
+          { role: 'assistant', content: 'earlier answer' },
+        ],
+      }),
+    );
+    await openArtemis();
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText(/your name/i), {
+        target: { value: 'Alex' },
+      });
+      fireEvent.change(screen.getByLabelText(/resume code/i), {
+        target: { value: 'sess-abc' },
+      });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
+    });
+    await waitFor(() => {
+      expect(screen.getByText('earlier answer')).toBeInTheDocument();
+    });
+    // The code is fetched through the same-origin proxy, never the bot directly.
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/chat?sessionId=sess-abc',
+    );
+    // And it becomes the resume code shown back to the visitor.
+    expect(screen.getByText('sess-abc')).toBeInTheDocument();
+  });
+
+  it('reports a resume code that does not match anything', async () => {
+    localStorage.clear();
+    fetchMock.mockResolvedValueOnce(jsonRes({ status: 'error' }, 404));
+    await openArtemis();
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText(/your name/i), {
+        target: { value: 'Alex' },
+      });
+      fireEvent.change(screen.getByLabelText(/resume code/i), {
+        target: { value: 'nope' },
+      });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
+    });
+    expect(screen.getByRole('alert')).toHaveTextContent(/did not match/i);
+    // Still gated — a failed resume must not silently start a fresh chat.
+    expect(screen.queryByLabelText(/^message$/i)).not.toBeInTheDocument();
   });
 });

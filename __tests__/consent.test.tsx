@@ -2,6 +2,21 @@ import { fireEvent, render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import FloatingChat from "@/components/global/FloatingChat";
 
+// The identity gate stands in front of the chat now. These suites exercise the
+// conversation itself, so seed a returning visitor (the shape localStorage
+// holds) instead of clicking through the gate in every test. Gate behaviour has
+// its own tests in FloatingChat.test.tsx.
+function seedReturningVisitor(name = 'Tester') {
+  localStorage.setItem(
+    'concierge_session_v1',
+    JSON.stringify({
+      displayName: name,
+      sessionId: { personal: null, '3kok': null },
+      messages: { personal: [], '3kok': [] },
+    }),
+  );
+}
+
 // --- Shared fetch mock (same shape as the other suites) -----------------
 interface FakeResponse {
   status: number;
@@ -30,6 +45,9 @@ beforeEach(() => {
   // AC-T3-2: each consent test must start from a clean localStorage so the
   // useState initializer reads a deterministic value.
   window.localStorage.clear();
+  // Re-seed AFTER the clear: the identity gate would otherwise hide the consent
+  // row these tests are about.
+  seedReturningVisitor();
   jest.useRealTimers();
 });
 
@@ -54,7 +72,7 @@ describe("AC-T3-1 consent row copy", () => {
 
     // Substring match against the full consent sentence.
     expect(
-      screen.getByText(/answered only after the owner approves/i),
+      screen.getByText(/may be collected and used for model research/i),
     ).toBeInTheDocument();
   });
 });
@@ -69,7 +87,7 @@ describe("AC-T3-2 consent row dismiss + persistence", () => {
     await openPanel();
 
     expect(
-      screen.getByText(/answered only after the owner approves/i),
+      screen.getByText(/may be collected and used for model research/i),
     ).toBeInTheDocument();
 
     await act(async () => {
@@ -79,7 +97,7 @@ describe("AC-T3-2 consent row dismiss + persistence", () => {
     });
 
     expect(
-      screen.queryByText(/answered only after the owner approves/i),
+      screen.queryByText(/may be collected and used for model research/i),
     ).not.toBeInTheDocument();
   });
 
@@ -93,7 +111,7 @@ describe("AC-T3-2 consent row dismiss + persistence", () => {
       );
     });
     expect(
-      screen.queryByText(/answered only after the owner approves/i),
+      screen.queryByText(/may be collected and used for model research/i),
     ).not.toBeInTheDocument();
     // Sanity: the flag really was written.
     expect(window.localStorage.getItem("concierge_consent_dismissed")).toBe(
@@ -108,7 +126,7 @@ describe("AC-T3-2 consent row dismiss + persistence", () => {
     await openPanel();
 
     expect(
-      screen.queryByText(/answered only after the owner approves/i),
+      screen.queryByText(/may be collected and used for model research/i),
     ).not.toBeInTheDocument();
   });
 });
