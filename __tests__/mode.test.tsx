@@ -5,16 +5,20 @@ import FloatingChat from '@/components/global/FloatingChat';
 // One bubble with a 2-line "AI"/"CHAT" launcher (AC-T3-1..4). The old two-FAB
 // mode switcher AND the quick-reply chips are gone; mode is chosen at the
 // identity gate via a Personal / 3-Kingdom toggle, then chat is plain free
-// text in that mode. Seed a returning visitor to skip the gate where useful.
+// text in that mode. Seed a returning visitor (v2 Session[]) to skip the gate
+// where useful.
 function seedReturningVisitor(name = 'Tester') {
-  localStorage.setItem(
-    'concierge_session_v1',
-    JSON.stringify({
-      displayName: name,
-      sessionId: { personal: null, '3kok': null },
-      messages: { personal: [], '3kok': [] },
-    }),
-  );
+  const session = {
+    id: 's-' + Math.random().toString(36).slice(2, 8),
+    displayName: name,
+    mode: 'personal' as const,
+    sessionId: null,
+    messages: [],
+    createdAt: 1_700_000_000_000,
+    updatedAt: 1_700_000_000_000,
+  };
+  localStorage.setItem('concierge_sessions_v2', JSON.stringify([session]));
+  localStorage.setItem('concierge_active_session_v2', session.id);
 }
 
 interface FakeResponse {
@@ -66,7 +70,7 @@ describe('AC-T3-1 single chat bubble', () => {
     expect(screen.getByRole('button', { name: /ai chat/i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /ask about me/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /ask 3 kingdoms/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /chat with สามก๊ก/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /chat สามก๊ก/i })).not.toBeInTheDocument();
   });
 });
 
@@ -150,12 +154,11 @@ describe('AC-T3-2/3 gate bot-toggle drives send mode', () => {
     jest.useRealTimers();
   });
 
-  // Regression guard for the answer-routing fix (pollModeRef). Mode is chosen at
-  // the gate now (not via a chip's setMode+send), but the polled answer must
-  // STILL route to the sending mode — pollModeRef is captured at send time.
-  // Without it the answer would append to the wrong transcript. The canary
-  // being visible proves it routed to the gate-chosen 3kok mode.
-  it('routes the polled answer to the gate-chosen 3kok mode (pollModeRef guard)', async () => {
+  // Regression guard for the answer-routing fix (pollModeRef → pollSessionIdRef
+  // under v2). Mode is chosen at the gate; the polled answer must STILL route
+  // to the session that sent it. The canary being visible proves it routed to
+  // the gate-chosen 3kok session.
+  it('routes the polled answer to the gate-chosen 3kok session (answer-routing guard)', async () => {
     localStorage.clear();
     jest.useFakeTimers();
     fetchMock

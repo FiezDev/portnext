@@ -7,14 +7,18 @@ import FloatingChat from "@/components/global/FloatingChat";
 // holds) instead of clicking through the gate in every test. Gate behaviour has
 // its own tests in FloatingChat.test.tsx.
 function seedReturningVisitor(name = 'Tester') {
-  localStorage.setItem(
-    'concierge_session_v1',
-    JSON.stringify({
-      displayName: name,
-      sessionId: { personal: null, '3kok': null },
-      messages: { personal: [], '3kok': [] },
-    }),
-  );
+  // v2: a Session[] + active id. One personal session, active, no messages.
+  const session = {
+    id: 's-' + Math.random().toString(36).slice(2, 8),
+    displayName: name,
+    mode: 'personal' as const,
+    sessionId: null,
+    messages: [],
+    createdAt: 1_700_000_000_000,
+    updatedAt: 1_700_000_000_000,
+  };
+  localStorage.setItem('concierge_sessions_v2', JSON.stringify([session]));
+  localStorage.setItem('concierge_active_session_v2', session.id);
 }
 
 // --- Shared fetch mock (same shape as the other suites) -----------------
