@@ -9,6 +9,7 @@
 
 import {
   faClose,
+  faMessage,
   faPaperPlane,
   faScroll,
   faShieldHalved,
@@ -52,6 +53,21 @@ const MAX_STORED_MESSAGES = 40; // per bot — keeps localStorage small
 
 type Mode = 'personal' | '3kok';
 type ByMode<T> = Record<Mode, T>;
+
+// AC-T3-2/3 — quick-reply chips. Each carries the mode + question to send;
+// tapping one sets the mode and auto-sends (see onChip).
+interface ChatPreset {
+  label: string;
+  mode: Mode;
+  question: string;
+}
+const CHAT_PRESETS: ChatPreset[] = [
+  { label: 'What can you do?', mode: 'personal', question: 'What can you do?' },
+  { label: 'Tell me about your background', mode: 'personal', question: 'Tell me about your background' },
+  { label: 'Show me your projects', mode: 'personal', question: 'Show me your projects' },
+  { label: 'Summarise สามก๊ก', mode: '3kok', question: 'Summarise สามก๊ก (Romance of the Three Kingdoms)' },
+  { label: 'Who is โจโฉ (Cao Cao)?', mode: '3kok', question: 'Who is โจโฉ (Cao Cao)?' },
+];
 interface StoredSession {
   displayName: string;
   sessionId: ByMode<string | null>;
@@ -440,8 +456,9 @@ const FloatingChat = ({
 
   // AC-T7-6: send -> POST /api/chat. A retried POST with the same
   // client_request_id is forwarded verbatim (the bot dedupes).
-  const send = useCallback(async () => {
-    const trimmed = draft.trim();
+  const send = useCallback(async (message?: string, overrideMode?: Mode) => {
+    const activeMode = overrideMode ?? mode;
+    const trimmed = (message ?? draft).trim();
     if (!trimmed || status === 'awaiting' || status === 'composing') return;
 
     const clientRequestId = uuid();
@@ -452,7 +469,7 @@ const FloatingChat = ({
       role: 'user',
       content: trimmed,
     };
-    setMessagesByMode((prev) => ({ ...prev, [mode]: [...prev[mode], userMsg] }));
+    setMessagesByMode((prev) => ({ ...prev, [activeMode]: [...prev[activeMode], userMsg] }));
     setDraft('');
     setStatus('composing');
 
@@ -470,10 +487,10 @@ const FloatingChat = ({
         },
         body: JSON.stringify({
           message: trimmed,
-          mode,
+          mode: activeMode,
           client_request_id: clientRequestId,
           // Reusing the session is what gives the bot conversation context.
-          sessionId: sessionIdByMode[mode],
+          sessionId: sessionIdByMode[activeMode],
           displayName,
         }),
       });
@@ -502,11 +519,23 @@ const FloatingChat = ({
     const newSession = body.sessionId;
     if (typeof newSession === 'string' && newSession) {
       setSessionIdByMode((prev) =>
-        prev[mode] === newSession ? prev : { ...prev, [mode]: newSession },
+        prev[activeMode] === newSession ? prev : { ...prev, [activeMode]: newSession },
       );
     }
     startAwaiting(body.pendingId);
   }, [draft, status, startAwaiting, mode, sessionIdByMode, displayName]);
+
+  // AC-T3-3: a chip sets the mode and auto-sends in one tap. The bleed-guard
+  // resets a stale awaiting/answered state from the other mode (status is
+  // global, not per-mode) — same protection the old per-mode FABs had.
+  const onChip = useCallback(
+    (p: ChatPreset) => {
+      if (p.mode !== mode) setStatus('open');
+      setMode(p.mode);
+      void send(p.question, p.mode);
+    },
+    [mode, send],
+  );
 
   // --- Render ------------------------------------------------------------
   const openTransition = useMemo(
@@ -519,55 +548,18 @@ const FloatingChat = ({
 
   return (
     <>
-      {/* Two themed entry FABs (AC-T2-1): Artemis = personal advisor,
-          สามก๊ก = Three-Kingdoms scholar. Each FAB pins the panel to its
-          mode; clicking the active bot's FAB toggles the panel, clicking
-          the other switches mode + opens. No localStorage (stress fix). */}
-      {/* Folder tabs flush to the right edge, vertically centred. The label is
-          TEXT saying what each bot answers, not a glyph a stranger has to
-          decode. The panel opens to their left so both tabs stay visible and
-          switchable while chatting. */}
-      <div className="fixed right-0 top-1/2 z-[200] flex -translate-y-1/2 flex-col gap-2">
-        <button
-          type="button"
-          aria-label="Ask about me — chat with Artemis"
-          onClick={() => {
-            // Switching bots (not toggling the same one) resets status so an
-            // 'awaiting'/'answered' state from the other bot doesn't bleed
-            // into the freshly opened chat.
-            if (mode !== 'personal') setStatus('open');
-            setMode('personal');
-            setOpen((v) => (mode === 'personal' ? !v : true));
-          }}
-          aria-expanded={open && mode === 'personal'}
-          aria-haspopup="dialog"
-          className={`${TAB_BASE} ${
-            open && mode === 'personal'
-              ? 'border-accent bg-accent text-black'
-              : 'border-accent/40 bg-black text-accent hover:bg-accent/15'
-          }`}
-        >
-          <span className={VERTICAL_LABEL}>Ask about me</span>
-        </button>
-        <button
-          type="button"
-          aria-label="Ask 3 Kingdoms — chat with สามก๊ก"
-          onClick={() => {
-            if (mode !== '3kok') setStatus('open');
-            setMode('3kok');
-            setOpen((v) => (mode === '3kok' ? !v : true));
-          }}
-          aria-expanded={open && mode === '3kok'}
-          aria-haspopup="dialog"
-          className={`${TAB_BASE} ${
-            open && mode === '3kok'
-              ? 'border-accent bg-accent text-black'
-              : 'border-accent/40 bg-black text-accent hover:bg-accent/15'
-          }`}
-        >
-          <span className={VERTICAL_LABEL}>Ask 3 Kingdoms</span>
-        </button>
-      </div>
+      {/* AC-T3-1: one bottom-right bubble launcher replaces the two mode FABs.
+          Mode is now chosen via quick-reply chips inside the panel. */}
+      <button
+        type="button"
+        aria-label="Chat with Fiez"
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        onClick={() => setOpen((v) => !v)}
+        className="fixed bottom-6 right-5 z-[201] flex h-14 w-14 items-center justify-center rounded-full border border-accent/40 bg-black text-accent shadow-2xl shadow-black/60 transition-colors hover:bg-accent/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        <FontAwesomeIcon icon={open ? faClose : faMessage} className="h-5 w-5" />
+      </button>
 
       <AnimatePresence>
         {open && (
@@ -824,6 +816,20 @@ const FloatingChat = ({
               )}
             </div>
 
+            {/* AC-T3-2/3: quick-reply chips — pick what to ask; sets mode + auto-sends. */}
+            <div className="flex flex-wrap gap-1.5 pb-1">
+              {CHAT_PRESETS.map((p) => (
+                <button
+                  key={p.label}
+                  type="button"
+                  disabled={status === 'awaiting' || status === 'composing'}
+                  onClick={() => onChip(p)}
+                  className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs text-accent transition-colors hover:bg-accent/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
 
             {/* Composer */}
             <div className="flex items-end gap-2 border-t border-white/15 pt-2">
