@@ -480,3 +480,101 @@ describe('identity gate and session persistence', () => {
     expect(screen.queryByLabelText(/^message$/i)).not.toBeInTheDocument();
   });
 });
+
+// --------------------------------------------------------------------------
+// Back-to-menu: once inside the chat there is no way back to the gate to
+// switch bot or re-enter. A "← Menu" control in the panel header returns to
+// the gate with the name pre-filled and the bot toggle pre-selected, so a
+// user can flip Personal/3-Kingdom or re-enter after they're already chatting.
+// --------------------------------------------------------------------------
+describe('back-to-menu control (switch bot / re-enter from inside chat)', () => {
+  function seedReturningVisitorNamed(
+    name: string,
+    mode: 'personal' | '3kok' = 'personal',
+  ) {
+    localStorage.setItem(
+      'concierge_session_v1',
+      JSON.stringify({
+        displayName: name,
+        sessionId: { personal: null, '3kok': null },
+        messages: { personal: [], '3kok': [] },
+        mode,
+      }),
+    );
+  }
+
+  it('returns to the gate (name pre-filled, bot toggle present) then re-enters in the chosen bot', async () => {
+    jest.useFakeTimers();
+    // Returning visitor opens straight into the chat (post-gate), where the
+    // Menu control lives.
+    seedReturningVisitorNamed('Tester', 'personal');
+    // POST -> pending for the send after re-entering; remaining calls pending.
+    fetchMock
+      .mockResolvedValueOnce(jsonRes({ pendingId: 'p-menu', status: 'pending' }, 202))
+      .mockResolvedValue(jsonRes({ status: 'pending' }));
+
+    render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
+    });
+
+    // Chat is shown (NOT the gate): the Message composer is present...
+    expect(screen.getByLabelText(/^message$/i)).toBeInTheDocument();
+    // ...and the gate's name input is NOT.
+    expect(screen.queryByLabelText(/your name/i)).not.toBeInTheDocument();
+
+    // Click the back-to-menu control in the panel header.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /back to menu/i }));
+    });
+
+    // The gate re-appears: name input present AND pre-filled with the name...
+    const nameInput = screen.getByLabelText(/your name/i) as HTMLInputElement;
+    expect(nameInput).toBeInTheDocument();
+    expect(nameInput.value).toBe('Tester');
+    // ...and the bot toggle group is there, with Personal pre-selected.
+    const botGroup = screen.getByRole('group', { name: /bot/i });
+    expect(botGroup).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /personal/i }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    // The Message composer is gone while at the menu.
+    expect(screen.queryByLabelText(/^message$/i)).not.toBeInTheDocument();
+
+    // Switch to the 3-Kingdom bot and Start -> back in chat.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /3 kingdoms/i }));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
+    });
+    const messageInput = await waitFor(() =>
+      screen.getByLabelText(/^message$/i),
+    );
+    expect(messageInput).toBeInTheDocument();
+
+    // Type + send; assert the POST body carries mode === '3kok' (switch took effect).
+    await act(async () => {
+      fireEvent.change(messageInput, { target: { value: 'hello' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /send/i }));
+      await Promise.resolve();
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+
+    const postCall = fetchMock.mock.calls.find(
+      ([url, init]) =>
+        String(url).includes('/api/chat') &&
+        (init as RequestInit | undefined)?.method === 'POST',
+    );
+    expect(postCall).toBeDefined();
+    const postedBody = JSON.parse((postCall![1] as RequestInit).body as string);
+    expect(postedBody.mode).toBe('3kok');
+
+    jest.useRealTimers();
+  });
+});
