@@ -2,9 +2,10 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import FloatingChat from '@/components/global/FloatingChat';
 
-// One-bubble + quick-reply chip entry model (AC-T3-1..4). The old two-FAB mode
-// switcher is gone; mode is chosen by tapping a chip (auto-send) or free-typing
-// (personal). Seed a returning visitor to skip the identity gate.
+// One bubble with a 2-line "AI"/"CHAT" launcher (AC-T3-1..4). The old two-FAB
+// mode switcher AND the quick-reply chips are gone; mode is chosen at the
+// identity gate via a Personal / 3-Kingdom toggle, then chat is plain free
+// text in that mode. Seed a returning visitor to skip the gate where useful.
 function seedReturningVisitor(name = 'Tester') {
   localStorage.setItem(
     'concierge_session_v1',
@@ -60,36 +61,46 @@ function postedBody(): Record<string, unknown> | undefined {
 }
 
 describe('AC-T3-1 single chat bubble', () => {
-  it('renders exactly one chat launcher (the two mode FABs are gone)', () => {
+  it('renders exactly one AI/CHAT launcher (the two mode FABs are gone)', () => {
     render(<FloatingChat />);
-    expect(screen.getByRole('button', { name: /chat with fiez/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /ai chat/i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /ask about me/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /ask 3 kingdoms/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /chat with สามก๊ก/i })).not.toBeInTheDocument();
   });
 });
 
-describe('AC-T3-2 quick-reply chips', () => {
-  it('renders personal + 3kok chips after opening', async () => {
-    render(<FloatingChat />);
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
-    });
-    expect(screen.getByRole('button', { name: /what can you do/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /summarise สามก๊ก/i })).toBeInTheDocument();
-  });
-});
-
-describe('AC-T3-3 chip auto-sends in the right mode', () => {
-  it('a 3kok chip sends mode:"3kok"', async () => {
+describe('AC-T3-2/3 gate bot-toggle drives send mode', () => {
+  it('3 Kingdoms at the gate sends mode:"3kok"', async () => {
+    localStorage.clear();
     jest.useFakeTimers();
     fetchMock.mockResolvedValueOnce(jsonRes({ pendingId: 'p-3kok', status: 'pending' }, 202));
-    render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
+
+    const { container } = render(
+      <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
+    );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
+    });
+    // Review/training notice is shown at the gate.
+    expect(container).toHaveTextContent(/reviewed by the site owner/i);
+    // Pick 3 Kingdoms at the gate, enter name, start.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /3 kingdoms/i }));
     });
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /summarise สามก๊ก/i }));
+      fireEvent.change(screen.getByLabelText(/your name/i), { target: { value: 'Alex' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
+    });
+    // Type + send free text.
+    const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'a 3kok question' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /send/i }));
     });
     await act(async () => {
       jest.advanceTimersByTime(60);
@@ -98,21 +109,35 @@ describe('AC-T3-3 chip auto-sends in the right mode', () => {
     const posted = postedBody();
     expect(posted).toBeDefined();
     expect(posted!.mode).toBe('3kok');
-    expect(posted!.message).toBe('Summarise สามก๊ก (Romance of the Three Kingdoms)');
-    // Chips disable while an answer is pending (disabled={status === 'awaiting' || status === 'composing'}).
-    expect(screen.getByRole('button', { name: /summarise/i })).toBeDisabled();
+    expect(posted!.message).toBe('a 3kok question');
     jest.useRealTimers();
   });
 
-  it('a personal chip sends mode:"personal"', async () => {
+  it('Personal at the gate sends mode:"personal"', async () => {
+    localStorage.clear();
     jest.useFakeTimers();
     fetchMock.mockResolvedValueOnce(jsonRes({ pendingId: 'p-p', status: 'pending' }, 202));
+
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
+    });
+    // Personal is the default; tap it explicitly to prove the toggle drives mode.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /^personal$/i }));
     });
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /what can you do/i }));
+      fireEvent.change(screen.getByLabelText(/your name/i), { target: { value: 'Alex' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
+    });
+    const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'a personal question' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /send/i }));
     });
     await act(async () => {
       jest.advanceTimersByTime(60);
@@ -121,34 +146,43 @@ describe('AC-T3-3 chip auto-sends in the right mode', () => {
     const posted = postedBody();
     expect(posted).toBeDefined();
     expect(posted!.mode).toBe('personal');
-    expect(posted!.message).toBe('What can you do?');
+    expect(posted!.message).toBe('a personal question');
     jest.useRealTimers();
   });
 
-  // Regression guard for the answer-routing fix (pollModeRef). A chip does
-  // setMode + send in one tap; before the fix the queued poll closed over the
-  // PRE-switch mode and the answer landed in the wrong bot's transcript
-  // (invisible in the now-active mode). This test passes WITH pollModeRef and
-  // would fail without it.
-  it('routes the polled answer to the chip mode, not the pre-switch mode', async () => {
+  // Regression guard for the answer-routing fix (pollModeRef). Mode is chosen at
+  // the gate now (not via a chip's setMode+send), but the polled answer must
+  // STILL route to the sending mode — pollModeRef is captured at send time.
+  // Without it the answer would append to the wrong transcript. The canary
+  // being visible proves it routed to the gate-chosen 3kok mode.
+  it('routes the polled answer to the gate-chosen 3kok mode (pollModeRef guard)', async () => {
+    localStorage.clear();
     jest.useFakeTimers();
     fetchMock
       .mockResolvedValueOnce(jsonRes({ pendingId: 'p-route', status: 'pending' }, 202))
-      .mockResolvedValueOnce(
-        jsonRes({ status: 'answered', answer: 'Routed-to-3kok canary' }),
-      );
+      .mockResolvedValueOnce(jsonRes({ status: 'answered', answer: 'Routed-to-3kok canary' }));
 
     const { container } = render(
       <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
-    // Default mode is personal; the 3kok chip switches mode + sends in one tap.
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /summarise สามก๊ก/i }));
+      fireEvent.click(screen.getByRole('button', { name: /3 kingdoms/i }));
+      fireEvent.change(screen.getByLabelText(/your name/i), { target: { value: 'Alex' } });
     });
-    // Drive the POST microtask + the first scheduled poll (50ms).
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
+    });
+    const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'route me' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /send/i }));
+    });
+    // Drive POST + the first scheduled poll (50ms).
     await act(async () => {
       jest.advanceTimersByTime(60);
       await Promise.resolve();
@@ -158,10 +192,6 @@ describe('AC-T3-3 chip auto-sends in the right mode', () => {
       jest.advanceTimersByTime(60);
       await Promise.resolve();
     });
-
-    // The chip switched the panel to 3kok. Without the fix the answer would
-    // have been appended to the old personal mode (invisible here) — seeing
-    // the canary proves it routed to the chip's mode.
     await waitFor(() => {
       expect(container).toHaveTextContent(/Routed-to-3kok canary/i);
     });
@@ -175,7 +205,7 @@ describe('AC-T3-4 free text defaults to personal', () => {
     fetchMock.mockResolvedValueOnce(jsonRes({ pendingId: 'p-ft', status: 'pending' }, 202));
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {

@@ -72,8 +72,11 @@ const SkillsSection = () => {
           className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent"
         />
         <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-sm">
-          The tools I reach for daily — typed, tested, and shipped to
-          production.
+          <span className="font-semibold text-gray-700">
+            Framework-agnostic engineer.
+          </span>{' '}
+          I ship production work across many frameworks and libraries, whichever
+          fits the job. What's listed here is a glimpse, not the whole picture.
         </p>
         <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
           {coreicon.length} technologies · {GROUPS.length} domains

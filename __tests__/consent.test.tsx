@@ -58,7 +58,7 @@ afterEach(() => {
 // Helper: open the panel via the Artemis FAB.
 async function openPanel() {
   await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: /chat with fiez/i }));
+    fireEvent.click(screen.getByRole("button", { name: /ai chat/i }));
   });
 }
 
