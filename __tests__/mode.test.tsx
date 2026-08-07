@@ -1,11 +1,10 @@
-import { fireEvent, render, screen, act } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import FloatingChat from "@/components/global/FloatingChat";
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import FloatingChat from '@/components/global/FloatingChat';
 
-// The identity gate stands in front of the chat now. These suites exercise the
-// conversation itself, so seed a returning visitor (the shape localStorage
-// holds) instead of clicking through the gate in every test. Gate behaviour has
-// its own tests in FloatingChat.test.tsx.
+// One-bubble + quick-reply chip entry model (AC-T3-1..4). The old two-FAB mode
+// switcher is gone; mode is chosen by tapping a chip (auto-send) or free-typing
+// (personal). Seed a returning visitor to skip the identity gate.
 function seedReturningVisitor(name = 'Tester') {
   localStorage.setItem(
     'concierge_session_v1',
@@ -17,10 +16,6 @@ function seedReturningVisitor(name = 'Tester') {
   );
 }
 
-// --- Shared fetch mock ---------------------------------------------------
-// Same plumbing as __tests__/FloatingChat.test.tsx — jsdom has no global
-// Response/Request, so we return a minimal plain object that quacks like a
-// Response (only the fields the widget reads).
 interface FakeResponse {
   status: number;
   ok: boolean;
@@ -46,8 +41,7 @@ beforeEach(() => {
   seedReturningVisitor();
   fetchMock = jest.fn() as unknown as FetchMock;
   (globalThis as { fetch: unknown }).fetch = fetchMock;
-  // Default: any unplanned poll returns pending (no answer).
-  fetchMock.mockResolvedValue(jsonRes({ status: "pending" }));
+  fetchMock.mockResolvedValue(jsonRes({ status: 'pending' }));
   jest.useRealTimers();
 });
 
@@ -55,114 +49,149 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-// Helper: open the panel via the named FAB, type, click send.
-async function sendViaFab(fabName: RegExp, text: string) {
-  await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: fabName }));
-  });
-  const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
-  await act(async () => {
-    fireEvent.change(input, { target: { value: text } });
-  });
-  await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
-  });
+function postedBody(): Record<string, unknown> | undefined {
+  const postCall = fetchMock.mock.calls.find(
+    ([url, init]) =>
+      String(url).includes('/api/chat') &&
+      (init as RequestInit | undefined)?.method === 'POST',
+  );
+  if (!postCall) return undefined;
+  return JSON.parse((postCall[1] as RequestInit).body as string);
 }
 
-// --------------------------------------------------------------------------
-// AC-T2-1: two themed entry FABs; clicking either opens the panel pinned to
-// its mode and the header reflects the active bot.
-// --------------------------------------------------------------------------
-describe("AC-T2-1 two-FAB mode wiring", () => {
-  it("renders BOTH entry FABs (Artemis + สามก๊ก)", () => {
+describe('AC-T3-1 single chat bubble', () => {
+  it('renders exactly one chat launcher (the two mode FABs are gone)', () => {
     render(<FloatingChat />);
-    expect(
-      screen.getByRole("button", { name: /chat with artemis/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /chat with สามก๊ก/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("clicking สามก๊ก opens the panel + header shows the สามก๊ก bot", async () => {
-    render(<FloatingChat />);
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /chat with สามก๊ก/i }));
-    });
-    // Panel is open.
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    // Header reflects the active bot (role=heading so screen readers announce it).
-    expect(
-      screen.getByRole("heading", { name: /สามก๊ก/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("clicking Artemis opens the panel + header shows Artemis", async () => {
-    render(<FloatingChat />);
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /chat with artemis/i }));
-    });
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /artemis/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /chat with fiez/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /ask about me/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /ask 3 kingdoms/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /chat with สามก๊ก/i })).not.toBeInTheDocument();
   });
 });
 
-// --------------------------------------------------------------------------
-// AC-T2-2: the selected FAB's mode literal is what hits POST /api/chat.
-// --------------------------------------------------------------------------
-describe("AC-T2-2 mode literal sent on POST", () => {
-  it("sends mode:\"3kok\" after the สามก๊ก FAB is used", async () => {
+describe('AC-T3-2 quick-reply chips', () => {
+  it('renders personal + 3kok chips after opening', async () => {
+    render(<FloatingChat />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    });
+    expect(screen.getByRole('button', { name: /what can you do/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /summarise สามก๊ก/i })).toBeInTheDocument();
+  });
+});
+
+describe('AC-T3-3 chip auto-sends in the right mode', () => {
+  it('a 3kok chip sends mode:"3kok"', async () => {
     jest.useFakeTimers();
-    fetchMock.mockResolvedValueOnce(
-      jsonRes({ pendingId: "p-3kok", status: "pending" }, 202),
-    );
-
+    fetchMock.mockResolvedValueOnce(jsonRes({ pendingId: 'p-3kok', status: 'pending' }, 202));
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
-
-    await sendViaFab(/chat with สามก๊ก/i, "ทดสอบ");
-
-    // Drive the POST microtask.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /summarise สามก๊ก/i }));
+    });
     await act(async () => {
       jest.advanceTimersByTime(60);
       await Promise.resolve();
     });
-
-    const postCall = fetchMock.mock.calls.find(
-      ([url, init]) =>
-        String(url).includes("/api/chat") &&
-        (init as RequestInit | undefined)?.method === "POST",
-    );
-    expect(postCall).toBeDefined();
-    const posted = JSON.parse((postCall![1] as RequestInit).body as string);
-    expect(posted.mode).toBe("3kok");
+    const posted = postedBody();
+    expect(posted).toBeDefined();
+    expect(posted!.mode).toBe('3kok');
+    expect(posted!.message).toBe('Summarise สามก๊ก (Romance of the Three Kingdoms)');
+    // Chips disable while an answer is pending (disabled={status === 'awaiting' || status === 'composing'}).
+    expect(screen.getByRole('button', { name: /summarise/i })).toBeDisabled();
     jest.useRealTimers();
   });
 
-  it("sends mode:\"personal\" after the Artemis FAB is used", async () => {
+  it('a personal chip sends mode:"personal"', async () => {
     jest.useFakeTimers();
-    fetchMock.mockResolvedValueOnce(
-      jsonRes({ pendingId: "p-personal", status: "pending" }, 202),
-    );
-
+    fetchMock.mockResolvedValueOnce(jsonRes({ pendingId: 'p-p', status: 'pending' }, 202));
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /what can you do/i }));
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+    const posted = postedBody();
+    expect(posted).toBeDefined();
+    expect(posted!.mode).toBe('personal');
+    expect(posted!.message).toBe('What can you do?');
+    jest.useRealTimers();
+  });
 
-    await sendViaFab(/chat with artemis/i, "hello");
+  // Regression guard for the answer-routing fix (pollModeRef). A chip does
+  // setMode + send in one tap; before the fix the queued poll closed over the
+  // PRE-switch mode and the answer landed in the wrong bot's transcript
+  // (invisible in the now-active mode). This test passes WITH pollModeRef and
+  // would fail without it.
+  it('routes the polled answer to the chip mode, not the pre-switch mode', async () => {
+    jest.useFakeTimers();
+    fetchMock
+      .mockResolvedValueOnce(jsonRes({ pendingId: 'p-route', status: 'pending' }, 202))
+      .mockResolvedValueOnce(
+        jsonRes({ status: 'answered', answer: 'Routed-to-3kok canary' }),
+      );
 
+    const { container } = render(
+      <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
+    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    });
+    // Default mode is personal; the 3kok chip switches mode + sends in one tap.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /summarise สามก๊ก/i }));
+    });
+    // Drive the POST microtask + the first scheduled poll (50ms).
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+    // First poll returns answered.
     await act(async () => {
       jest.advanceTimersByTime(60);
       await Promise.resolve();
     });
 
-    const postCall = fetchMock.mock.calls.find(
-      ([url, init]) =>
-        String(url).includes("/api/chat") &&
-        (init as RequestInit | undefined)?.method === "POST",
-    );
-    expect(postCall).toBeDefined();
-    const posted = JSON.parse((postCall![1] as RequestInit).body as string);
-    expect(posted.mode).toBe("personal");
+    // The chip switched the panel to 3kok. Without the fix the answer would
+    // have been appended to the old personal mode (invisible here) — seeing
+    // the canary proves it routed to the chip's mode.
+    await waitFor(() => {
+      expect(container).toHaveTextContent(/Routed-to-3kok canary/i);
+    });
+    jest.useRealTimers();
+  });
+});
+
+describe('AC-T3-4 free text defaults to personal', () => {
+  it('sends mode:"personal" for typed text', async () => {
+    jest.useFakeTimers();
+    fetchMock.mockResolvedValueOnce(jsonRes({ pendingId: 'p-ft', status: 'pending' }, 202));
+    render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    });
+    const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'a custom question' } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /send/i }));
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+    const posted = postedBody();
+    expect(posted).toBeDefined();
+    expect(posted!.mode).toBe('personal');
+    expect(posted!.message).toBe('a custom question');
     jest.useRealTimers();
   });
 });

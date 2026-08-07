@@ -59,12 +59,14 @@ afterEach(() => {
 describe('AC-T7-1 FloatingChat bubble + panel', () => {
   it('renders the floating button and opens the panel on click', async () => {
     render(<FloatingChat />);
-    const bubble = screen.getByRole('button', { name: /chat with artemis/i });
+    const bubble = screen.getByRole('button', { name: /chat with fiez/i });
     expect(bubble).toBeInTheDocument();
 
     await act(async () => {
       fireEvent.click(bubble);
     });
+    // The bubble reflects its open state on the toggle itself.
+    expect(bubble).toHaveAttribute('aria-expanded', 'true');
 
     const dialog = await screen.findByRole('dialog', { name: /chat with fiez/i });
     expect(dialog).toBeInTheDocument();
@@ -74,7 +76,7 @@ describe('AC-T7-1 FloatingChat bubble + panel', () => {
 
   it('closes the panel on Esc', async () => {
     render(<FloatingChat />);
-    const bubble = screen.getByRole('button', { name: /chat with artemis/i });
+    const bubble = screen.getByRole('button', { name: /chat with fiez/i });
     await act(async () => {
       fireEvent.click(bubble);
     });
@@ -114,7 +116,7 @@ describe('AC-T7-1 / AC-T7-3 send + poll flow', () => {
       <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
     });
 
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
@@ -193,7 +195,7 @@ describe('AC-T7-5 degradation to Unavailable', () => {
       <FloatingChat pollMinMs={20} pollMaxMs={20} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {
@@ -242,7 +244,7 @@ describe('[MED] FloatingChat source-URL XSS guard', () => {
 
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {
@@ -284,7 +286,7 @@ describe('[MED] FloatingChat source-URL XSS guard', () => {
 
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {
@@ -332,7 +334,7 @@ describe('poll cadence stays constant while pending', () => {
       <FloatingChat pollMinMs={50} pollMaxMs={5000} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
     });
     await act(async () => {
       fireEvent.change(screen.getByLabelText(/message/i), {
@@ -359,29 +361,14 @@ describe('poll cadence stays constant while pending', () => {
   });
 });
 
-// --------------------------------------------------------------------------
-// The empty-state intro must describe the bot you actually opened. It used to
-// be Artemis copy ("my work, stack, or availability") for BOTH FABs, so the
-// สามก๊ก bot introduced itself as a portfolio assistant.
-// --------------------------------------------------------------------------
-describe('empty-state intro is per-bot', () => {
-  it('introduces the สามก๊ก bot by what it answers, not the portfolio copy', async () => {
+// AC-T3-1: one bubble opens to the personal bot.
+describe('empty-state intro on the single bubble', () => {
+  it('opens to the personal bot and shows its portfolio intro', async () => {
     const { container } = render(<FloatingChat />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with สามก๊ก/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
     });
-    // ตัวละคร ("characters") appears only in the 3kok intro, so this pins the
-    // intro copy rather than the header label.
-    expect(container).toHaveTextContent(/ตัวละคร/);
-    expect(container).toHaveTextContent(/Three Kingdoms/i);
-    expect(container).not.toHaveTextContent(/work, stack, or availability/i);
-  });
-
-  it('keeps the portfolio copy for Artemis', async () => {
-    const { container } = render(<FloatingChat />);
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
-    });
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(container).toHaveTextContent(/work, stack, or availability/i);
   });
 });
@@ -392,23 +379,23 @@ describe('empty-state intro is per-bot', () => {
 // refresh lost the conversation and the bot had no multi-turn context.
 // --------------------------------------------------------------------------
 describe('identity gate and session persistence', () => {
-  async function openArtemis() {
+  async function openBubble() {
     render(<FloatingChat />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with artemis/i }));
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
     });
   }
 
   it('asks for a name before showing the composer on a first visit', async () => {
     localStorage.clear();
-    await openArtemis();
+    await openBubble();
     expect(screen.getByLabelText(/your name/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/^message$/i)).not.toBeInTheDocument();
   });
 
   it('will not start until the name is long enough', async () => {
     localStorage.clear();
-    await openArtemis();
+    await openBubble();
     const start = screen.getByRole('button', { name: /start chat/i });
     expect(start).toBeDisabled();
     await act(async () => {
@@ -427,7 +414,7 @@ describe('identity gate and session persistence', () => {
 
   it('reveals the composer after starting and remembers the name', async () => {
     localStorage.clear();
-    await openArtemis();
+    await openBubble();
     await act(async () => {
       fireEvent.change(screen.getByLabelText(/your name/i), {
         target: { value: 'Alex' },
@@ -450,7 +437,7 @@ describe('identity gate and session persistence', () => {
         ],
       }),
     );
-    await openArtemis();
+    await openBubble();
     await act(async () => {
       fireEvent.change(screen.getByLabelText(/your name/i), {
         target: { value: 'Alex' },
@@ -476,7 +463,7 @@ describe('identity gate and session persistence', () => {
   it('reports a resume code that does not match anything', async () => {
     localStorage.clear();
     fetchMock.mockResolvedValueOnce(jsonRes({ status: 'error' }, 404));
-    await openArtemis();
+    await openBubble();
     await act(async () => {
       fireEvent.change(screen.getByLabelText(/your name/i), {
         target: { value: 'Alex' },
