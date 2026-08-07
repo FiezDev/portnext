@@ -4,6 +4,12 @@
 //
 // A REAL state machine that talks same-origin to /api/chat (which proxies the
 // portfolio bot). No bot secret ever touches the browser.
+//
+// Multi-session (v2): storage is a LIST of single-bot conversations, not one
+// object. localStorage holds `concierge_sessions_v2` (Session[]) and
+// `concierge_active_session_v2` (the active id). A returning visitor picks
+// which conversation to resume from a dropdown in the gate/menu; the "start
+// new chat" form creates a fresh session. v1 storage is migrated on load.
 
 import {
   faArrowLeft,
@@ -27,26 +33,46 @@ const POLL_MIN_MS = 3000; // backoff floor
 const POLL_MAX_MS = 15000; // backoff ceiling
 const POLL_DURATION_MAX_MS = 10 * 60 * 1000; // ~10 min total client budget
 
-// --- session persistence ---------------------------------------------------
-// The transcript used to live only in React state and the proxy minted a NEW bot
-// session per message, so a refresh lost the conversation and the bot answered
-// every question as turn one. The browser now keeps {name, session ids,
-// transcript}; the session id doubles as a resume code that rehydrates the
-// conversation on any device.
-const STORE_KEY = 'concierge_session_v1';
+// --- session persistence (v2 — a LIST of conversations) -------------------
+// v1 held ONE {displayName, per-mode session ids, per-mode messages, mode}.
+// v2 holds a Session[]: each entry is one single-bot conversation. The active
+// id reopens the last conversation on reload. v1 is migrated on first load.
+const STORE_KEY_V1 = 'concierge_session_v1';
+const STORE_KEY_V2 = 'concierge_sessions_v2';
+const ACTIVE_KEY_V2 = 'concierge_active_session_v2';
 const CONSENT_KEY = 'concierge_consent_dismissed';
-const MAX_STORED_MESSAGES = 40; // per bot — keeps localStorage small
+const MAX_STORED_MESSAGES = 40; // per session — keeps localStorage small
 
 type Mode = 'personal' | '3kok';
-type ByMode<T> = Record<Mode, T>;
 
-interface StoredSession {
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: { title: string; url: string }[];
+}
+
+interface Session {
+  id: string; // uuid — stable identity for this conversation
   displayName: string;
-  sessionId: ByMode<string | null>;
-  messages: ByMode<ChatMessage[]>;
-  // Returning visitor's last bot (gate toggle). Default 'personal' when absent
-  // (legacy stored sessions predate the field).
+  mode: Mode; // which bot this conversation is with
+  sessionId: string | null; // bot resume code, set on first successful POST
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+// The v1 shape, used only for one-time migration.
+interface StoredSessionV1 {
+  displayName: string;
+  sessionId: Record<Mode, string | null>;
+  messages: Record<Mode, ChatMessage[]>;
   mode: Mode;
+}
+
+interface StoredState {
+  sessions: Session[];
+  activeId: string | null;
 }
 
 // localStorage can be absent (SSR), a method-less stub (Node 25), or throw
@@ -61,44 +87,144 @@ function safeStore(): Storage | null {
   }
 }
 
-function loadStored(): StoredSession | null {
-  const ls = safeStore();
-  if (!ls) return null;
-  try {
-    const parsed = JSON.parse(ls.getItem(STORE_KEY) || 'null') as unknown;
-    const o = parsed as Partial<StoredSession> | null;
-    if (!o || typeof o.displayName !== 'string' || !o.displayName) return null;
-    const mode = (m: Mode) => ({
-      id: (o.sessionId?.[m] ?? null) as string | null,
-      msgs: Array.isArray(o.messages?.[m]) ? (o.messages as ByMode<ChatMessage[]>)[m] : [],
-    });
-    const p = mode('personal');
-    const k = mode('3kok');
-    return {
-      displayName: o.displayName.slice(0, 40),
-      sessionId: { personal: p.id, '3kok': k.id },
-      messages: { personal: p.msgs, '3kok': k.msgs },
-      mode: o.mode === '3kok' ? '3kok' : 'personal',
-    };
-  } catch {
-    return null;
-  }
+function isChatMessage(m: unknown): m is ChatMessage {
+  if (!m || typeof m !== 'object') return false;
+  const mm = m as Record<string, unknown>;
+  return (
+    typeof mm.id === 'string' &&
+    (mm.role === 'user' || mm.role === 'assistant') &&
+    typeof mm.content === 'string'
+  );
 }
 
-function saveStored(v: StoredSession): void {
+// Validate + coerce one parsed object into a Session, or drop it. Defensive:
+// localStorage is attacker-controllable (other tabs, extensions, devtools).
+function parseSession(raw: unknown): Session | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const o = raw as Record<string, unknown>;
+  const id = typeof o.id === 'string' ? o.id : null;
+  const displayName = typeof o.displayName === 'string' ? o.displayName : null;
+  const mode: Mode | null = o.mode === '3kok' ? '3kok' : o.mode === 'personal' ? 'personal' : null;
+  if (!id || !displayName || !mode) return null;
+  const sessionId = typeof o.sessionId === 'string' ? o.sessionId : null;
+  const messages = Array.isArray(o.messages)
+    ? (o.messages as unknown[]).filter(isChatMessage)
+    : [];
+  const now = Date.now();
+  const createdAt = typeof o.createdAt === 'number' ? o.createdAt : now;
+  const updatedAt = typeof o.updatedAt === 'number' ? o.updatedAt : now;
+  return {
+    id,
+    displayName: displayName.slice(0, 40),
+    mode,
+    sessionId,
+    messages,
+    createdAt,
+    updatedAt,
+  };
+}
+
+// Read + migrate. v2 wins if present; otherwise a present v1 is migrated
+// (one Session per mode that has messages), and v1 is removed after a
+// successful v2 write. Conversations are NEVER lost.
+function loadStored(): StoredState {
+  const ls = safeStore();
+  if (!ls) return { sessions: [], activeId: null };
+
+  // v2 present?
+  try {
+    const raw2 = ls.getItem(STORE_KEY_V2);
+    if (raw2 !== null) {
+      const parsed = JSON.parse(raw2) as unknown;
+      if (Array.isArray(parsed)) {
+        const sessions = (parsed as unknown[])
+          .map(parseSession)
+          .filter((s): s is Session => s !== null);
+        let activeId: string | null = null;
+        try {
+          activeId = ls.getItem(ACTIVE_KEY_V2);
+        } catch {
+          activeId = null;
+        }
+        if (!activeId || !sessions.some((s) => s.id === activeId)) {
+          activeId = sessions[0]?.id ?? null;
+        }
+        return { sessions, activeId };
+      }
+    }
+  } catch {
+    // fall through to v1 migration
+  }
+
+  // v1 present? migrate.
+  try {
+    const raw1 = ls.getItem(STORE_KEY_V1);
+    if (raw1 !== null) {
+      const o = JSON.parse(raw1) as Partial<StoredSessionV1> | null;
+      if (o && typeof o.displayName === 'string' && o.displayName) {
+        const name = o.displayName.slice(0, 40);
+        const now = Date.now();
+        const pMsgs = Array.isArray(o.messages?.personal) ? o.messages!.personal : [];
+        const kMsgs = Array.isArray(o.messages?.['3kok']) ? o.messages!['3kok'] : [];
+        const pId = o.sessionId?.personal;
+        const kId = o.sessionId?.['3kok'];
+        const sessions: Session[] = [];
+        if (pMsgs.length > 0) {
+          sessions.push({
+            id: uuid(),
+            displayName: name,
+            mode: 'personal',
+            sessionId: typeof pId === 'string' && pId ? pId : null,
+            messages: pMsgs.slice(-MAX_STORED_MESSAGES),
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+        if (kMsgs.length > 0) {
+          sessions.push({
+            id: uuid(),
+            displayName: name,
+            mode: '3kok',
+            sessionId: typeof kId === 'string' && kId ? kId : null,
+            messages: kMsgs.slice(-MAX_STORED_MESSAGES),
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+        // Prefer the visitor's last bot as the active conversation.
+        const preferredMode: Mode = o.mode === '3kok' ? '3kok' : 'personal';
+        const activeId =
+          sessions.find((s) => s.mode === preferredMode)?.id ?? sessions[0]?.id ?? null;
+        // Write v2 first; only drop v1 once v2 is safely persisted.
+        try {
+          ls.setItem(STORE_KEY_V2, JSON.stringify(sessions));
+          if (activeId) ls.setItem(ACTIVE_KEY_V2, activeId);
+          else ls.removeItem(ACTIVE_KEY_V2);
+          ls.removeItem(STORE_KEY_V1);
+        } catch {
+          // Quota / private mode — keep v1 so a later load can retry migration.
+        }
+        return { sessions, activeId };
+      }
+    }
+  } catch {
+    // corrupt v1 — ignore, fall through to empty
+  }
+
+  return { sessions: [], activeId: null };
+}
+
+function saveStored(sessions: Session[], activeId: string | null): void {
   const ls = safeStore();
   if (!ls) return;
-  const trim = (m: ChatMessage[]) => m.slice(-MAX_STORED_MESSAGES);
   try {
-    ls.setItem(
-      STORE_KEY,
-      JSON.stringify({
-        displayName: v.displayName,
-        sessionId: v.sessionId,
-        messages: { personal: trim(v.messages.personal), '3kok': trim(v.messages['3kok']) },
-        mode: v.mode,
-      }),
-    );
+    const trimmed = sessions.map((s) => ({
+      ...s,
+      messages: s.messages.slice(-MAX_STORED_MESSAGES),
+    }));
+    ls.setItem(STORE_KEY_V2, JSON.stringify(trimmed));
+    if (activeId) ls.setItem(ACTIVE_KEY_V2, activeId);
+    else ls.removeItem(ACTIVE_KEY_V2);
   } catch {
     // Quota or private mode — the conversation just won't survive a reload.
   }
@@ -125,13 +251,6 @@ type ChatStatus =
   | 'expired'
   | 'error'
   | 'unavailable';
-
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  sources?: { title: string; url: string }[];
-}
 
 interface PendingResponse {
   pendingId?: string;
@@ -178,6 +297,21 @@ function uuid(): string {
     .join('')}-${hex.slice(8, 10).join('')}-${hex.slice(10, 16).join('')}`;
 }
 
+// Short, deterministic YYYY-MM-DD label for the dropdown. Deterministic on
+// purpose so tests can assert against it without locale flakiness.
+function shortDate(ts: number): string {
+  const d = new Date(ts);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function sessionLabel(s: Session): string {
+  const bot = s.mode === '3kok' ? '3-Kingdom' : 'Personal';
+  return `${s.displayName} · ${bot} · ${shortDate(s.updatedAt)}`;
+}
+
 // --- Component -----------------------------------------------------------
 const FloatingChat = ({
   pollMinMs = POLL_MIN_MS,
@@ -189,35 +323,21 @@ const FloatingChat = ({
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<ChatStatus>('open');
   const [draft, setDraft] = useState('');
-  // Gate-chosen bot, persisted so a returning visitor (who skips the gate)
-  // keeps their last bot. 'personal' = Artemis, '3kok' = สามก๊ก.
-  const [mode, setMode] = useState<'personal' | '3kok'>(
-    () => loadStored()?.mode ?? 'personal',
-  );
-  // Per-mode message history: each bot keeps its OWN list. Switching FAB
-  // swaps the visible list — no leak, no loss (the bug where chatting with
-  // Artemis then opening สามก๊ก showed Artemis's history).
-  const [messagesByMode, setMessagesByMode] = useState<
-    Record<'personal' | '3kok', ChatMessage[]>
-  >(() => loadStored()?.messages ?? { personal: [], '3kok': [] });
-  // Identity gate: a display name (so an approved answer reaches the right
-  // person) and per-bot session ids (so the bot has multi-turn context).
-  const [displayName, setDisplayName] = useState<string>(
-    () => loadStored()?.displayName ?? '',
-  );
-  const [sessionIdByMode, setSessionIdByMode] = useState<
-    Record<'personal' | '3kok', string | null>
-  >(() => loadStored()?.sessionId ?? { personal: null, '3kok': null });
+
+  // v2: a LIST of conversations + the active id. The visible messages, bot
+  // mode, displayName and resume code all DERIVE from the active session.
+  const [sessions, setSessions] = useState<Session[]>(() => loadStored().sessions);
+  const [activeId, setActiveId] = useState<string | null>(() => loadStored().activeId);
+  // The gate's bot toggle selects the bot for a NEW session. Set to the active
+  // session's mode when the menu is reopened from inside a chat.
+  const [gateMode, setGateMode] = useState<Mode>('personal');
+
   const [nameDraft, setNameDraft] = useState('');
   const [resumeDraft, setResumeDraft] = useState('');
   const [gateError, setGateError] = useState<string | null>(null);
-  // Re-open the gate from inside the chat so a visitor can switch bot or
-  // re-enter after startChat has set displayName. The gate renders when
-  // !displayName (first visit) OR menuOpen (returning from the chat).
+  // The menu (dropdown + new-chat form) shows on first visit (no active
+  // session) OR when a visitor re-opens it from inside the chat via ← Menu.
   const [menuOpen, setMenuOpen] = useState(false);
-  // Derived: the active mode's history. All reads (render, auto-scroll dep)
-  // go through this, so swapping `mode` swaps the visible list automatically.
-  const messages = messagesByMode[mode];
   // AC-T3-1..2: dismissable consent notice. Persists per-browser via
   // localStorage so a visitor who closed it doesn't see it again on reload.
   const [consentDismissed, setConsentDismissed] = useState(
@@ -231,6 +351,12 @@ const FloatingChat = ({
       localStorage.getItem(CONSENT_KEY) === '1',
   );
 
+  // The active conversation. All visible state reads (render, auto-scroll,
+  // send, poll) go through this.
+  const active = sessions.find((s) => s.id === activeId) ?? null;
+  const messages = active?.messages ?? [];
+  const gateVisible = !active || menuOpen;
+
   // Polling refs (kept off React state to avoid re-render churn).
   const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollStartRef = useRef<number>(0);
@@ -238,46 +364,43 @@ const FloatingChat = ({
   const pollPendingIdRef = useRef<string | null>(null);
   const clientIdRef = useRef<string | null>(null);
   const abortedRef = useRef<boolean>(false);
-  // The mode that SENT the in-flight request — read by pollOnce when it appends
-  // the assistant answer, so the answer lands in the sending bot's transcript
-  // even if the visible mode has since switched (chip setMode+send race).
-  const pollModeRef = useRef<Mode>('personal');
+  // The SESSION that SENT the in-flight request — read by pollOnce when it
+  // appends the assistant answer, so the answer lands in the sending
+  // conversation even if the visitor has since switched to another session in
+  // the dropdown (the multi-session successor to the per-mode pollModeRef).
+  const pollSessionIdRef = useRef<string | null>(null);
 
   const messageListRef = useRef<HTMLDivElement>(null);
 
-  // Persist identity + transcript whenever either changes. Only after the gate
-  // is passed, so we never write a half-filled record.
+  // Persist the whole conversation list (+ active id) whenever it changes.
   useEffect(() => {
-    if (!displayName) return;
-    saveStored({ displayName, sessionId: sessionIdByMode, messages: messagesByMode, mode });
-  }, [displayName, sessionIdByMode, messagesByMode, mode]);
+    saveStored(sessions, activeId);
+  }, [sessions, activeId]);
 
-  // Pull a transcript back from the server for a session id. This is what makes
-  // a resume code work on a machine that has never seen this conversation.
-  const rehydrate = useCallback(
-    async (sid: string): Promise<boolean> => {
+  // Pull a transcript back from the server for a session id. Pure: returns the
+  // messages (or null on failure) so the caller can place them into whichever
+  // session it chooses. This is what makes a resume code work on a machine
+  // that has never seen this conversation.
+  const fetchTranscript = useCallback(
+    async (sid: string): Promise<ChatMessage[] | null> => {
       try {
         const res = await fetch(`/api/chat?sessionId=${encodeURIComponent(sid)}`);
-        if (!res.ok) return false;
+        if (!res.ok) return null;
         const body = (await res.json()) as {
           messages?: { role: 'user' | 'assistant'; content: string; sources?: ChatMessage['sources'] }[];
         };
         const rows = Array.isArray(body?.messages) ? body.messages : [];
-        setMessagesByMode((prev) => ({
-          ...prev,
-          [mode]: rows.map((m) => ({
-            id: uuid(),
-            role: m.role,
-            content: m.content,
-            sources: m.sources,
-          })),
+        return rows.map((m) => ({
+          id: uuid(),
+          role: m.role,
+          content: m.content,
+          sources: m.sources,
         }));
-        return true;
       } catch {
-        return false;
+        return null;
       }
     },
-    [mode],
+    [],
   );
 
   const startChat = useCallback(async () => {
@@ -285,19 +408,37 @@ const FloatingChat = ({
     if (name.length < 2) return;
     const code = resumeDraft.trim();
     setGateError(null);
+
+    let msgs: ChatMessage[] = [];
+    let sessionId: string | null = null;
     if (code) {
-      const ok = await rehydrate(code);
-      if (!ok) {
+      const got = await fetchTranscript(code);
+      if (!got) {
         setGateError('That resume code did not match a conversation.');
         return;
       }
-      setSessionIdByMode((prev) => ({ ...prev, [mode]: code }));
+      msgs = got;
+      sessionId = code;
     }
-    setDisplayName(name);
-    // Returning from the menu: submitting the gate closes it and goes back to
-    // the chat in the (possibly newly chosen) bot.
+
+    // Starting a new chat ALWAYS creates a new session (fresh or seeded from a
+    // resume code). Resuming a SAVED conversation is done via the dropdown.
+    const now = Date.now();
+    const s: Session = {
+      id: uuid(),
+      displayName: name,
+      mode: gateMode,
+      sessionId,
+      messages: msgs,
+      createdAt: now,
+      updatedAt: now,
+    };
+    setSessions((prev) => [...prev, s]);
+    setActiveId(s.id);
     setMenuOpen(false);
-  }, [nameDraft, resumeDraft, mode, rehydrate]);
+    setNameDraft('');
+    setResumeDraft('');
+  }, [nameDraft, resumeDraft, gateMode, fetchTranscript]);
 
   // Auto-scroll the message list to the bottom whenever it changes.
   useEffect(() => {
@@ -326,9 +467,19 @@ const FloatingChat = ({
   // Cleanup on unmount.
   useEffect(() => stopPolling, [stopPolling]);
 
-  // AC-T7-5: poll the pending endpoint with exponential backoff. Flips to
-  // Unavailable after K consecutive network/5xx failures; flips to Expired
-  // after POLL_DURATION_MAX_MS total wall-clock.
+  // Update one session by id (functional update). Bumps updatedAt.
+  const patchSession = useCallback(
+    (id: string, patch: (s: Session) => Session): void => {
+      setSessions((prev) =>
+        prev.map((s) => (s.id === id ? { ...patch(s), updatedAt: Date.now() } : s)),
+      );
+    },
+    [],
+  );
+
+  // AC-T7-5: poll the pending endpoint with constant cadence while pending.
+  // Flips to Unavailable after K consecutive network/5xx failures; flips to
+  // Expired after POLL_DURATION_MAX_MS total wall-clock.
   const pollOnce = useCallback(
     async (pendingId: string, delayMs: number) => {
       if (abortedRef.current) return;
@@ -388,24 +539,25 @@ const FloatingChat = ({
       }
       const s = body?.status;
       if (s === 'answered' && typeof body.answer === 'string') {
-        // Append the assistant answer to the mode that SENT the request.
-        // pollModeRef is set in send() at SEND time to the active mode; reading
-        // it here (NOT the `mode` closure var) routes the answer correctly even
-        // when a chip did setMode + send in one tap — otherwise the queued poll
-        // captured the pre-switch mode and the answer landed in the wrong bot.
-        const answeredMode = pollModeRef.current;
-        setMessagesByMode((prev) => ({
-          ...prev,
-          [answeredMode]: [
-            ...prev[answeredMode],
-            {
-              id: uuid(),
-              role: 'assistant',
-              content: body.answer as string,
-              sources: Array.isArray(body.sources) ? body.sources : undefined,
-            },
-          ],
-        }));
+        // Append the assistant answer to the SESSION that SENT the request.
+        // pollSessionIdRef is set in send() at SEND time; reading it here (NOT
+        // activeId) routes the answer correctly even if the visitor has since
+        // picked another conversation in the dropdown.
+        const answeredId = pollSessionIdRef.current;
+        if (answeredId) {
+          patchSession(answeredId, (sess) => ({
+            ...sess,
+            messages: [
+              ...sess.messages,
+              {
+                id: uuid(),
+                role: 'assistant',
+                content: body.answer as string,
+                sources: Array.isArray(body.sources) ? body.sources : undefined,
+              },
+            ],
+          }));
+        }
         setStatus('answered');
         stopPolling();
         return;
@@ -427,7 +579,7 @@ const FloatingChat = ({
       // steady poll can never trip its own 429.
       schedule(pollMinMs);
     },
-    [stopPolling, pollDurationMaxMs, pollMaxMs, pollMinMs],
+    [stopPolling, pollDurationMaxMs, pollMaxMs, pollMinMs, patchSession],
   );
 
   const startAwaiting = useCallback(
@@ -443,17 +595,19 @@ const FloatingChat = ({
         pollMinMs,
       );
     },
-    [pollOnce],
+    [pollOnce, pollMinMs],
   );
 
   // AC-T7-6: send -> POST /api/chat. A retried POST with the same
   // client_request_id is forwarded verbatim (the bot dedupes).
-  const send = useCallback(async (message?: string, overrideMode?: Mode) => {
-    const activeMode = overrideMode ?? mode;
-    // Route the eventual polled ANSWER by the send-time mode, not the closure
-    // mode at poll time — a chip's setMode + send in one handler would
-    // otherwise leave the queued poll holding the pre-switch mode.
-    pollModeRef.current = activeMode;
+  const send = useCallback(async (message?: string) => {
+    const activeSession = sessions.find((s) => s.id === activeId) ?? null;
+    if (!activeSession) return;
+    const activeMode = activeSession.mode;
+    // Route the eventual polled ANSWER to the session that SENT it — reading
+    // activeId at poll time would misroute if the visitor switches sessions
+    // while a request is in flight.
+    pollSessionIdRef.current = activeSession.id;
     const trimmed = (message ?? draft).trim();
     if (!trimmed || status === 'awaiting' || status === 'composing') return;
 
@@ -465,7 +619,10 @@ const FloatingChat = ({
       role: 'user',
       content: trimmed,
     };
-    setMessagesByMode((prev) => ({ ...prev, [activeMode]: [...prev[activeMode], userMsg] }));
+    patchSession(activeSession.id, (s) => ({
+      ...s,
+      messages: [...s.messages, userMsg],
+    }));
     setDraft('');
     setStatus('composing');
 
@@ -486,8 +643,8 @@ const FloatingChat = ({
           mode: activeMode,
           client_request_id: clientRequestId,
           // Reusing the session is what gives the bot conversation context.
-          sessionId: sessionIdByMode[activeMode],
-          displayName,
+          sessionId: activeSession.sessionId,
+          displayName: activeSession.displayName,
         }),
       });
     } catch {
@@ -513,13 +670,11 @@ const FloatingChat = ({
     // First message mints the session; keep it so later turns reuse it and the
     // visitor has a resume code.
     const newSession = body.sessionId;
-    if (typeof newSession === 'string' && newSession) {
-      setSessionIdByMode((prev) =>
-        prev[activeMode] === newSession ? prev : { ...prev, [activeMode]: newSession },
-      );
+    if (typeof newSession === 'string' && newSession && newSession !== activeSession.sessionId) {
+      patchSession(activeSession.id, (s) => ({ ...s, sessionId: newSession }));
     }
     startAwaiting(body.pendingId);
-  }, [draft, status, startAwaiting, mode, sessionIdByMode, displayName]);
+  }, [draft, status, sessions, activeId, patchSession, startAwaiting]);
 
   // --- Render ------------------------------------------------------------
   const openTransition = useMemo(
@@ -529,6 +684,10 @@ const FloatingChat = ({
         : ({ type: 'spring', stiffness: 300, damping: 26 } as const),
     [reducedMotion],
   );
+
+  const activeMode = active?.mode ?? 'personal';
+  const activeSessionId = active?.sessionId ?? null;
+  const activeDisplayName = active?.displayName ?? '';
 
   return (
     <>
@@ -570,17 +729,18 @@ const FloatingChat = ({
             {/* Header */}
             <header className="flex items-center justify-between border-b border-accent/20 pb-2">
               <div className="flex items-center gap-2">
-                {/* Back-to-menu: returns to the gate (name pre-filled, bot toggle
-                    pre-selected) so a visitor can switch Personal/3-Kingdom or
-                    re-enter after they're already chatting. Only shown INSIDE the
-                    chat — the gate is already the menu. */}
-                {displayName && !menuOpen && (
+                {/* Back-to-menu: returns to the menu (dropdown of saved
+                    sessions + new-chat form) so a visitor can switch
+                    conversations or start a new one in another bot. Only shown
+                    INSIDE the chat — the menu is already the menu. */}
+                {active && !menuOpen && (
                   <button
                     type="button"
                     aria-label="Back to menu"
                     onClick={() => {
                       setMenuOpen(true);
-                      setNameDraft(displayName ?? '');
+                      setGateMode(active?.mode ?? 'personal');
+                      setNameDraft(active?.displayName ?? '');
                       setResumeDraft('');
                       setGateError(null);
                     }}
@@ -590,7 +750,7 @@ const FloatingChat = ({
                   </button>
                 )}
                 <h2 className="flex items-center gap-1.5 text-sm font-semibold tracking-wide">
-                  {mode === '3kok' ? (
+                  {activeMode === '3kok' ? (
                     <>
                       <FontAwesomeIcon icon={faScroll} className="h-4 w-4 text-accent" aria-hidden="true" />
                       <span>สามก๊ก</span>
@@ -625,9 +785,10 @@ const FloatingChat = ({
               </div>
             </header>
 
-            {/* AC-T3-1..2: consent notice. Rendered ABOVE the gate so it is on screen
-                when the visitor presses Start chat, which is the moment they
-                agree. Dismissable, and the dismissal persists per browser. */}
+            {/* AC-T3-1..2: consent notice. Rendered ABOVE the gate/menu so it is
+                on screen when the visitor presses Start chat, which is the
+                moment they agree. Dismissable, and the dismissal persists per
+                browser. */}
             {!consentDismissed && (
               <div className="flex items-center gap-2 rounded-lg bg-white/5 px-2 py-1 text-xs text-white/70">
                 <FontAwesomeIcon
@@ -659,43 +820,81 @@ const FloatingChat = ({
               </div>
             )}
 
-            {/* Identity gate. A name means an approved answer reaches a person
-                rather than an anonymous socket, and it anchors the session so
-                follow-up questions have context. The resume code is that
-                session id — paste it on another machine to continue there.
-                Shows on first visit (!displayName) OR when the visitor re-opens
-                it from the chat via the ← Menu control (menuOpen). */}
-            {!displayName || menuOpen ? (
+            {/* Menu / identity gate. A name means an approved answer reaches a
+                person rather than an anonymous socket, and it anchors the
+                session so follow-up questions have context. The resume code is
+                that session id — paste it on another machine to continue there.
+                Shows on first visit (no active session) OR when the visitor
+                re-opens it from the chat via the ← Menu control (menuOpen). */}
+            {gateVisible ? (
               <form
-                className="flex grow flex-col justify-center gap-3"
+                className="flex grow flex-col justify-center gap-3 overflow-y-auto"
                 onSubmit={(e) => {
                   e.preventDefault();
                   void startChat();
                 }}
               >
+                {/* Dropdown of saved conversations. Selecting one resumes it
+                    (sets it active, swaps the visible transcript) and re-enters
+                    the chat. Absent on a first visit. */}
+                {sessions.length > 0 && (
+                  <div>
+                    <label
+                      htmlFor="concierge-resume-select"
+                      className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                    >
+                      Resume a conversation
+                    </label>
+                    <select
+                      id="concierge-resume-select"
+                      value={activeId ?? ''}
+                      onChange={(e) => {
+                        const sid = e.target.value;
+                        if (!sid) return;
+                        const picked = sessions.find((s) => s.id === sid);
+                        if (!picked) return;
+                        setActiveId(picked.id);
+                        setGateMode(picked.mode);
+                        setMenuOpen(false);
+                        setNameDraft('');
+                        setResumeDraft('');
+                        setGateError(null);
+                      }}
+                      className="w-full rounded-lg border border-white/10 bg-white/10 p-2 text-sm text-white focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50"
+                    >
+                      <option value="">— Pick a saved conversation —</option>
+                      {sessions.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {sessionLabel(s)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <p className="text-sm text-white/70">
                   Tell me who I am talking to. I review and approve every answer
                   personally, so a name helps.
                 </p>
-                {/* A2: choose your bot at the gate. Persists (see saveStored) so a
-                    returning visitor — who skips this gate — keeps their last bot. */}
+                {/* A2: choose your bot at the gate. This selects the bot for the
+                    NEW session being created. */}
                 <div role="group" aria-label="Bot">
                   <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/60">
                     Bot
                   </span>
                   <div className="flex gap-1.5 rounded-lg border border-white/10 bg-white/5 p-1">
                     {(['personal', '3kok'] as const).map((m) => {
-                      const active = mode === m;
+                      const isPressed = gateMode === m;
                       const label = m === 'personal' ? 'Personal' : '3 Kingdoms';
                       return (
                         <button
                           key={m}
                           type="button"
-                          aria-pressed={active}
-                          onClick={() => setMode(m)}
+                          aria-pressed={isPressed}
+                          onClick={() => setGateMode(m)}
                           className={
                             'flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ' +
-                            (active
+                            (isPressed
                               ? 'bg-accent text-black'
                               : 'text-white/60 hover:text-white')
                           }
@@ -728,7 +927,7 @@ const FloatingChat = ({
                     id="concierge-resume"
                     value={resumeDraft}
                     onChange={(e) => setResumeDraft(e.target.value)}
-                    placeholder="Paste to continue an earlier chat"
+                    placeholder="Paste to import an earlier chat"
                     className="w-full rounded-lg border border-white/10 bg-white/10 p-2 text-sm text-white placeholder-white/60 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50"
                   />
                 </div>
@@ -761,7 +960,7 @@ const FloatingChat = ({
             >
               {messages.length === 0 && (
                 <p className="m-auto text-center text-sm text-white/70">
-                  {mode === '3kok' ? (
+                  {activeMode === '3kok' ? (
                     <>
                       ถามได้ทุกเรื่องเกี่ยวกับสามก๊ก — ตัวละคร เหตุการณ์ และกลศึก
                       <span className="mt-1 block text-xs text-white/50">
@@ -904,18 +1103,18 @@ const FloatingChat = ({
                 shown rather than hidden. Anyone holding it can read this
                 transcript, which is why it is only ever displayed to the person
                 whose browser created it. */}
-            {sessionIdByMode[mode] && (
+            {activeSessionId && (
               <div className="mt-1 flex items-center gap-2 text-[11px] text-white/50">
                 <span className="shrink-0">Resume code</span>
                 <code className="min-w-0 flex-1 truncate text-white/70">
-                  {sessionIdByMode[mode]}
+                  {activeSessionId}
                 </code>
                 <button
                   type="button"
                   className="shrink-0 rounded text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   onClick={() => {
                     void navigator.clipboard
-                      ?.writeText(sessionIdByMode[mode] as string)
+                      ?.writeText(activeSessionId)
                       .catch(() => {});
                   }}
                 >

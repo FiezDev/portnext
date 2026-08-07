@@ -2,19 +2,55 @@ import { fireEvent, render, screen, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import FloatingChat from '@/components/global/FloatingChat';
 
-// The identity gate stands in front of the chat now. These suites exercise the
-// conversation itself, so seed a returning visitor (the shape localStorage
-// holds) instead of clicking through the gate in every test. Gate behaviour has
-// its own tests in FloatingChat.test.tsx.
+// --- v2 multi-session storage helpers ------------------------------------
+// Storage migrated from ONE session object to a LIST of single-bot
+// conversations. localStorage now holds:
+//   concierge_sessions_v2        -> Session[] ({id, displayName, mode,
+//                                          sessionId, messages, createdAt,
+//                                          updatedAt})
+//   concierge_active_session_v2  -> the active session id (string)
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: { title: string; url: string }[];
+}
+type Mode = 'personal' | '3kok';
+interface Session {
+  id: string;
+  displayName: string;
+  mode: Mode;
+  sessionId: string | null;
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+function makeSession(opts: Partial<Session> & { displayName?: string } = {}): Session {
+  const now = 1_700_000_000_000; // deterministic timestamp for stable date labels
+  return {
+    id: opts.id ?? 's-' + Math.random().toString(36).slice(2, 8),
+    displayName: opts.displayName ?? 'Tester',
+    mode: opts.mode ?? 'personal',
+    sessionId: opts.sessionId ?? null,
+    messages: opts.messages ?? [],
+    createdAt: opts.createdAt ?? now,
+    updatedAt: opts.updatedAt ?? now,
+  };
+}
+
+function seedSessions(sessions: Session[], activeId?: string | null) {
+  localStorage.setItem('concierge_sessions_v2', JSON.stringify(sessions));
+  const aid = activeId !== undefined ? activeId : (sessions[0]?.id ?? null);
+  if (aid) localStorage.setItem('concierge_active_session_v2', aid);
+  else localStorage.removeItem('concierge_active_session_v2');
+}
+
+// Seed a returning visitor: one personal session, active. (Was a v1 object;
+// now a v2 Session[].)
 function seedReturningVisitor(name = 'Tester') {
-  localStorage.setItem(
-    'concierge_session_v1',
-    JSON.stringify({
-      displayName: name,
-      sessionId: { personal: null, '3kok': null },
-      messages: { personal: [], '3kok': [] },
-    }),
-  );
+  const s = makeSession({ displayName: name, mode: 'personal' });
+  seedSessions([s], s.id);
 }
 
 // --- Shared fetch mock ---------------------------------------------------
@@ -38,6 +74,16 @@ function jsonRes(body: unknown, status = 200): FakeResponse {
     text: () => Promise.resolve(text),
     json: () => Promise.resolve(JSON.parse(text)),
   };
+}
+
+function postedBody(): Record<string, unknown> | undefined {
+  const postCall = fetchMock.mock.calls.find(
+    ([url, init]) =>
+      String(url).includes('/api/chat') &&
+      (init as RequestInit | undefined)?.method === 'POST',
+  );
+  if (!postCall) return undefined;
+  return JSON.parse((postCall[1] as RequestInit).body as string);
 }
 
 beforeEach(() => {
@@ -206,8 +252,6 @@ describe('AC-T7-5 degradation to Unavailable', () => {
     });
 
     // Advance timers to drive the polling loop through K failures.
-    // Backoff doubles each failure (20, 40, 80, 160, 320, ...). Advance in
-    // chunks that comfortably cover each scheduled poll; we need >=5 failures.
     for (let i = 0; i < 6; i++) {
       await act(async () => {
         jest.advanceTimersByTime(1000);
@@ -412,7 +456,7 @@ describe('identity gate and session persistence', () => {
     expect(start).toBeEnabled();
   });
 
-  it('reveals the composer after starting and remembers the name', async () => {
+  it('reveals the composer after starting and remembers the name (v2 session)', async () => {
     localStorage.clear();
     await openBubble();
     await act(async () => {
@@ -424,10 +468,18 @@ describe('identity gate and session persistence', () => {
       fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
     });
     expect(screen.getByLabelText(/^message$/i)).toBeInTheDocument();
-    expect(localStorage.getItem('concierge_session_v1')).toContain('Alex');
+    // v2: a Session[] is written, with an entry whose displayName is 'Alex'.
+    const stored = JSON.parse(
+      localStorage.getItem('concierge_sessions_v2') || '[]',
+    ) as Session[];
+    expect(stored.length).toBe(1);
+    expect(stored[0].displayName).toBe('Alex');
+    expect(localStorage.getItem('concierge_active_session_v2')).toBe(
+      stored[0].id,
+    );
   });
 
-  it('rehydrates a transcript from a resume code', async () => {
+  it('rehydrates a transcript from a resume code into a new session', async () => {
     localStorage.clear();
     fetchMock.mockResolvedValueOnce(
       jsonRes({
@@ -458,6 +510,11 @@ describe('identity gate and session persistence', () => {
     );
     // And it becomes the resume code shown back to the visitor.
     expect(screen.getByText('sess-abc')).toBeInTheDocument();
+    // v2: a session was created carrying the resume code as its sessionId.
+    const stored = JSON.parse(
+      localStorage.getItem('concierge_sessions_v2') || '[]',
+    ) as Session[];
+    expect(stored.some((s) => s.sessionId === 'sess-abc')).toBe(true);
   });
 
   it('reports a resume code that does not match anything', async () => {
@@ -482,32 +539,295 @@ describe('identity gate and session persistence', () => {
 });
 
 // --------------------------------------------------------------------------
-// Back-to-menu: once inside the chat there is no way back to the gate to
-// switch bot or re-enter. A "← Menu" control in the panel header returns to
-// the gate with the name pre-filled and the bot toggle pre-selected, so a
-// user can flip Personal/3-Kingdom or re-enter after they're already chatting.
+// Multi-session (v2). Storage is now a LIST of single-bot conversations; the
+// gate/menu shows a dropdown to resume any saved one, and the "start new chat"
+// form creates a fresh session. v1 conversations are migrated on first load.
 // --------------------------------------------------------------------------
-describe('back-to-menu control (switch bot / re-enter from inside chat)', () => {
-  function seedReturningVisitorNamed(
-    name: string,
-    mode: 'personal' | '3kok' = 'personal',
-  ) {
-    localStorage.setItem(
-      'concierge_session_v1',
-      JSON.stringify({
-        displayName: name,
-        sessionId: { personal: null, '3kok': null },
-        messages: { personal: [], '3kok': [] },
-        mode,
-      }),
-    );
-  }
+describe('multi-session (v2)', () => {
+  // --- MIGRATION: v1 object → v2 Session[] (one entry per mode with msgs) ---
+  describe('v1 → v2 migration', () => {
+    it('builds one v2 session per mode that has messages, preserves transcripts, removes v1', async () => {
+      localStorage.clear();
+      // v1 visitor with both personal + 3kok history.
+      localStorage.setItem(
+        'concierge_session_v1',
+        JSON.stringify({
+          displayName: 'Legacy',
+          sessionId: { personal: 'p-leg', '3kok': 'k-leg' },
+          messages: {
+            personal: [{ id: 'm1', role: 'user', content: 'hello personal' }],
+            '3kok': [
+              { id: 'm2', role: 'assistant', content: 'hello 3kok answer' },
+            ],
+          },
+          mode: 'personal',
+        }),
+      );
 
-  it('returns to the gate (name pre-filled, bot toggle present) then re-enters in the chosen bot', async () => {
+      const { container } = render(<FloatingChat />);
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
+      });
+
+      // v2 written with 2 entries; v1 gone.
+      const stored = JSON.parse(
+        localStorage.getItem('concierge_sessions_v2') || '[]',
+      ) as Session[];
+      expect(stored.length).toBe(2);
+      expect(localStorage.getItem('concierge_session_v1')).toBeNull();
+      // Conversations intact: the personal entry (active per v1.mode) loaded.
+      expect(stored.some((s) => s.mode === 'personal')).toBe(true);
+      expect(stored.some((s) => s.mode === '3kok')).toBe(true);
+      // Resume codes preserved.
+      expect(stored.find((s) => s.mode === 'personal')!.sessionId).toBe(
+        'p-leg',
+      );
+      expect(stored.find((s) => s.mode === '3kok')!.sessionId).toBe('k-leg');
+      // Active = the personal session (v1.mode='personal'), chat is shown with
+      // its transcript.
+      expect(container).toHaveTextContent('hello personal');
+    });
+
+    it('creates no entries when v1 has no messages', async () => {
+      localStorage.clear();
+      localStorage.setItem(
+        'concierge_session_v1',
+        JSON.stringify({
+          displayName: 'Empty',
+          sessionId: { personal: null, '3kok': null },
+          messages: { personal: [], '3kok': [] },
+          mode: 'personal',
+        }),
+      );
+      render(<FloatingChat />);
+      // No v2 sessions, and the gate is up (no active session).
+      expect(localStorage.getItem('concierge_sessions_v2')).toBe('[]');
+      // v1 was consumed (migration ran even though it yielded nothing).
+      expect(localStorage.getItem('concierge_session_v1')).toBeNull();
+    });
+  });
+
+  // --- NEW SESSION: fresh → gate → 3-Kingdom → start → session created ---
+  describe('start new chat creates a session', () => {
+    it('creates a 3kok session on start, then send posts mode:"3kok" into it', async () => {
+      localStorage.clear();
+      jest.useFakeTimers();
+      fetchMock.mockResolvedValueOnce(
+        jsonRes({ pendingId: 'p-new', status: 'pending' }, 202),
+      );
+
+      render(
+        <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
+      });
+      // Fresh visit: no saved sessions → no dropdown.
+      expect(screen.queryByLabelText(/resume a conversation/i)).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /3 kingdoms/i }));
+      });
+      await act(async () => {
+        fireEvent.change(screen.getByLabelText(/your name/i), {
+          target: { value: 'Cara' },
+        });
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /start chat/i }));
+      });
+
+      // A 3kok session named Cara was created and made active.
+      const stored = JSON.parse(
+        localStorage.getItem('concierge_sessions_v2') || '[]',
+      ) as Session[];
+      expect(stored.length).toBe(1);
+      expect(stored[0].displayName).toBe('Cara');
+      expect(stored[0].mode).toBe('3kok');
+      expect(localStorage.getItem('concierge_active_session_v2')).toBe(
+        stored[0].id,
+      );
+
+      // Send → POST mode=3kok.
+      const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
+      await act(async () => {
+        fireEvent.change(input, { target: { value: 'new q' } });
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /send/i }));
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(60);
+        await Promise.resolve();
+      });
+      const posted = postedBody();
+      expect(posted).toBeDefined();
+      expect(posted!.mode).toBe('3kok');
+
+      // The user message landed in the active session.
+      const storedAfter = JSON.parse(
+        localStorage.getItem('concierge_sessions_v2') || '[]',
+      ) as Session[];
+      expect(
+        storedAfter[0].messages.some((m) => m.content === 'new q'),
+      ).toBe(true);
+
+      jest.useRealTimers();
+    });
+  });
+
+  // --- DROPDOWN RESUME: pick a saved session, conversation swaps to it ---
+  describe('dropdown resume', () => {
+    it('lists saved sessions labeled name · bot · date, and selecting one swaps the conversation', async () => {
+      const s1 = makeSession({
+        id: 's-alice',
+        displayName: 'Alice',
+        mode: 'personal',
+        messages: [{ id: 'a1', role: 'user', content: 'alice message' }],
+      });
+      const s2 = makeSession({
+        id: 's-bob',
+        displayName: 'Bob',
+        mode: '3kok',
+        messages: [{ id: 'b1', role: 'assistant', content: 'bob message' }],
+      });
+      seedSessions([s1, s2], s1.id);
+
+      render(<FloatingChat />);
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
+      });
+      // Active = s1 (Alice) → its message is visible.
+      expect(screen.getByText('alice message')).toBeInTheDocument();
+
+      // ← Menu.
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /back to menu/i }));
+      });
+      // Dropdown visible with both sessions, labeled correctly.
+      const select = screen.getByLabelText(/resume a conversation/i) as HTMLSelectElement;
+      const options = Array.from(select.options).map((o) => o.textContent || '');
+      expect(options.some((t) => /Alice.*Personal/.test(t))).toBe(true);
+      expect(options.some((t) => /Bob.*3-Kingdom/.test(t))).toBe(true);
+
+      // Select Bob → conversation swaps.
+      await act(async () => {
+        fireEvent.change(select, { target: { value: 's-bob' } });
+      });
+      await waitFor(() => {
+        expect(screen.getByText('bob message')).toBeInTheDocument();
+      });
+      expect(screen.queryByText('alice message')).not.toBeInTheDocument();
+      // Active id persisted.
+      expect(localStorage.getItem('concierge_active_session_v2')).toBe('s-bob');
+    });
+  });
+
+  // --- BACK-TO-MENU + SWITCH: from one chat, switch to another saved session.
+  describe('back-to-menu + switch sessions', () => {
+    it('from an active chat, ← Menu → dropdown → pick another → chat swaps', async () => {
+      const s1 = makeSession({
+        id: 's-one',
+        displayName: 'Winnie',
+        mode: 'personal',
+        messages: [{ id: 'w1', role: 'user', content: 'winnie says hi' }],
+      });
+      const s2 = makeSession({
+        id: 's-two',
+        displayName: 'Piglet',
+        mode: '3kok',
+        messages: [{ id: 'p1', role: 'user', content: 'piglet says hello' }],
+      });
+      seedSessions([s1, s2], s1.id);
+
+      render(<FloatingChat />);
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
+      });
+      expect(screen.getByText('winnie says hi')).toBeInTheDocument();
+
+      // ← Menu → dropdown → pick Piglet.
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /back to menu/i }));
+      });
+      const select = screen.getByLabelText(/resume a conversation/i);
+      await act(async () => {
+        fireEvent.change(select, { target: { value: 's-two' } });
+      });
+      await waitFor(() => {
+        expect(screen.getByText('piglet says hello')).toBeInTheDocument();
+      });
+      expect(screen.queryByText('winnie says hi')).not.toBeInTheDocument();
+    });
+  });
+
+  // --- Regression: polled answer routes to the active session that SENT it ---
+  // (the multi-session successor to the pollModeRef fix). If the active session
+  // sent and stayed active, the answer must land in its transcript.
+  describe('answer routing into the active session', () => {
+    it('appends the polled answer to the active session that sent the message', async () => {
+      jest.useFakeTimers();
+      const s1 = makeSession({
+        id: 's-route',
+        displayName: 'Router',
+        mode: '3kok',
+        messages: [],
+      });
+      seedSessions([s1], s1.id);
+      fetchMock
+        .mockResolvedValueOnce(
+          jsonRes({ pendingId: 'p-route2', status: 'pending' }, 202),
+        )
+        .mockResolvedValueOnce(
+          jsonRes({ status: 'answered', answer: 'routed-canary' }),
+        );
+
+      const { container } = render(
+        <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
+      });
+      const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
+      await act(async () => {
+        fireEvent.change(input, { target: { value: 'route me' } });
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /send/i }));
+      });
+      // POST + first poll (answered).
+      await act(async () => {
+        jest.advanceTimersByTime(60);
+        await Promise.resolve();
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(60);
+        await Promise.resolve();
+      });
+      await waitFor(() => {
+        expect(container).toHaveTextContent('routed-canary');
+      });
+      // Persisted into the active session.
+      const stored = JSON.parse(
+        localStorage.getItem('concierge_sessions_v2') || '[]',
+      ) as Session[];
+      expect(
+        stored[0].messages.some((m) => m.content === 'routed-canary'),
+      ).toBe(true);
+      jest.useRealTimers();
+    });
+  });
+});
+
+// --------------------------------------------------------------------------
+// Back-to-menu from inside chat: returns to the menu (dropdown + new-chat
+// form) so a visitor can switch sessions or start a new one in another bot.
+// --------------------------------------------------------------------------
+describe('back-to-menu control (open menu / switch bot from inside chat)', () => {
+  it('returns to the menu (name pre-filled, bot toggle present) then a 3-Kingdom start creates a new 3kok session', async () => {
     jest.useFakeTimers();
-    // Returning visitor opens straight into the chat (post-gate), where the
-    // Menu control lives.
-    seedReturningVisitorNamed('Tester', 'personal');
+    const s = makeSession({ displayName: 'Tester', mode: 'personal' });
+    seedSessions([s], s.id);
     // POST -> pending for the send after re-entering; remaining calls pending.
     fetchMock
       .mockResolvedValueOnce(jsonRes({ pendingId: 'p-menu', status: 'pending' }, 202))
@@ -528,7 +848,7 @@ describe('back-to-menu control (switch bot / re-enter from inside chat)', () => 
       fireEvent.click(screen.getByRole('button', { name: /back to menu/i }));
     });
 
-    // The gate re-appears: name input present AND pre-filled with the name...
+    // The menu re-appears: name input present AND pre-filled with the name...
     const nameInput = screen.getByLabelText(/your name/i) as HTMLInputElement;
     expect(nameInput).toBeInTheDocument();
     expect(nameInput.value).toBe('Tester');
@@ -541,7 +861,8 @@ describe('back-to-menu control (switch bot / re-enter from inside chat)', () => 
     // The Message composer is gone while at the menu.
     expect(screen.queryByLabelText(/^message$/i)).not.toBeInTheDocument();
 
-    // Switch to the 3-Kingdom bot and Start -> back in chat.
+    // Switch to the 3-Kingdom bot and Start -> creates a NEW 3kok session and
+    // returns to chat in it.
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /3 kingdoms/i }));
     });
@@ -553,7 +874,7 @@ describe('back-to-menu control (switch bot / re-enter from inside chat)', () => 
     );
     expect(messageInput).toBeInTheDocument();
 
-    // Type + send; assert the POST body carries mode === '3kok' (switch took effect).
+    // Type + send; assert the POST body carries mode === '3kok'.
     await act(async () => {
       fireEvent.change(messageInput, { target: { value: 'hello' } });
     });
@@ -566,14 +887,9 @@ describe('back-to-menu control (switch bot / re-enter from inside chat)', () => 
       await Promise.resolve();
     });
 
-    const postCall = fetchMock.mock.calls.find(
-      ([url, init]) =>
-        String(url).includes('/api/chat') &&
-        (init as RequestInit | undefined)?.method === 'POST',
-    );
-    expect(postCall).toBeDefined();
-    const postedBody = JSON.parse((postCall![1] as RequestInit).body as string);
-    expect(postedBody.mode).toBe('3kok');
+    const posted = postedBody();
+    expect(posted).toBeDefined();
+    expect(posted!.mode).toBe('3kok');
 
     jest.useRealTimers();
   });
