@@ -59,7 +59,7 @@ afterEach(() => {
 describe('AC-T7-1 FloatingChat bubble + panel', () => {
   it('renders the floating button and opens the panel on click', async () => {
     render(<FloatingChat />);
-    const bubble = screen.getByRole('button', { name: /chat with fiez/i });
+    const bubble = screen.getByRole('button', { name: /ai chat/i });
     expect(bubble).toBeInTheDocument();
 
     await act(async () => {
@@ -68,7 +68,7 @@ describe('AC-T7-1 FloatingChat bubble + panel', () => {
     // The bubble reflects its open state on the toggle itself.
     expect(bubble).toHaveAttribute('aria-expanded', 'true');
 
-    const dialog = await screen.findByRole('dialog', { name: /chat with fiez/i });
+    const dialog = await screen.findByRole('dialog', { name: /ai chat/i });
     expect(dialog).toBeInTheDocument();
     // Input is labeled.
     expect(screen.getByLabelText(/message/i)).toBeInTheDocument();
@@ -76,7 +76,7 @@ describe('AC-T7-1 FloatingChat bubble + panel', () => {
 
   it('closes the panel on Esc', async () => {
     render(<FloatingChat />);
-    const bubble = screen.getByRole('button', { name: /chat with fiez/i });
+    const bubble = screen.getByRole('button', { name: /ai chat/i });
     await act(async () => {
       fireEvent.click(bubble);
     });
@@ -116,7 +116,7 @@ describe('AC-T7-1 / AC-T7-3 send + poll flow', () => {
       <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
 
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
@@ -195,7 +195,7 @@ describe('AC-T7-5 degradation to Unavailable', () => {
       <FloatingChat pollMinMs={20} pollMaxMs={20} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {
@@ -244,7 +244,7 @@ describe('[MED] FloatingChat source-URL XSS guard', () => {
 
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {
@@ -286,7 +286,7 @@ describe('[MED] FloatingChat source-URL XSS guard', () => {
 
     render(<FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
     const input = screen.getByLabelText(/message/i) as HTMLTextAreaElement;
     await act(async () => {
@@ -334,7 +334,7 @@ describe('poll cadence stays constant while pending', () => {
       <FloatingChat pollMinMs={50} pollMaxMs={5000} pollDurationMaxMs={60_000} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
     await act(async () => {
       fireEvent.change(screen.getByLabelText(/message/i), {
@@ -366,7 +366,7 @@ describe('empty-state intro on the single bubble', () => {
   it('opens to the personal bot and shows its portfolio intro', async () => {
     const { container } = render(<FloatingChat />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(container).toHaveTextContent(/work, stack, or availability/i);
@@ -382,7 +382,7 @@ describe('identity gate and session persistence', () => {
   async function openBubble() {
     render(<FloatingChat />);
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+      fireEvent.click(screen.getByRole('button', { name: /ai chat/i }));
     });
   }
 

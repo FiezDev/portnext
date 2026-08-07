@@ -7,7 +7,6 @@
 
 import {
   faClose,
-  faMessage,
   faPaperPlane,
   faScroll,
   faShieldHalved,
@@ -40,24 +39,13 @@ const MAX_STORED_MESSAGES = 40; // per bot — keeps localStorage small
 type Mode = 'personal' | '3kok';
 type ByMode<T> = Record<Mode, T>;
 
-// AC-T3-2/3 — quick-reply chips. Each carries the mode + question to send;
-// tapping one sets the mode and auto-sends (see onChip).
-interface ChatPreset {
-  label: string;
-  mode: Mode;
-  question: string;
-}
-const CHAT_PRESETS: ChatPreset[] = [
-  { label: 'What can you do?', mode: 'personal', question: 'What can you do?' },
-  { label: 'Tell me about your background', mode: 'personal', question: 'Tell me about your background' },
-  { label: 'Show me your projects', mode: 'personal', question: 'Show me your projects' },
-  { label: 'Summarise สามก๊ก', mode: '3kok', question: 'Summarise สามก๊ก (Romance of the Three Kingdoms)' },
-  { label: 'Who is โจโฉ (Cao Cao)?', mode: '3kok', question: 'Who is โจโฉ (Cao Cao)?' },
-];
 interface StoredSession {
   displayName: string;
   sessionId: ByMode<string | null>;
   messages: ByMode<ChatMessage[]>;
+  // Returning visitor's last bot (gate toggle). Default 'personal' when absent
+  // (legacy stored sessions predate the field).
+  mode: Mode;
 }
 
 // localStorage can be absent (SSR), a method-less stub (Node 25), or throw
@@ -89,6 +77,7 @@ function loadStored(): StoredSession | null {
       displayName: o.displayName.slice(0, 40),
       sessionId: { personal: p.id, '3kok': k.id },
       messages: { personal: p.msgs, '3kok': k.msgs },
+      mode: o.mode === '3kok' ? '3kok' : 'personal',
     };
   } catch {
     return null;
@@ -106,6 +95,7 @@ function saveStored(v: StoredSession): void {
         displayName: v.displayName,
         sessionId: v.sessionId,
         messages: { personal: trim(v.messages.personal), '3kok': trim(v.messages['3kok']) },
+        mode: v.mode,
       }),
     );
   } catch {
@@ -198,9 +188,11 @@ const FloatingChat = ({
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<ChatStatus>('open');
   const [draft, setDraft] = useState('');
-  // AC-T2-1: per-FAB mode (no localStorage — each open is a fresh
-  // session in that mode). 'personal' = Artemis, '3kok' = สามก๊ก.
-  const [mode, setMode] = useState<'personal' | '3kok'>('personal');
+  // Gate-chosen bot, persisted so a returning visitor (who skips the gate)
+  // keeps their last bot. 'personal' = Artemis, '3kok' = สามก๊ก.
+  const [mode, setMode] = useState<'personal' | '3kok'>(
+    () => loadStored()?.mode ?? 'personal',
+  );
   // Per-mode message history: each bot keeps its OWN list. Switching FAB
   // swaps the visible list — no leak, no loss (the bug where chatting with
   // Artemis then opening สามก๊ก showed Artemis's history).
@@ -252,8 +244,8 @@ const FloatingChat = ({
   // is passed, so we never write a half-filled record.
   useEffect(() => {
     if (!displayName) return;
-    saveStored({ displayName, sessionId: sessionIdByMode, messages: messagesByMode });
-  }, [displayName, sessionIdByMode, messagesByMode]);
+    saveStored({ displayName, sessionId: sessionIdByMode, messages: messagesByMode, mode });
+  }, [displayName, sessionIdByMode, messagesByMode, mode]);
 
   // Pull a transcript back from the server for a session id. This is what makes
   // a resume code work on a machine that has never seen this conversation.
@@ -521,18 +513,6 @@ const FloatingChat = ({
     startAwaiting(body.pendingId);
   }, [draft, status, startAwaiting, mode, sessionIdByMode, displayName]);
 
-  // AC-T3-3: a chip sets the mode and auto-sends in one tap. The bleed-guard
-  // resets a stale awaiting/answered state from the other mode (status is
-  // global, not per-mode) — same protection the old per-mode FABs had.
-  const onChip = useCallback(
-    (p: ChatPreset) => {
-      if (p.mode !== mode) setStatus('open');
-      setMode(p.mode);
-      void send(p.question, p.mode);
-    },
-    [mode, send],
-  );
-
   // --- Render ------------------------------------------------------------
   const openTransition = useMemo(
     () =>
@@ -545,16 +525,24 @@ const FloatingChat = ({
   return (
     <>
       {/* AC-T3-1: one bottom-right bubble launcher replaces the two mode FABs.
-          Mode is now chosen via quick-reply chips inside the panel. */}
+          Closed state shows a 2-line "AI"/"CHAT" label; open state shows the
+          close (X) icon so it toggles closed. Mode is chosen at the gate. */}
       <button
         type="button"
-        aria-label="Chat with Fiez"
+        aria-label="AI Chat"
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 right-5 z-[201] flex h-14 w-14 items-center justify-center rounded-full border border-accent/40 bg-black text-accent shadow-2xl shadow-black/60 transition-colors hover:bg-accent/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="fixed bottom-6 right-5 z-[201] flex h-14 w-14 flex-col items-center justify-center rounded-full border border-accent/40 bg-black text-accent leading-none shadow-2xl shadow-black/60 transition-colors hover:bg-accent/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
-        <FontAwesomeIcon icon={open ? faClose : faMessage} className="h-5 w-5" />
+        {open ? (
+          <FontAwesomeIcon icon={faClose} className="h-5 w-5" />
+        ) : (
+          <>
+            <span className="text-[10px] font-bold uppercase tracking-wide">AI</span>
+            <span className="text-[10px] font-bold uppercase tracking-wide">CHAT</span>
+          </>
+        )}
       </button>
 
       <AnimatePresence>
@@ -562,7 +550,7 @@ const FloatingChat = ({
           <motion.section
             key="panel"
             role="dialog"
-            aria-label="Chat with Fiez"
+            aria-label="AI Chat"
             aria-live="polite"
             aria-modal="false"
             className="fixed bottom-6 right-24 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-accent/25 bg-black/95 p-3 text-white shadow-2xl shadow-black/60 backdrop-blur-md"
@@ -658,6 +646,35 @@ const FloatingChat = ({
                   Tell me who I am talking to. I review and approve every answer
                   personally, so a name helps.
                 </p>
+                {/* A2: choose your bot at the gate. Persists (see saveStored) so a
+                    returning visitor — who skips this gate — keeps their last bot. */}
+                <div role="group" aria-label="Bot">
+                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/60">
+                    Bot
+                  </span>
+                  <div className="flex gap-1.5 rounded-lg border border-white/10 bg-white/5 p-1">
+                    {(['personal', '3kok'] as const).map((m) => {
+                      const active = mode === m;
+                      const label = m === 'personal' ? 'Personal' : '3 Kingdoms';
+                      return (
+                        <button
+                          key={m}
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() => setMode(m)}
+                          className={
+                            'flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ' +
+                            (active
+                              ? 'bg-accent text-black'
+                              : 'text-white/60 hover:text-white')
+                          }
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <div>
                   <label htmlFor="concierge-name" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/60">
                     Your name
@@ -689,6 +706,12 @@ const FloatingChat = ({
                     {gateError}
                   </p>
                 )}
+                {/* A4: review/training notice, shown at the gate so the visitor
+                    sees it before pressing Start. */}
+                <p className="text-[11px] leading-snug text-white/50">
+                  Each message is reviewed by the site owner before it reaches
+                  the AI, and conversations may be used to improve it.
+                </p>
                 <button
                   type="submit"
                   disabled={nameDraft.trim().length < 2}
@@ -812,21 +835,6 @@ const FloatingChat = ({
               )}
             </div>
 
-            {/* AC-T3-2/3: quick-reply chips — pick what to ask; sets mode + auto-sends. */}
-            <div className="flex flex-wrap gap-1.5 pb-1">
-              {CHAT_PRESETS.map((p) => (
-                <button
-                  key={p.label}
-                  type="button"
-                  disabled={status === 'awaiting' || status === 'composing'}
-                  onClick={() => onChip(p)}
-                  className="rounded-full whitespace-nowrap border border-accent/40 bg-accent/10 px-3 py-1 text-xs text-accent transition-colors hover:bg-accent/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-
             {/* Composer */}
             <div className="flex items-end gap-2 border-t border-white/15 pt-2">
               <label htmlFor="floating-chat-input" className="sr-only">
@@ -884,6 +892,12 @@ const FloatingChat = ({
                 </button>
               </div>
             )}
+
+            {/* A4: one-line persistent review/training footer. */}
+            <p className="mt-1 text-[11px] leading-snug text-white/50">
+              Each message is reviewed by the site owner before it reaches the
+              AI, and conversations may be used to improve it.
+            </p>
               </>
             )}
           </motion.section>
