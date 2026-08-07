@@ -65,6 +65,8 @@ describe('AC-T7-1 FloatingChat bubble + panel', () => {
     await act(async () => {
       fireEvent.click(bubble);
     });
+    // The bubble reflects its open state on the toggle itself.
+    expect(bubble).toHaveAttribute('aria-expanded', 'true');
 
     const dialog = await screen.findByRole('dialog', { name: /chat with fiez/i });
     expect(dialog).toBeInTheDocument();
@@ -377,7 +379,7 @@ describe('empty-state intro on the single bubble', () => {
 // refresh lost the conversation and the bot had no multi-turn context.
 // --------------------------------------------------------------------------
 describe('identity gate and session persistence', () => {
-  async function openArtemis() {
+  async function openBubble() {
     render(<FloatingChat />);
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
@@ -386,14 +388,14 @@ describe('identity gate and session persistence', () => {
 
   it('asks for a name before showing the composer on a first visit', async () => {
     localStorage.clear();
-    await openArtemis();
+    await openBubble();
     expect(screen.getByLabelText(/your name/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/^message$/i)).not.toBeInTheDocument();
   });
 
   it('will not start until the name is long enough', async () => {
     localStorage.clear();
-    await openArtemis();
+    await openBubble();
     const start = screen.getByRole('button', { name: /start chat/i });
     expect(start).toBeDisabled();
     await act(async () => {
@@ -412,7 +414,7 @@ describe('identity gate and session persistence', () => {
 
   it('reveals the composer after starting and remembers the name', async () => {
     localStorage.clear();
-    await openArtemis();
+    await openBubble();
     await act(async () => {
       fireEvent.change(screen.getByLabelText(/your name/i), {
         target: { value: 'Alex' },
@@ -435,7 +437,7 @@ describe('identity gate and session persistence', () => {
         ],
       }),
     );
-    await openArtemis();
+    await openBubble();
     await act(async () => {
       fireEvent.change(screen.getByLabelText(/your name/i), {
         target: { value: 'Alex' },
@@ -461,7 +463,7 @@ describe('identity gate and session persistence', () => {
   it('reports a resume code that does not match anything', async () => {
     localStorage.clear();
     fetchMock.mockResolvedValueOnce(jsonRes({ status: 'error' }, 404));
-    await openArtemis();
+    await openBubble();
     await act(async () => {
       fireEvent.change(screen.getByLabelText(/your name/i), {
         target: { value: 'Alex' },

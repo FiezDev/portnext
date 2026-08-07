@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, act } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FloatingChat from '@/components/global/FloatingChat';
 
@@ -98,6 +98,9 @@ describe('AC-T3-3 chip auto-sends in the right mode', () => {
     const posted = postedBody();
     expect(posted).toBeDefined();
     expect(posted!.mode).toBe('3kok');
+    expect(posted!.message).toBe('Summarise สามก๊ก (Romance of the Three Kingdoms)');
+    // Chips disable while an answer is pending (disabled={status === 'awaiting' || status === 'composing'}).
+    expect(screen.getByRole('button', { name: /summarise/i })).toBeDisabled();
     jest.useRealTimers();
   });
 
@@ -118,6 +121,50 @@ describe('AC-T3-3 chip auto-sends in the right mode', () => {
     const posted = postedBody();
     expect(posted).toBeDefined();
     expect(posted!.mode).toBe('personal');
+    expect(posted!.message).toBe('What can you do?');
+    jest.useRealTimers();
+  });
+
+  // Regression guard for the answer-routing fix (pollModeRef). A chip does
+  // setMode + send in one tap; before the fix the queued poll closed over the
+  // PRE-switch mode and the answer landed in the wrong bot's transcript
+  // (invisible in the now-active mode). This test passes WITH pollModeRef and
+  // would fail without it.
+  it('routes the polled answer to the chip mode, not the pre-switch mode', async () => {
+    jest.useFakeTimers();
+    fetchMock
+      .mockResolvedValueOnce(jsonRes({ pendingId: 'p-route', status: 'pending' }, 202))
+      .mockResolvedValueOnce(
+        jsonRes({ status: 'answered', answer: 'Routed-to-3kok canary' }),
+      );
+
+    const { container } = render(
+      <FloatingChat pollMinMs={50} pollMaxMs={50} pollDurationMaxMs={60_000} />,
+    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /chat with fiez/i }));
+    });
+    // Default mode is personal; the 3kok chip switches mode + sends in one tap.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /summarise สามก๊ก/i }));
+    });
+    // Drive the POST microtask + the first scheduled poll (50ms).
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+    // First poll returns answered.
+    await act(async () => {
+      jest.advanceTimersByTime(60);
+      await Promise.resolve();
+    });
+
+    // The chip switched the panel to 3kok. Without the fix the answer would
+    // have been appended to the old personal mode (invisible here) — seeing
+    // the canary proves it routed to the chip's mode.
+    await waitFor(() => {
+      expect(container).toHaveTextContent(/Routed-to-3kok canary/i);
+    });
     jest.useRealTimers();
   });
 });

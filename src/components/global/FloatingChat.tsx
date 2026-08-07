@@ -2,10 +2,8 @@
 
 // AC-T7-1..6 — FloatingChat widget
 //
-// Revives the old Livechat shell (glass panel, fixed position, DebounceInput,
-// FontAwesome + Imgix icons) but wires it to a REAL state machine that talks
-// same-origin to /api/chat (which proxies the portfolio bot). No bot secret
-// ever touches the browser.
+// A REAL state machine that talks same-origin to /api/chat (which proxies the
+// portfolio bot). No bot secret ever touches the browser.
 
 import {
   faClose,
@@ -28,18 +26,6 @@ const MAX_POLL_FAILURES = 5; // K consecutive network/5xx failures -> Unavailabl
 const POLL_MIN_MS = 3000; // backoff floor
 const POLL_MAX_MS = 15000; // backoff ceiling
 const POLL_DURATION_MAX_MS = 10 * 60 * 1000; // ~10 min total client budget
-
-// Edge-anchored folder tab. w-11 keeps the tap target at 44px; border-r-0 lets it
-// sit flush against the viewport edge so it reads as a tab, not a floating pill.
-const TAB_BASE =
-  'flex w-11 items-center justify-center rounded-l-lg border border-r-0 py-4 ' +
-  'text-[11px] font-semibold uppercase tracking-[0.18em] ' +
-  'shadow-[-4px_0_14px_rgba(0,0,0,0.35)] transition-colors ' +
-  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ' +
-  'focus-visible:outline-accent';
-// Vertical text reading bottom-to-top — the convention for right-edge tabs.
-const VERTICAL_LABEL =
-  '[writing-mode:vertical-rl] rotate-180 whitespace-nowrap leading-none';
 
 // --- session persistence ---------------------------------------------------
 // The transcript used to live only in React state and the proxy minted a NEW bot
@@ -255,6 +241,10 @@ const FloatingChat = ({
   const pollPendingIdRef = useRef<string | null>(null);
   const clientIdRef = useRef<string | null>(null);
   const abortedRef = useRef<boolean>(false);
+  // The mode that SENT the in-flight request — read by pollOnce when it appends
+  // the assistant answer, so the answer lands in the sending bot's transcript
+  // even if the visible mode has since switched (chip setMode+send race).
+  const pollModeRef = useRef<Mode>('personal');
 
   const messageListRef = useRef<HTMLDivElement>(null);
 
@@ -399,13 +389,15 @@ const FloatingChat = ({
       const s = body?.status;
       if (s === 'answered' && typeof body.answer === 'string') {
         // Append the assistant answer to the mode that SENT the request.
-        // `mode` is captured in this closure (pollOnce has `mode` in its
-        // deps), and the scheduled timer retains the originating instance,
-        // so even a mid-poll mode-switch routes the answer to the right bot.
+        // pollModeRef is set in send() at SEND time to the active mode; reading
+        // it here (NOT the `mode` closure var) routes the answer correctly even
+        // when a chip did setMode + send in one tap — otherwise the queued poll
+        // captured the pre-switch mode and the answer landed in the wrong bot.
+        const answeredMode = pollModeRef.current;
         setMessagesByMode((prev) => ({
           ...prev,
-          [mode]: [
-            ...prev[mode],
+          [answeredMode]: [
+            ...prev[answeredMode],
             {
               id: uuid(),
               role: 'assistant',
@@ -435,7 +427,7 @@ const FloatingChat = ({
       // steady poll can never trip its own 429.
       schedule(pollMinMs);
     },
-    [stopPolling, pollDurationMaxMs, pollMaxMs, pollMinMs, mode],
+    [stopPolling, pollDurationMaxMs, pollMaxMs, pollMinMs],
   );
 
   const startAwaiting = useCallback(
@@ -458,6 +450,10 @@ const FloatingChat = ({
   // client_request_id is forwarded verbatim (the bot dedupes).
   const send = useCallback(async (message?: string, overrideMode?: Mode) => {
     const activeMode = overrideMode ?? mode;
+    // Route the eventual polled ANSWER by the send-time mode, not the closure
+    // mode at poll time — a chip's setMode + send in one handler would
+    // otherwise leave the queued poll holding the pre-switch mode.
+    pollModeRef.current = activeMode;
     const trimmed = (message ?? draft).trim();
     if (!trimmed || status === 'awaiting' || status === 'composing') return;
 
@@ -569,7 +565,7 @@ const FloatingChat = ({
             aria-label="Chat with Fiez"
             aria-live="polite"
             aria-modal="false"
-            className="fixed bottom-6 right-14 md:right-16 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-accent/25 bg-black/95 p-3 text-white shadow-2xl shadow-black/60 backdrop-blur-md"
+            className="fixed bottom-6 right-24 z-[200] flex h-[500px] w-[min(92vw,360px)] flex-col rounded-2xl border border-accent/25 bg-black/95 p-3 text-white shadow-2xl shadow-black/60 backdrop-blur-md"
             initial={reducedMotion ? false : { opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? undefined : { opacity: 0, y: 12, scale: 0.98 }}
@@ -824,7 +820,7 @@ const FloatingChat = ({
                   type="button"
                   disabled={status === 'awaiting' || status === 'composing'}
                   onClick={() => onChip(p)}
-                  className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs text-accent transition-colors hover:bg-accent/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
+                  className="rounded-full whitespace-nowrap border border-accent/40 bg-accent/10 px-3 py-1 text-xs text-accent transition-colors hover:bg-accent/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {p.label}
                 </button>
