@@ -6,6 +6,7 @@
 // portfolio bot). No bot secret ever touches the browser.
 
 import {
+  faArrowLeft,
   faClose,
   faPaperPlane,
   faScroll,
@@ -210,6 +211,10 @@ const FloatingChat = ({
   const [nameDraft, setNameDraft] = useState('');
   const [resumeDraft, setResumeDraft] = useState('');
   const [gateError, setGateError] = useState<string | null>(null);
+  // Re-open the gate from inside the chat so a visitor can switch bot or
+  // re-enter after startChat has set displayName. The gate renders when
+  // !displayName (first visit) OR menuOpen (returning from the chat).
+  const [menuOpen, setMenuOpen] = useState(false);
   // Derived: the active mode's history. All reads (render, auto-scroll dep)
   // go through this, so swapping `mode` swaps the visible list automatically.
   const messages = messagesByMode[mode];
@@ -289,6 +294,9 @@ const FloatingChat = ({
       setSessionIdByMode((prev) => ({ ...prev, [mode]: code }));
     }
     setDisplayName(name);
+    // Returning from the menu: submitting the gate closes it and goes back to
+    // the chat in the (possibly newly chosen) bot.
+    setMenuOpen(false);
   }, [nameDraft, resumeDraft, mode, rehydrate]);
 
   // Auto-scroll the message list to the bottom whenever it changes.
@@ -561,19 +569,40 @@ const FloatingChat = ({
           >
             {/* Header */}
             <header className="flex items-center justify-between border-b border-accent/20 pb-2">
-              <h2 className="flex items-center gap-1.5 text-sm font-semibold tracking-wide">
-                {mode === '3kok' ? (
-                  <>
-                    <FontAwesomeIcon icon={faScroll} className="h-4 w-4 text-accent" aria-hidden="true" />
-                    <span>สามก๊ก</span>
-                  </>
-                ) : (
-                  <>
-                    <FontAwesomeIcon icon={faUser} className="h-4 w-4 text-accent" aria-hidden="true" />
-                    <span>Artemis</span>
-                  </>
+              <div className="flex items-center gap-2">
+                {/* Back-to-menu: returns to the gate (name pre-filled, bot toggle
+                    pre-selected) so a visitor can switch Personal/3-Kingdom or
+                    re-enter after they're already chatting. Only shown INSIDE the
+                    chat — the gate is already the menu. */}
+                {displayName && !menuOpen && (
+                  <button
+                    type="button"
+                    aria-label="Back to menu"
+                    onClick={() => {
+                      setMenuOpen(true);
+                      setNameDraft(displayName ?? '');
+                      setResumeDraft('');
+                      setGateError(null);
+                    }}
+                    className="rounded text-white/70 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    <FontAwesomeIcon icon={faArrowLeft} className="h-3.5 w-3.5" />
+                  </button>
                 )}
-              </h2>
+                <h2 className="flex items-center gap-1.5 text-sm font-semibold tracking-wide">
+                  {mode === '3kok' ? (
+                    <>
+                      <FontAwesomeIcon icon={faScroll} className="h-4 w-4 text-accent" aria-hidden="true" />
+                      <span>สามก๊ก</span>
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faUser} className="h-4 w-4 text-accent" aria-hidden="true" />
+                      <span>Artemis</span>
+                    </>
+                  )}
+                </h2>
+              </div>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -633,8 +662,10 @@ const FloatingChat = ({
             {/* Identity gate. A name means an approved answer reaches a person
                 rather than an anonymous socket, and it anchors the session so
                 follow-up questions have context. The resume code is that
-                session id — paste it on another machine to continue there. */}
-            {!displayName ? (
+                session id — paste it on another machine to continue there.
+                Shows on first visit (!displayName) OR when the visitor re-opens
+                it from the chat via the ← Menu control (menuOpen). */}
+            {!displayName || menuOpen ? (
               <form
                 className="flex grow flex-col justify-center gap-3"
                 onSubmit={(e) => {
