@@ -83,9 +83,9 @@ export const WorkProjects: WorkProjectObj[] = [
       },
     },
     projectDesc: [
-      '- Own the operations backend of an agritech IoT platform end to end: the GraphQL API (author of nearly its entire commit history), the admin console for device management, farmer oversight and alert triage, and the AI-Ops console for model monitoring and system health.',
+      '- Support role for the in-house AI team on an agritech IoT platform — I own the infrastructure and dashboards around their models: the GraphQL API (author of nearly its entire commit history), the admin console for device management, farmer oversight and alert triage, and the AI-Ops console for model monitoring and system health.',
       '- Designed and provisioned the entire AWS production infrastructure: a VPC with public/private subnets across two AZs, ALB + NLB, a RabbitMQ broker for MQTTS/AMQP telemetry, EC2-hosted API, PostgreSQL/TimescaleDB, S3 backups and Secrets Manager — as idempotent infrastructure-as-code with GitHub Actions CI/CD. Flow: field telemetry → MQTTS/NLB → RabbitMQ → API → TimescaleDB.',
-      '- The platform also ships AI features — pest and disease detection, soil-NPK and IoT-anomaly models, weather and yield (XGBoost) prediction, and semantic search over the knowledge base. My side is the API, the consoles and the production infrastructure they run on.',
+      '- The AI is the team\'s work — pest and disease detection, soil-NPK and IoT-anomaly models, weather and yield (XGBoost) prediction, and semantic search over the knowledge base. My part is the API, the consoles and dashboards, and the production infrastructure it all runs on.',
     ],
   },
   {
