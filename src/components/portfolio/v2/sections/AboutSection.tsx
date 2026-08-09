@@ -5,7 +5,7 @@ import GoldHeading, { KICKER } from '../shared/GoldHeading';
 import { MORPH_LAYOUT_TRANSITION } from '../shared/useMorphTransition';
 import { ImgixImage } from '@/constants/storage';
 import Image from 'next/image';
-import { MapPin, Download, Heart, GraduationCap } from 'lucide-react';
+import { MapPin, Download, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const MOTTO_TEXT = 'PASSIONATE TO MAKE THE REMARKABLE THING';
@@ -111,28 +111,6 @@ const AboutSection = () => {
                 </span>
                 .
               </p>
-            </div>
-          </motion.div>
-
-          {/* Education */}
-          <motion.div variants={itemVariants}>
-            <div className="flex items-center gap-2 mb-3">
-              <GraduationCap className="w-4 h-4 text-yellow-500" />
-              <h4 className="text-xs uppercase tracking-widest text-gray-500 font-bold">
-                Education
-              </h4>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm md:text-base font-semibold text-gray-900">
-                B.Eng. in Computer and Artificial Intelligence Engineering
-              </p>
-              <p className="text-xs md:text-sm text-gray-600 font-light">
-                Faculty of Engineering, University of the Thai Chamber of Commerce (UTCC)
-              </p>
-              <span className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-0.5 bg-yellow-100/80 text-yellow-800 border border-yellow-200 text-xs rounded-full font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
-                In progress
-              </span>
             </div>
           </motion.div>
 
