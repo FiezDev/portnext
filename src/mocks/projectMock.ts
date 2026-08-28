@@ -325,11 +325,7 @@ export const SideProjects: SideProjectObj[] = [
       'Plays DRM-protected video by building on the castLabs Electron fork for Widevine, and keeps each view sandboxed with context isolation instead of trusting page scripts.',
       'Tested with Playwright driving the packaged Electron app end to end, and packaged for Windows x64 and macOS arm64.',
     ],
-    pic: [
-      '/screenshot/simpler-launcher.png',
-      '/screenshot/simpler-windows.jpg',
-      '/screenshot/simpler-window.jpg',
-    ],
+    pic: ['/screenshot/simpler-browser.png'],
     ghlink: 'github.com/FiezDev/simpler-browser',
     weblink: '',
   },
@@ -465,5 +461,26 @@ export const SideProjects: SideProjectObj[] = [
     ],
     ghlink: '',
     weblink: '',
+  },
+  {
+    projectName: 'MathForge',
+    projectIntro:
+      'Self-study math tutor PWA — lessons, graded practice, spaced repetition, and an AI tutor for calculus × physics.',
+    stack: [
+      'React',
+      'TypeScript',
+      'Vite PWA',
+      'MathLive',
+      'Cortex Compute Engine',
+      'Vitest',
+    ],
+    projectDesc: [
+      'An offline-first installable PWA for self-study: lesson view, timed practice, and a mastery tracker that drives spaced repetition (SRS scheduling wired into question selection) with daily streaks — bilingual English/Thai throughout.',
+      'Answers are typed as real math via MathLive and graded by the Cortex compute engine, so equivalent forms score correctly — fractions vs decimals, complex numbers, and Thai digits included. A content pipeline generates, validates, and verifies every question.',
+      'An AI tutor panel gives step-by-step help behind a provider-agnostic seam (cloud or local LLM), and the whole app is covered by 188 unit tests plus Playwright end-to-end runs.',
+    ],
+    pic: ['/screenshot/mathforge.png'],
+    ghlink: '',
+    weblink: 'mathforge.fiez.dev',
   },
 ];
