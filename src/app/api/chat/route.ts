@@ -22,7 +22,7 @@
 
 // AC-T4-1: HMAC widget→bot auth. Every forwarded call is signed so the bot can
 // prove the request came from portnext (not a stranger) and isn't a replay.
-import { createHmac } from 'crypto';
+import { createHash, createHmac } from 'crypto';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -63,16 +63,23 @@ function botPath(u: string): string {
 // (Content-Type / correlation-id / …) merged under Authorization +
 // X-Timestamp + X-Signature. Authorization is ALWAYS derived from the secret
 // and overrides any stale Authorization in `base`. A fresh timestamp is
-// minted per call so each of the 3 fetches signs its own (ts, path) pair.
+// minted per call so each fetch signs its own (ts, path, material) triple.
+// Stress-#3 upgrade (byte-compatible with the Workers bot's widget-auth):
+// the signature covers the hashed request material — the raw body string
+// when non-empty, else the URL's search string INCLUDING the leading '?' —
+// so a tampered body or query no longer rides a valid (ts, path) pair.
 export function signHeaders(
   secret: string,
   url: string,
+  body?: string,
   base: Record<string, string> = {},
 ): Record<string, string> {
   const ts = Math.floor(Date.now() / 1000).toString();
   const path = botPath(url);
+  const material = body && body.length > 0 ? body : new URL(url).search;
+  const materialHash = createHash('sha256').update(material).digest('hex');
   const sig = createHmac('sha256', secret)
-    .update(`${ts}:${path}`)
+    .update(`${ts}:${path}:${materialHash}`)
     .digest('hex');
   return {
     ...base,
@@ -298,12 +305,13 @@ export async function POST(req: Request): Promise<Response> {
     typeof sessionIdIn === 'string' && sessionIdIn.length > 0 ? sessionIdIn : null;
   if (reusedSessionId) {
     const chatUrlR = `${base}/chat/request`;
+    const chatBodyR = JSON.stringify({ session_id: reusedSessionId, question: message });
     let upstreamR: Response;
     try {
       upstreamR = await fetch(chatUrlR, {
         method: 'POST',
-        headers: signHeaders(botSecret, chatUrlR, baseHeaders),
-        body: JSON.stringify({ session_id: reusedSessionId, question: message }),
+        headers: signHeaders(botSecret, chatUrlR, chatBodyR, baseHeaders),
+        body: chatBodyR,
         cache: 'no-store',
       });
     } catch {
@@ -336,12 +344,13 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const sessionUrl = `${base}/session`;
+  const sessionReqBody = JSON.stringify({ email: visitorEmail, mode: botMode });
   let sessionRes: Response;
   try {
     sessionRes = await fetch(sessionUrl, {
       method: 'POST',
-      headers: signHeaders(botSecret, sessionUrl, baseHeaders),
-      body: JSON.stringify({ email: visitorEmail, mode: botMode }),
+      headers: signHeaders(botSecret, sessionUrl, sessionReqBody, baseHeaders),
+      body: sessionReqBody,
       cache: 'no-store',
     });
   } catch {
@@ -360,12 +369,13 @@ export async function POST(req: Request): Promise<Response> {
 
   // 2. Gated sendback: POST /chat/request {session_id, question}.
   const chatUrl = `${base}/chat/request`;
+  const chatBody = JSON.stringify({ session_id: sessionId, question: message });
   let upstream: Response;
   try {
     upstream = await fetch(chatUrl, {
       method: 'POST',
-      headers: signHeaders(botSecret, chatUrl, baseHeaders),
-      body: JSON.stringify({ session_id: sessionId, question: message }),
+      headers: signHeaders(botSecret, chatUrl, chatBody, baseHeaders),
+      body: chatBody,
       cache: 'no-store',
     });
   } catch {
@@ -417,7 +427,7 @@ export async function GET(req: Request): Promise<Response> {
     try {
       up = await fetch(msgsUrl, {
         method: 'GET',
-        headers: signHeaders(botSecret, msgsUrl, { ...JSON_HEADERS }),
+        headers: signHeaders(botSecret, msgsUrl, undefined, { ...JSON_HEADERS }),
         cache: 'no-store',
       });
     } catch {
@@ -463,7 +473,7 @@ export async function GET(req: Request): Promise<Response> {
   try {
     upstream = await fetch(pendingUrl, {
       method: 'GET',
-      headers: signHeaders(botSecret, pendingUrl, {
+      headers: signHeaders(botSecret, pendingUrl, undefined, {
         ...JSON_HEADERS,
         [CORRELATION_HEADER]: correlationId,
       }),
