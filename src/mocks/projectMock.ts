@@ -318,11 +318,11 @@ export const SideProjects: SideProjectObj[] = [
   {
     projectName: 'Simpler',
     projectIntro:
-      'Electron browser that opens any URL in a locked aspect ratio — DRM-capable and sandboxed.',
-    stack: ['Electron', 'TypeScript', 'Playwright', 'Widevine', 'electron-builder'],
+      'Electron browser that pins any URL to a locked aspect ratio — with whole-page zoom.',
+    stack: ['Electron', 'TypeScript', 'Playwright', 'electron-builder'],
     projectDesc: [
       'A minimal desktop browser for one job: put a single web view on screen at a fixed aspect ratio, remember the geometry per URL, and stay out of the way. MIT licensed.',
-      'Plays DRM-protected video by building on the castLabs Electron fork for Widevine, and keeps each view sandboxed with context isolation instead of trusting page scripts.',
+      'Zooms the whole page exactly like a real browser — Ctrl+wheel, keyboard steps and a live-percent menu — while the app chrome keeps its exact pixel size at any zoom level.',
       'Tested with Playwright driving the packaged Electron app end to end, and packaged for Windows x64 and macOS arm64.',
     ],
     pic: ['/screenshot/simpler-browser.png'],
