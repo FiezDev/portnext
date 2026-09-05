@@ -17,11 +17,14 @@ const titillium = Titillium_Web({
 
 // AC-T1-3: Thai-capable font so assistant Thai answers don't fall back to a
 // latin-only stack. Exposed as --font-noto-thai so .chat-md can opt in without
-// forcing it on the whole document.
+// forcing it on the whole document. preload OFF (T8, perf pack): the font is
+// consumed only inside chat answers — no reason to fetch it before a chat
+// exists. display:swap covers the fallback.
 const notoThai = Noto_Sans_Thai({
   subsets: ['thai', 'latin'],
   display: 'swap',
   variable: '--font-noto-thai',
+  preload: false,
 });
 
 export const metadata: Metadata = {
