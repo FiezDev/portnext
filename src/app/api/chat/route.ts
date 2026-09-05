@@ -43,12 +43,21 @@ const JSON_HEADERS = {
 } as const;
 
 // --- AC-T4-1 HMAC widget→bot auth ----------------------------------------
-// Bot contract (must match app/widget_auth.py:require_widget_auth exactly):
+// Bot contract (must match the Workers verifier
+// personal-chatbot/workers/src/services/widget-auth.ts:requireWidgetAuth —
+// the stress-#3 formula. The retired Python app/widget_auth.py signed only
+// "<ts>:<path>" and is NO LONGER the contract):
 //   X-Timestamp = unix seconds (string); bot rejects if |now-ts| > 60
-//   X-Signature = HMAC-SHA256(secret, "<ts>:<path>").hexdigest() (hex)
+//   X-Signature = HMAC-SHA256(secret,
+//                 "<ts>:<path>:sha256hex(material)").hexdigest() (hex)
 //   path        = the bot route's pathname — /session, /chat/request,
 //                 /pending/{id} — with NO query and NO trailing slash, so it
 //                 matches the bot-side `<ts>:<path>` byte-for-byte.
+//   material    = the raw request body when non-empty, else the URL's search
+//                 string INCLUDING the leading '?' — queries ride the hashed
+//                 material, never the signed path.
+// The verifier additionally replays-nonce (ts, sig, secret) for 180s, so a
+// repeated byte-identical signed request fails with 401 invalid_trio.
 // Takes the FULL bot URL being fetched so it can extract the pathname; falls
 // back to the raw string if it isn't a parseable URL (e.g. a bare "/session").
 function botPath(u: string): string {
