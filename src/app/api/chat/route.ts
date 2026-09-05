@@ -68,6 +68,18 @@ function botPath(u: string): string {
   }
 }
 
+// Material fallback for body-less requests: the URL's search string
+// INCLUDING the leading '?'. Same guarded parse as botPath — a bare path
+// (e.g. "/session") isn't a parseable URL, so fall back to '' instead of
+// throwing; the bot-side verifier only ever sees full URLs anyway.
+function botSearch(u: string): string {
+  try {
+    return new URL(u).search;
+  } catch {
+    return '';
+  }
+}
+
 // Returns the auth header set for a single bot fetch: caller's `base` headers
 // (Content-Type / correlation-id / …) merged under Authorization +
 // X-Timestamp + X-Signature. Authorization is ALWAYS derived from the secret
@@ -85,7 +97,7 @@ export function signHeaders(
 ): Record<string, string> {
   const ts = Math.floor(Date.now() / 1000).toString();
   const path = botPath(url);
-  const material = body && body.length > 0 ? body : new URL(url).search;
+  const material = body && body.length > 0 ? body : botSearch(url);
   const materialHash = createHash('sha256').update(material).digest('hex');
   const sig = createHmac('sha256', secret)
     .update(`${ts}:${path}:${materialHash}`)

@@ -158,6 +158,24 @@ describe("AC-T4-1a signHeaders(secret, url, body?, base?)", () => {
     }
   });
 
+  it("does not throw on a bare path with no body — material falls back to '' (guarded parse, like botPath)", () => {
+    // signHeaders(secret, "/session") with a bare path + no body used to
+    // throw: new URL('/session') is invalid, and the material line parsed
+    // `url` unguarded. The material must use the same try/catch fallback as
+    // botPath so a bare path signs sha256("") as its material.
+    expect(() => signHeaders("sek", "/session")).not.toThrow();
+    jest.useFakeTimers({ now: 1700000000_000 });
+    try {
+      const h = signHeaders("sek", "/session");
+      expect(h["X-Timestamp"]).toBe("1700000000");
+      expect(h["X-Signature"]).toBe(
+        expectedSig("sek", "1700000000", "/session", ""),
+      );
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it("signs a query-only GET over the raw search string including '?'", () => {
     jest.useFakeTimers({ now: 1700000000_000 });
     try {
