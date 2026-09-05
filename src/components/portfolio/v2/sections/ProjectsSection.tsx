@@ -399,7 +399,6 @@ const ProjectsSection = () => {
                         fill
                         className="object-contain p-1"
                         sizes="(max-width: 768px) 100vw, 45vw"
-                        priority
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-4xl font-bold text-gray-300">
