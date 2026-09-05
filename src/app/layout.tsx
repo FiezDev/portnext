@@ -1,4 +1,5 @@
 import ReactQueryProviders from '@/lib/react-query-providers';
+import VisualFreeze from '@/components/VisualFreeze';
 // import { ThemeProvider } from '@/lib/theme-provider';
 import type { Metadata } from 'next';
 import { Noto_Sans_Thai, Titillium_Web } from 'next/font/google';
@@ -48,6 +49,8 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         <link rel="preconnect" href="https://fiez.imgix.net" crossOrigin="" />
       </head>
       <body className={`${titillium.className} ${notoThai.variable}`}>
+        {/* visual-diff freeze hook — inert unless ?__seed= is in the URL */}
+        <VisualFreeze />
         {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
