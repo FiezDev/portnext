@@ -260,6 +260,50 @@ describe("AC-T4-1b HMAC headers attached to all bot fetches", () => {
     expect(chatBodies).toHaveLength(2);
     expect(chatBodies[0]).toMatchObject({ session_id: "sess-1", question: "q1", mode: "3kok" });
     expect(chatBodies[1]).toMatchObject({ session_id: "sess-1", question: "q2", mode: "personal" });
+
+    // Replay-nonce guard (stress-#3 verifier): the sig covers only
+    // (ts-seconds, path, sha256(body)); the chat body has no per-request
+    // unique value, so a retry/double-submit within the same wall-clock
+    // second is byte-identical and the Worker's nonce rejects it with 401
+    // invalid_trio. Pin the clock so ts is IDENTICAL for every POST — the
+    // minted client_request_id must be the only thing telling the signed
+    // bodies apart (fresh + reused session paths both covered).
+    __resetRateLimit(); // burst is 5/IP; the duplicate volley would trip it
+    jest.useFakeTimers({ now: 1700000000_000 });
+    try {
+      const dup = { message: "same question", client_request_id: "dup-1" };
+      // Fresh-session duplicate pair (no sessionId -> /session + /chat/request).
+      await POST(allowedPost({ ...dup }));
+      await POST(allowedPost({ ...dup }));
+      // Reused-session duplicate pair (sessionId -> /chat/request only).
+      await POST(allowedPost({ ...dup, sessionId: "sess-1" }));
+      await POST(allowedPost({ ...dup, sessionId: "sess-1" }));
+    } finally {
+      jest.useRealTimers();
+    }
+
+    const chatCalls = fetchMock.mock.calls.filter(([url]) =>
+      String(url).endsWith("/chat/request"),
+    );
+    expect(chatCalls).toHaveLength(6);
+    const ids = chatCalls.map(
+      ([, init]) =>
+        JSON.parse(String((init as RequestInit).body)).client_request_id,
+    );
+    ids.forEach((id: unknown) =>
+      expect(id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      ),
+    );
+    // All distinct — no two same-second POSTs share a signed body.
+    expect(new Set(ids).size).toBe(6);
+    // With the clock pinned the (ts, path) pairs were identical, so the
+    // differing minted ids are what made the SIGNATURES differ:
+    const sigs = chatCalls.map(
+      ([, init]) =>
+        new Headers((init as RequestInit).headers).get("X-Signature"),
+    );
+    expect(new Set(sigs).size).toBe(6);
   });
 
   it("GET attaches HMAC headers to /pending/{id} (empty material)", async () => {

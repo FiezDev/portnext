@@ -230,7 +230,8 @@ function serverUnavailable(
 // POST /api/chat
 // Body: { message, mode?, sessionId?, client_request_id }
 // AC-T7-2, AC-T7-6: forwards to ${BOT_URL}/chat/request with Bearer secret +
-// the client_request_id (the bot dedupes retries on this id).
+// a fresh client_request_id minted per POST (the bot dedupes on this id, and
+// the mint keeps a same-second retry from being a byte-identical replay).
 // ---------------------------------------------------------------------------
 export async function POST(req: Request): Promise<Response> {
   // 1. Origin allowlist (cheap pre-flight; fail fast on CSRF-style abuse).
@@ -307,6 +308,17 @@ export async function POST(req: Request): Promise<Response> {
     [CORRELATION_HEADER]: correlationId,
   } as Record<string, string>;
 
+  // Replay-nonce uniqueness: the Worker's verifier replays-nonces
+  // (ts|sig|secret) for 180s and the sig covers only (ts-seconds, path,
+  // sha256(body)) — the chat body has no per-request unique value, so a
+  // retry/double-submit within the same wall-clock second used to be
+  // byte-identical and died with 401 invalid_trio. Mint a fresh
+  // client_request_id per POST (both session paths below) into the signed+
+  // sent body; the Worker's zod ChatReqSchema takes it as optional
+  // (additive, wire-compatible). The caller's own client_request_id still
+  // drives the visitor email above, keeping retries session-stable.
+  const mintedRequestId = uuid();
+
   // 1. Reuse the caller's session when they have one; only mint a new one on the
   // first message. Passing sessionId through is what gives the bot multi-turn
   // context — this route previously documented the field and ignored it.
@@ -314,7 +326,7 @@ export async function POST(req: Request): Promise<Response> {
     typeof sessionIdIn === 'string' && sessionIdIn.length > 0 ? sessionIdIn : null;
   if (reusedSessionId) {
     const chatUrlR = `${base}/chat/request`;
-    const chatBodyR = JSON.stringify({ session_id: reusedSessionId, question: message, mode: botMode });
+    const chatBodyR = JSON.stringify({ session_id: reusedSessionId, question: message, mode: botMode, client_request_id: mintedRequestId });
     let upstreamR: Response;
     try {
       upstreamR = await fetch(chatUrlR, {
@@ -379,7 +391,7 @@ export async function POST(req: Request): Promise<Response> {
   // 2. Gated sendback: POST /chat/request {session_id, question, mode} — the
   // Worker's zod contract requires mode on every chat request (T6 chat.ts).
   const chatUrl = `${base}/chat/request`;
-  const chatBody = JSON.stringify({ session_id: sessionId, question: message, mode: botMode });
+  const chatBody = JSON.stringify({ session_id: sessionId, question: message, mode: botMode, client_request_id: mintedRequestId });
   let upstream: Response;
   try {
     upstream = await fetch(chatUrl, {
