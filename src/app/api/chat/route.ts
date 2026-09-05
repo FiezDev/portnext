@@ -305,7 +305,7 @@ export async function POST(req: Request): Promise<Response> {
     typeof sessionIdIn === 'string' && sessionIdIn.length > 0 ? sessionIdIn : null;
   if (reusedSessionId) {
     const chatUrlR = `${base}/chat/request`;
-    const chatBodyR = JSON.stringify({ session_id: reusedSessionId, question: message });
+    const chatBodyR = JSON.stringify({ session_id: reusedSessionId, question: message, mode: botMode });
     let upstreamR: Response;
     try {
       upstreamR = await fetch(chatUrlR, {
@@ -367,9 +367,10 @@ export async function POST(req: Request): Promise<Response> {
   const sessionId = sessionBody.id;
   if (!sessionId) return bad('bot_session_no_id', 502);
 
-  // 2. Gated sendback: POST /chat/request {session_id, question}.
+  // 2. Gated sendback: POST /chat/request {session_id, question, mode} — the
+  // Worker's zod contract requires mode on every chat request (T6 chat.ts).
   const chatUrl = `${base}/chat/request`;
-  const chatBody = JSON.stringify({ session_id: sessionId, question: message });
+  const chatBody = JSON.stringify({ session_id: sessionId, question: message, mode: botMode });
   let upstream: Response;
   try {
     upstream = await fetch(chatUrl, {

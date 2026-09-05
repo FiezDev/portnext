@@ -227,6 +227,41 @@ describe("AC-T4-1b HMAC headers attached to all bot fetches", () => {
     }
   });
 
+  it("POST /chat/request body carries the mode the Worker requires (fresh + reused session)", async () => {
+    // Worker contract (T6 chat.ts zod): session_id, question, mode(personal|"3kok")
+    // — mode is REQUIRED on /chat/request, not just /session. Without it the
+    // Worker 400s bad_request and the widget sendback dies at stage sendback.
+    fetchMock.mockImplementation((url: string | URL | Request) => {
+      const u = String(url);
+      if (u.endsWith("/session"))
+        return Promise.resolve(jsonRes({ id: "sess-1" }, 201));
+      if (u.endsWith("/chat/request"))
+        return Promise.resolve(jsonRes({ id: "pend-1", status: "pending" }, 202));
+      return Promise.resolve(jsonRes({}, 200));
+    });
+
+    // Fresh session path: POST without sessionId -> /session then /chat/request.
+    await POST(
+      allowedPost({ message: "q1", mode: "3kok", client_request_id: "cid-m1" }),
+    );
+    // Reused-session path: POST with sessionId -> /chat/request only.
+    await POST(
+      allowedPost({
+        message: "q2",
+        mode: "personal",
+        sessionId: "sess-1",
+        client_request_id: "cid-m2",
+      }),
+    );
+
+    const chatBodies = fetchMock.mock.calls
+      .filter(([url]) => String(url).endsWith("/chat/request"))
+      .map(([, init]) => JSON.parse(String((init as RequestInit).body)));
+    expect(chatBodies).toHaveLength(2);
+    expect(chatBodies[0]).toMatchObject({ session_id: "sess-1", question: "q1", mode: "3kok" });
+    expect(chatBodies[1]).toMatchObject({ session_id: "sess-1", question: "q2", mode: "personal" });
+  });
+
   it("GET attaches HMAC headers to /pending/{id} (empty material)", async () => {
     fetchMock.mockResolvedValue(jsonRes({ status: "pending" }));
 
