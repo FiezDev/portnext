@@ -12,6 +12,16 @@ const nextConfig = {
     ],
   },
   reactCompiler: true,
+  experimental: {
+    // (T12, perf pack) barrel-safe per-icon/per-component imports
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      '@fortawesome/react-fontawesome',
+      '@fortawesome/free-brands-svg-icons',
+      '@fortawesome/free-solid-svg-icons',
+    ],
+  },
 };
 
 module.exports = nextConfig;
