@@ -277,8 +277,7 @@ export async function POST(req: Request): Promise<Response> {
   // Bot contract: POST /session {email, mode} → {id,…}; POST /chat/request
   // {session_id, question} → {id, status, note}. The widget is anonymous, so
   // synthesize a stable visitor email per client_request_id (retries reuse the
-  // same session). The bot's mode vocabulary is 'personal' | 'samkok' (samkok
-  // == 3kok); map the widget's term.
+  // same session).
   // Identity: the visitor's own display name plus the stable id their browser
   // keeps, so one person maps to one session instead of a fresh session per
   // message (which is what made the bot answer every turn as turn one).
@@ -292,8 +291,8 @@ export async function POST(req: Request): Promise<Response> {
           .slice(0, 24)
       : '';
   const visitorEmail = `visitor+${nameSlug ? `${nameSlug}-` : ''}${client_request_id}@portfolio.local`;
-  // The bot's Mode enum values are the literals "personal" and "3kok" — pass
-  // through unchanged, default personal.
+  // The widget only ever sends 'personal' | '3kok'; coerce anything else to
+  // 'personal' so the Worker's zod Mode enum never sees an invalid literal.
   const botMode = mode === '3kok' ? '3kok' : 'personal';
 
   // AC-T11-6: forward the incoming correlation id, or mint one if the widget
