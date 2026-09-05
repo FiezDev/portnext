@@ -1,12 +1,10 @@
-import ReactQueryProviders from '@/lib/react-query-providers';
 import VisualFreeze from '@/components/VisualFreeze';
-import FloatingChat from "../components/global/FloatingChat";
+import FloatingChatLazy from "@/components/global/FloatingChatLazy";
 // import { ThemeProvider } from '@/lib/theme-provider';
 import type { Metadata } from 'next';
 import { Noto_Sans_Thai, Titillium_Web } from 'next/font/google';
 import Script from 'next/script';
 import { ReactNode, Suspense } from 'react';
-import AnalyticsTracker from '../components/global/AnalyticsTracker';
 import '../styles/globals.css';
 
 const titillium = Titillium_Web({
@@ -52,23 +50,23 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         <link rel="preconnect" href="https://fiez.imgix.net" crossOrigin="" />
       </head>
       <body className={`${titillium.className} ${notoThai.variable}`}>
-        {/* visual-diff freeze hook — inert unless ?__seed= is in the URL */}
-        <VisualFreeze />
         {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         > */}
-        <Suspense>
-          <AnalyticsTracker />
-        </Suspense>
-        <ReactQueryProviders>
-          {children}
-          {/* T7: global floating chat — sibling of children so it survives the
-              in-page /portfolio PageId nav. */}
-          <FloatingChat />
-        </ReactQueryProviders>
+        {children}
+        {/* global floating chat (lazy) — sibling AFTER children: outside any
+            provider subtree (a lazy boundary inside one swallows the SSR'd
+            page content), and after children so DOM order is unchanged */}
+        <FloatingChatLazy />
+        {/* visual-diff freeze hook — renders null, but the JSX reference is
+            what loads its client chunk: the module-level __seed hook (seeded
+            Math.random + animation freeze) must execute in the browser for
+            deterministic captures. An import alone is tree-shaken from the
+            client bundle when never rendered. */}
+        <VisualFreeze />
         {/* </ThemeProvider> */}
       </body>
     </html>

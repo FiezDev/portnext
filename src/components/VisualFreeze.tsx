@@ -27,6 +27,7 @@ const seededRandom = (seed: number) => {
 if (typeof window !== 'undefined') {
   const seedParam = new URLSearchParams(window.location.search).get('__seed');
   if (seedParam) {
+    (window as typeof window & { __VISUAL_FREEZE__?: boolean }).__VISUAL_FREEZE__ = true;
     Math.random = seededRandom(Number(seedParam) || 1337);
 
     const style = document.createElement('style');

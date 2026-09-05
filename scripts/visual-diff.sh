@@ -41,6 +41,17 @@ capture() {
       agent-browser wait "$SETTLE_MS" >/dev/null 2>&1
       agent-browser screenshot "$dir/${name}-${label}.png" >/dev/null 2>&1
       agent-browser snapshot > "$dir/${name}-${label}.txt" 2>/dev/null
+      # normalize: strip root-level "- generic" wrappers (serializer parks
+      # an invisible completed-boundary marker that re-nests the tree under
+      # a root generic; content lines still diff 1:1 after dedent)
+      python3 - "$dir/${name}-${label}.txt" << 'NORM'
+import sys, pathlib
+p = pathlib.Path(sys.argv[1])
+lines = p.read_text().splitlines()
+while lines and lines[0] == '- generic':
+    lines = [l[2:] if l.startswith('  ') else l for l in lines[1:]]
+p.write_text('\n'.join(lines) + '\n')
+NORM
     done
   done
   echo "captured $(ls "$dir" | wc -l) files into $dir"
