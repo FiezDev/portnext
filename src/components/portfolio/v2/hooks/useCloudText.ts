@@ -64,7 +64,6 @@ export const useCloudText = ({
 
   const [layers, setLayers] = useState<CloudLayerData[]>([]);
   const highlightedIndices = useRef<Array<{l: number, i: number}>>([]);
-  const [, forceUpdate] = useState(0);
 
   // Generate Words - only when colorFlag is true (on Main page)
   useEffect(() => {
@@ -122,33 +121,11 @@ export const useCloudText = ({
      setLayers(generatedLayers);
   }, [position.x, position.y, sortingType, colorFlag, color, glowFlag, count, seed, gameActive, gameViewW, gameViewH]);
 
-  // Highlight Loop - only when colorFlag is true and NOT in game mode
-  useEffect(() => {
-     if (!colorFlag || layers.length === 0 || gameActive) return;
-
-     const interval = setInterval(() => {
-         const candidates:Array<{l: number, i: number}> = [];
-         for (let k = 0; k < 3; k++) { // Reduced from 5 to 3
-            const randomLayerIndex = Math.floor(Math.random() * layers.length);
-            const layer = layers[randomLayerIndex];
-            if (layer && layer.items.length > 0) {
-                const randomItemIndex = Math.floor(Math.random() * layer.items.length);
-                candidates.push({ l: randomLayerIndex, i: randomItemIndex });
-            }
-         }
-
-         highlightedIndices.current = candidates;
-         forceUpdate(n => n + 1);
-
-         setTimeout(() => {
-              highlightedIndices.current = [];
-              forceUpdate(n => n + 1);
-         }, 3500);
-
-      }, 5000);
-
-     return () => clearInterval(interval);
-  }, [layers, colorFlag, gameActive]);
+  // Highlight loop REMOVED (T6, perf pack): it force-updated twice per 5s
+  // cycle forever, but combinedLayers' memo deps ([layers, color, glowFlag])
+  // never included the ref mutation — the highlight was visually dead and
+  // only the re-renders remained. If the twinkle is ever wanted, drive it
+  // with per-item state (or CSS) so 160 CloudWords don't re-render.
 
   // Merge State and Return - using ref for better performance
   const combinedLayers = useMemo(() => {

@@ -2,8 +2,6 @@
 
 import { memo, useEffect, useRef, useState } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import { letterFragments } from './letterGeometry';
 import type { Rotation } from './heroGameLogic';
 
@@ -105,39 +103,53 @@ function CloudWordImpl({ item, isGame, isHit, isTarget, wrongNonce, reduced, onH
   }, [isGame, wrongNonce, reduced, controls]);
 
   // GSAP shatter — on a correct hit the letters pop, fling out, tumble + fall, fade.
-  useGSAP(
-    () => {
-      if (!isGame || !isHit || !shattering || reduced) return;
+  // gsap is imported lazily INSIDE the effect: the shatter only runs in game
+  // mode, and the game has no entry point today — 117KB stays off /portfolio's
+  // initial load until a hit actually happens.
+  useEffect(() => {
+    if (!isGame || !isHit || !shattering || reduced) return;
+    let cancelled = false;
+    let tl: { kill: () => void } | null = null;
+    (async () => {
+      const { default: gsap } = await import('gsap');
+      if (cancelled) return;
       const shards = shardsRef.current?.querySelectorAll('text');
       if (!shards || shards.length === 0) return;
       const frags = letterFragments(item);
-      const tl = gsap.timeline();
+      const timeline = gsap.timeline();
+      tl = timeline;
       shards.forEach((el, i) => {
         const f = frags[i];
         if (!f) return;
         const at = i * 0.018;
-        tl.fromTo(
-          el,
-          { scale: 1, opacity: 1, x: 0, y: 0, rotation: 0 },
-          { scale: 1.5, duration: 0.1, ease: 'back.out(3)' },
-          at
-        ).to(
-          el,
-          {
-            x: f.tx * 2.4,
-            y: f.ty * 2.4 + 70,
-            rotation: f.spin * 2.6,
-            scale: 0.12,
-            opacity: 0,
-            duration: 0.72,
-            ease: 'power3.out',
-          },
-          at + 0.08
-        );
+        timeline
+          .fromTo(
+            el,
+            { scale: 1, opacity: 1, x: 0, y: 0, rotation: 0 },
+            { scale: 1.5, duration: 0.1, ease: 'back.out(3)' },
+            at
+          )
+          .to(
+            el,
+            {
+              x: f.tx * 2.4,
+              y: f.ty * 2.4 + 70,
+              rotation: f.spin * 2.6,
+              scale: 0.12,
+              opacity: 0,
+              duration: 0.72,
+              ease: 'power3.out',
+            },
+            at + 0.08
+          );
       });
-    },
-    { scope: shardsRef, dependencies: [shattering, isHit] }
-  );
+    })();
+    return () => {
+      cancelled = true;
+      tl?.kill();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shattering, isHit]);
 
   // ---- Decorative (non-game): byte-identical to the original inline word ----
   if (!isGame) {

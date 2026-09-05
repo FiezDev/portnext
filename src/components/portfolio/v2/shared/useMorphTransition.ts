@@ -79,14 +79,18 @@ export const useMorphTransition = (reduced: boolean) => {
     return () => mq.removeEventListener('change', update);
   }, []);
 
-  // Preload both films early. A 404 never becomes ready → that direction
-  // morphs without film.
+  // Preload films only after the visitor shows intent (first pointer/keydown)
+  // — 1.4MB of video no longer competes with first paint. `leave` loads
+  // first (the first navigation needs it), `return` follows sequentially.
+  // A 404 never becomes ready → that direction morphs without film.
   useEffect(() => {
     if (reduced || !wide) return;
     readyRef.current = {};
+    let started = false;
     const videos: HTMLVideoElement[] = [];
-    const t = setTimeout(() => {
-      (['leave', 'return'] as const).forEach((role) => {
+
+    const loadRole = (role: 'leave' | 'return') =>
+      new Promise<void>((resolve) => {
         const v = document.createElement('video');
         v.preload = 'auto';
         v.muted = true;
@@ -95,17 +99,33 @@ export const useMorphTransition = (reduced: boolean) => {
           'canplaythrough',
           () => {
             readyRef.current[role] = true;
+            resolve();
           },
           { once: true }
         );
-        v.addEventListener('error', () => {
-          readyRef.current[role] = false;
-        });
+        v.addEventListener(
+          'error',
+          () => {
+            readyRef.current[role] = false;
+            resolve();
+          },
+          { once: true }
+        );
         videos.push(v);
       });
-    }, 400);
+
+    const start = () => {
+      if (started) return;
+      started = true;
+      loadRole('leave').then(() => loadRole('return'));
+      window.removeEventListener('pointerdown', start);
+      window.removeEventListener('keydown', start);
+    };
+    window.addEventListener('pointerdown', start);
+    window.addEventListener('keydown', start);
     return () => {
-      clearTimeout(t);
+      window.removeEventListener('pointerdown', start);
+      window.removeEventListener('keydown', start);
       videos.forEach((v) => {
         v.removeAttribute('src');
         v.load();

@@ -51,3 +51,7 @@ nextjs/
 *.tsbuildinfo
 next-env.d.ts
 docs/df-deep-build/portfolio-video-transitions/takes/
+
+# df-deep doc packs live in oracle-asset; these are symlinks
+docs/spec/
+docsbackup/

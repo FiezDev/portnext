@@ -204,7 +204,7 @@ export const generateRadialPackedWords = (count: number = 50, sortingType: numbe
   for (let i = 1; i < pickedWords.length; i++) {
     const word = pickedWords[i];
     
-    let allCandidates: Rect[] = [];
+    const allCandidates: Rect[] = [];
 
     // Try ALL rotations for this word to find the best spot that satisfies constraints
     const possibleRotations = [0, 90, 180, 270] as const;

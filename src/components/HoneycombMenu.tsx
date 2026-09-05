@@ -13,12 +13,13 @@ interface HexagonItemProps {
   imagePosition?: string;
 }
 
-const HexagonItem: FC<HexagonItemProps> = ({
+const HexagonItem: FC<HexagonItemProps & { priority?: boolean }> = ({
   href,
   image,
   label,
   className,
   imagePosition,
+  priority,
 }) => {
   return (
     <Link
@@ -37,6 +38,7 @@ const HexagonItem: FC<HexagonItemProps> = ({
           src={image}
           alt={label}
           fill
+          priority={priority}
           className="object-cover transition-transform duration-500 group-hover:scale-110"
           style={imagePosition ? { objectPosition: imagePosition } : undefined}
         />
@@ -90,6 +92,7 @@ const HoneycombMenu: FC<HoneycombMenuProps> = ({ items, className }) => {
             image={item.image}
             label={item.label}
             imagePosition={item.imagePosition}
+            priority={index === 0}
             className={cn('honeycomb-item', `honeycomb-item-${index}`)}
           />
         ))}

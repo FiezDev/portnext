@@ -8,10 +8,10 @@
 
 | Category             | Technology                             |
 | -------------------- | -------------------------------------- |
-| **Framework**        | Next.js 15 (App Router, Static Export) |
+| **Framework**        | Next.js 16 (App Router, Turbopack, Vercel) |
 | **Language**         | TypeScript 5.9                         |
 | **UI Library**       | React 19                               |
-| **Styling**          | Tailwind CSS 3.4 + tailwindcss-animate |
+| **Styling**          | Tailwind CSS 4 |
 | **State Management** | Zustand 5, TanStack Query 5            |
 | **Forms**            | React Hook Form 7 + Zod validation     |
 | **Icons**            | FontAwesome 6, Lucide React            |
@@ -44,7 +44,6 @@ portnext/
 │   ├── layout/        # Layout components
 │   ├── lib/           # Utilities, providers, configs
 │   │   ├── config/    # App configuration
-│   │   ├── firebase/  # Firebase setup
 │   │   ├── store/     # Zustand stores
 │   │   └── validations/ # Zod schemas
 │   ├── mocks/         # Mock data for testing/dev
@@ -61,11 +60,13 @@ portnext/
 ```bash
 # Development
 bun dev              # Start dev server with Turbopack
-bun build            # Production build (static export)
+bun run build        # Production build (Turbopack)
+bun run lint         # ESLint (flat config, eslint src)
+bun run test         # Jest (canonical runner — 118/118 green)
 bun start            # Serve production build
 
 # Testing
-bun test             # Run Jest tests
+bun run test         # Jest tests (canonical; `bun test` uses Bun's runner and mis-reports)
 bun test:watch       # Watch mode
 bun test:coverage    # Coverage report
 

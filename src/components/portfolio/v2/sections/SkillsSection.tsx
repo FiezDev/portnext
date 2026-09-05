@@ -76,7 +76,7 @@ const SkillsSection = () => {
             Framework-agnostic engineer.
           </span>{' '}
           I ship production work across many frameworks and libraries, whichever
-          fits the job. What's listed here is a glimpse, not the whole picture.
+          fits the job. What&apos;s listed here is a glimpse, not the whole picture.
         </p>
         <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
           {coreicon.length} technologies · {GROUPS.length} domains
@@ -117,7 +117,6 @@ const SkillsSection = () => {
                     >
                       <span className="flex h-5 w-5 items-center justify-center">
                         {skill.img ? (
-                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={skill.img}
                             alt=""

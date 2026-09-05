@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Check, Copy, MapPin } from 'lucide-react';
 import Recaptcha from '@/components/global/Recapcha';
 import Notification from '@/components/global/Notification';
-import { useCreateContact } from '@/services/contact';
+import { createContact } from '@/services/contact';
 import { cn } from '@/lib/utils';
 
 const EMAILS = ['itti.task@gmail.com', 'fiez.dev@gmail.com'];
@@ -79,7 +79,6 @@ const ContactSection = () => {
     }
   };
 
-  const mutateCreateContact = useCreateContact();
 
   const {
     register,
@@ -153,7 +152,7 @@ const ContactSection = () => {
     };
 
     try {
-      await mutateCreateContact.mutateAsync(formData);
+      await createContact(formData);
       await sendToFormSubmit(value);
       setNotification({
         message: 'Your message has been sent successfully.',

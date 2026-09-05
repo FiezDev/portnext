@@ -131,9 +131,6 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange,
 
   const { layers } = useCloudText(cloudConfig);
 
-  // Memoize layers to prevent unnecessary re-renders
-  const memoizedLayers = useMemo(() => layers, [layers]);
-
   return (
     // relative z-10 keeps the whole page ABOVE the z-[5] hero film — the
     // page's own opacity animations create z-auto contexts that would
@@ -165,7 +162,7 @@ export const PortfolioCanvas = ({ currentPage, previousPage, onGameActiveChange,
             >
 
               {/* Text Cloud Background - Only on Main (becomes the game board in game mode) */}
-              {showBackground && memoizedLayers.map((layer, layerIndex) => (
+              {showBackground && layers.map((layer, layerIndex) => (
                 <ParallaxLayer
                   key={`layer-${layerIndex}`}
                   mx={parallaxX}

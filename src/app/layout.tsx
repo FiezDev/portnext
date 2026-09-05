@@ -1,11 +1,10 @@
-import ReactQueryProviders from '@/lib/react-query-providers';
+import VisualFreeze from '@/components/VisualFreeze';
+import FloatingChatLazy from "@/components/global/FloatingChatLazy";
 // import { ThemeProvider } from '@/lib/theme-provider';
 import type { Metadata } from 'next';
 import { Noto_Sans_Thai, Titillium_Web } from 'next/font/google';
 import Script from 'next/script';
-import { ReactNode, Suspense } from 'react';
-import AnalyticsTracker from '../components/global/AnalyticsTracker';
-import FloatingChat from '../components/global/FloatingChat';
+import { ReactNode} from 'react';
 import '../styles/globals.css';
 
 const titillium = Titillium_Web({
@@ -16,11 +15,14 @@ const titillium = Titillium_Web({
 
 // AC-T1-3: Thai-capable font so assistant Thai answers don't fall back to a
 // latin-only stack. Exposed as --font-noto-thai so .chat-md can opt in without
-// forcing it on the whole document.
+// forcing it on the whole document. preload OFF (T8, perf pack): the font is
+// consumed only inside chat answers — no reason to fetch it before a chat
+// exists. display:swap covers the fallback.
 const notoThai = Noto_Sans_Thai({
   subsets: ['thai', 'latin'],
   display: 'swap',
   variable: '--font-noto-thai',
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -54,15 +56,17 @@ const RootLayout = ({ children }: RootLayoutProps) => {
           enableSystem
           disableTransitionOnChange
         > */}
-        <Suspense>
-          <AnalyticsTracker />
-        </Suspense>
-        <ReactQueryProviders>
-          {children}
-          {/* T7: global floating chat — sibling of children so it survives the
-              in-page /portfolio PageId nav. */}
-          <FloatingChat />
-        </ReactQueryProviders>
+        {children}
+        {/* global floating chat - lazy sibling AFTER children - outside any
+            provider subtree (a lazy boundary inside one swallows the SSR'd
+            page content), and after children so DOM order is unchanged */}
+        <FloatingChatLazy />
+        {/* visual-diff freeze hook — renders null, but the JSX reference is
+            what loads its client chunk: the module-level __seed hook (seeded
+            Math.random + animation freeze) must execute in the browser for
+            deterministic captures. An import alone is tree-shaken from the
+            client bundle when never rendered. */}
+        <VisualFreeze />
         {/* </ThemeProvider> */}
       </body>
     </html>
