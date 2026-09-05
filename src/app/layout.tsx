@@ -4,7 +4,7 @@ import FloatingChatLazy from "@/components/global/FloatingChatLazy";
 import type { Metadata } from 'next';
 import { Noto_Sans_Thai, Titillium_Web } from 'next/font/google';
 import Script from 'next/script';
-import { ReactNode, Suspense } from 'react';
+import { ReactNode} from 'react';
 import '../styles/globals.css';
 
 const titillium = Titillium_Web({
@@ -57,7 +57,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
           disableTransitionOnChange
         > */}
         {children}
-        {/* global floating chat (lazy) — sibling AFTER children: outside any
+        {/* global floating chat - lazy sibling AFTER children - outside any
             provider subtree (a lazy boundary inside one swallows the SSR'd
             page content), and after children so DOM order is unchanged */}
         <FloatingChatLazy />

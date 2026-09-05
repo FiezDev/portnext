@@ -6,13 +6,8 @@ import {
   faLinkedin,
 } from '@fortawesome/free-brands-svg-icons';
 import {
-  faAddressBook,
-  faAddressCard,
   faGlobe,
-  faHouseChimney,
-  faLaptopFile,
   faPhone,
-  faUserGear,
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconType } from 'react-icons';
 import {
